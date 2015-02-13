@@ -8,16 +8,18 @@ CFile::CFile()
 
 bool CFile::Open(CString name, unsigned int mode)
 {
+    _mode = (mode & modeRead ? modeRead : modeWrite);
+
     switch (_mode)
     {
-        case modeRead:
+        case modeWrite:
+            _ostream.open(name.c_str(), std::fstream::out | std::fstream::trunc);
+            return _ostream.is_open();
+            break;
+        default:
             _istream.open(name.c_str(), std::ios_base::in | std::ios_base::binary);
             return _istream.is_open();
             break;
-
-        case modeWrite:
-            _ostream.open(name.c_str(), std::ios_base::out | std::ios_base::ate);
-            return _ostream.is_open();
     }
 }
 
@@ -72,7 +74,3 @@ ULONG CFile::GetLength()
     return size;
 }
 
-CStdioFile::CStdioFile() : CFile()
-{
-
-}

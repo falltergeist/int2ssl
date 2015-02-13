@@ -6,6 +6,11 @@ CString::CString()
 {
 }
 
+CString::CString(char value)
+{
+    _string.push_back(value);
+}
+
 CString::CString(std::string string)
 {
     _string = string;
@@ -78,7 +83,7 @@ void CString::Format(const char *format, ...)
     va_list args;
     va_start( args, format );
 
-    size = sprintf(buff, format, args);
+    size = vsprintf(buff, format, args);
     std::string stroka(buff, size);
     _string = stroka;
 }

@@ -10,10 +10,15 @@
 
 
 // COpcode::COpcodeAttributes
-COpcode::COpcodeAttributes::COpcodeAttributes(LPCTSTR lpszMnemonic, LPCTSTR lpszName, ULONG ulNumArgs,
-											  Type type, Category category, ULONG *procArgs, ULONG numProcArgs) :
-	m_strMnemonic(lpszMnemonic),
-	m_strName(lpszName),
+COpcode::COpcodeAttributes::COpcodeAttributes(std::string mnemonic,
+                                              std::string name,
+                                              ULONG ulNumArgs,
+                                              Type type,
+                                              Category category,
+                                              ULONG *procArgs,
+                                              ULONG numProcArgs) :
+    m_strMnemonic(mnemonic),
+    m_strName(name),
 	m_ulNumArgs(ulNumArgs),
 	m_Type(type),
 	m_Category(category),

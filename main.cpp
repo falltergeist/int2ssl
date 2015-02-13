@@ -58,13 +58,16 @@ int main(int argc, char* argv[])
         //}
 
         CFile fileInput;
-        CStdioFile fileOutput;
+        CFile fileOutput;
 
         //if (fileInput.Open(g_strInputFileName, CFile::modeRead | CFile::shareDenyWrite)) {
-        if (fileInput.Open(CString("BECA.int"), CFile::modeRead | CFile::shareDenyWrite)) {
+        if (fileInput.Open(CString("BECA.int"), CFile::modeRead | CFile::shareDenyWrite))
+        {
             //if (fileOutput.Open(g_strOutputFileName, CFile::modeCreate | CFile::modeWrite | CFile::typeText | CFile::shareDenyWrite)) {
-            if (fileOutput.Open(CString("BECA.int.ssl"), CFile::modeCreate | CFile::modeWrite | CFile::typeText | CFile::shareDenyWrite)) {
-                try {
+            if (fileOutput.Open(CString("BECA.int.ssl"), CFile::modeCreate | CFile::modeWrite | CFile::typeText | CFile::shareDenyWrite))
+            {
+                try
+                {
                     CArchive arInput(&fileInput, CArchive::load);
 					CFalloutScript Script;
 
@@ -76,7 +79,9 @@ int main(int argc, char* argv[])
 
                     CArchive arOutput(&fileOutput, CArchive::store);
 
-					if (g_bDump) {
+                    if (g_bDump)
+                    //if (true)
+                    {
                         printf("Dumping...\n", g_strInputFileName.c_str());
 						Script.Dump(arOutput);
 

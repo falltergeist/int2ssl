@@ -12,6 +12,7 @@ protected:
     std::string _string;
 public:
     CString();
+    CString(char value);
     CString(std::string string);
     CString(const CString& cstring);
 

@@ -7,17 +7,16 @@
 #include "Opcode.h"
 
 // CStartupCode
-class CStartupCode : public CObject {
+class CStartupCode
+{
 public:
+
 	enum Defaults {
 		c_nDefaultSize = 42
 	};
 
-public:
 	CStartupCode();
 	virtual ~CStartupCode();
-
-public:
 	virtual void Serialize(CArchive& ar);
 
 private:

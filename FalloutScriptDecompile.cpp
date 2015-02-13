@@ -46,7 +46,8 @@ void CFalloutScript::ProcessCode()
 
 	printf("    Building execution tree\n");
 	
-	for(INT_PTR i = 0; i < m_ProcTable.GetSize(); i++) {
+    for(INT_PTR i = 0; i < m_ProcTable.GetSize(); i++)
+    {
 		printf("        Procedure: %d\r", i);
         BuildTree(m_ProcBodies.at(i));
 	}
@@ -368,22 +369,25 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
 
 	COpcode::COpcodeAttributes opcodeAttributes;
 	INT_PTR j;
-    for (j = nStartIndex; (j < NodeArray.GetSize() && NodeArray.at(j).m_ulOffset < ulEndOffset); j++) {
+    for (j = nStartIndex; (j < NodeArray.GetSize() && NodeArray.at(j).m_ulOffset < ulEndOffset); j++)
+    {
         wOperator = NodeArray.at(j).m_Opcode.GetOperator();
         ulArgument = NodeArray.at(j).m_Opcode.GetArgument();
 
         opcodeAttributes = NodeArray.at(j).m_Opcode.GetAttributes();
 		nNumOfArgs = INT_PTR(opcodeAttributes.m_ulNumArgs);
 
-		switch(wOperator) {
+        switch(wOperator)
+        {
 		case COpcode::O_FETCH_EXTERNAL:
 		case COpcode::O_STORE_EXTERNAL:
-			{
+        {
 				INT_PTR nExtVarNameNodeIndex = NextNodeIndex(NodeArray, j, -1);
                 WORD wOpeartor = NodeArray.at(nExtVarNameNodeIndex).m_Opcode.GetOperator();
                 ULONG ulArgument = NodeArray.at(nExtVarNameNodeIndex).m_Opcode.GetArgument();
 
-				if ((wOpeartor != COpcode::O_STRINGOP) && (wOpeartor != COpcode::O_INTOP)) {
+                if ((wOpeartor != COpcode::O_STRINGOP) && (wOpeartor != COpcode::O_INTOP))
+                {
 					printf("Error: Invalid reference to external variable\n");
 					AfxThrowUserException();
 				}
@@ -453,17 +457,22 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
 		}
 
 		// Move arguments
-		for(INT_PTR k = 0; k < nNumOfArgs; k++) {
-			if (k < nOmittedArgStartIndex) {
+        for(INT_PTR k = 0; k < nNumOfArgs; k++)
+        {
+            if (k < nOmittedArgStartIndex)
+            {
                 NodeArray.at(j).m_Arguments.InsertAt(0, NodeArray.at(j - 1));
 				NodeArray.RemoveAt(j - 1);
 				j--;
 			}
-			else {
-				if (g_bInsOmittedArgsBackward) {
+            else
+            {
+                if (g_bInsOmittedArgsBackward)
+                {
                     NodeArray.at(j).m_Arguments.Add(CNode(CNode::TYPE_OMITTED_ARGUMENT));
 				}
-				else {
+                else
+                {
                     NodeArray.at(j).m_Arguments.InsertAt(0, CNode(CNode::TYPE_OMITTED_ARGUMENT));
 				}
 			}
@@ -496,7 +505,8 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
 
 void CFalloutScript::BuildTree(CNodeArray& NodeArray)
 {
-	if (NodeArray.GetSize() > 0) {
+    if (NodeArray.GetSize() > 0)
+    {
         BuildTreeBranch(NodeArray, 0, NodeArray.at(NodeArray.GetSize() - 1).m_ulOffset + COpcode::OPERATOR_SIZE);
 	}
 }

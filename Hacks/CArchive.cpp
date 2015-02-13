@@ -1,5 +1,7 @@
 #include "CArchive.h"
 
+#include <iostream>
+
 CArchive::CArchive(CFile* file, unsigned int mode)
 {
     _file = file;
@@ -16,6 +18,7 @@ CFile* CArchive::GetFile()
 
 void CArchive::WriteString(const char * value)
 {
+    std::cout << _file->_ostream.is_open() << std::endl;
     _file->_ostream << value;
 }
 

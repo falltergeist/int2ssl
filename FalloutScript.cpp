@@ -70,40 +70,48 @@ void CFalloutScript::Serialize(CArchive& ar)
 		// Jump to 'start' procedure
 		printf("    Check \"Jump to \'start\' procedure\" / \"Jump to end of statup code\"\n");
 
-		if (!HeaderTail.IsEmpty()) {
+        if (!HeaderTail.IsEmpty())
+        {
 			INT_PTR nIndexOfStart = GetIndexOfProc("start");
 			ULONG ulStartProcAddress = (nIndexOfStart != -1) ? m_ProcTable[nIndexOfStart].m_ulBodyOffset : 18;
 
             opcode = HeaderTail.at(HeaderTail.GetUpperBound());
 
-			if (opcode.GetOperator() == COpcode::O_JMP) {
+            if (opcode.GetOperator() == COpcode::O_JMP)
+            {
 				HeaderTail.RemoveAt(HeaderTail.GetUpperBound());
 
-				if (HeaderTail.IsEmpty()) {
+                if (HeaderTail.IsEmpty())
+                {
 					printf("\n");
 					printf("Warning: Omitted address of jump\n");
 					printf("\n");
 				}
-				else {
+                else
+                {
                     opcode = HeaderTail.at(HeaderTail.GetUpperBound());
 
-					if (opcode.GetOperator() == COpcode::O_INTOP) {
+                    if (opcode.GetOperator() == COpcode::O_INTOP)
+                    {
 						HeaderTail.RemoveAt(HeaderTail.GetUpperBound());
 
-						if (opcode.GetArgument() != ulStartProcAddress) {
+                        if (opcode.GetArgument() != ulStartProcAddress)
+                        {
 							printf("\n");
 							printf("Warning: Invalid jump address\n");
 							printf("\n");
 						}
 					}
-					else {
+                    else
+                    {
 						printf("\n");
 						printf("Warning: Invalid opcode for jump addres\n");
 						printf("\n");
 					}
 				}
 			}
-			else {
+            else
+            {
 				printf("\n");
 				printf("Warning: Omitted  \"Jump to \'start\' procedure\" / \"Jump to end of statup code\"\n");
 				printf("\n");
@@ -188,14 +196,16 @@ void CFalloutScript::Serialize(CArchive& ar)
 
 		CNode node;
 
-		for(INT_PTR i = 0; i < m_ProcTable.GetSize(); i++) {
+        for(INT_PTR i = 0; i < m_ProcTable.GetSize(); i++)
+        {
 			printf("    Procedure: %d\r", i);
 			ULONG ulOffset = m_ProcTable[i].m_ulBodyOffset;
 			ULONG ulSize = m_ProcTable.GetSizeOfProc(i);
 			ar.Flush();
 			ar.GetFile()->Seek(ulOffset, CFile::begin);
 
-			while(ulOffset < m_ProcTable[i].m_ulBodyOffset + ulSize) {
+            while(ulOffset < m_ProcTable[i].m_ulBodyOffset + ulSize)
+            {
 				node.m_Opcode.Serialize(ar);
 				node.m_ulOffset = ulOffset;
                 m_ProcBodies.at(i).Add(node);

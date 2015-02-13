@@ -36,18 +36,22 @@ void CNamespace::Serialize(CArchive& ar)
 
 		ULONG ulLength;
 
-		if (ReadMSBULong(ar, ulLength) != 4) {
+        if (ReadMSBULong(ar, ulLength) != 4)
+        {
 			printf("Error: Unable read length of namespace\n");
 			AfxThrowUserException();
 		}
 
-		if (ulLength != 0xFFFFFFFF) {
+        if (ulLength != 0xFFFFFFFF)
+        {
 			ULONG ulTotalRead = 0;
 			WORD wLengthOfString;
-			CString strNewString;
-			LPTSTR  lpszNewString;
+            LPTSTR  lpszNewString;
 
-			while(ulTotalRead < ulLength) {
+            while(ulTotalRead < ulLength)
+            {
+                CString strNewString;
+
 				if (ReadMSBWord(ar, wLengthOfString) != 2) {
 					printf("Error: Unable read length of string\n");
 					AfxThrowUserException();
@@ -72,17 +76,19 @@ void CNamespace::Serialize(CArchive& ar)
 					AfxThrowUserException();
 				}
 
-				strNewString.ReleaseBuffer();
+                std::string tmpString(lpszNewString);
+                strNewString = tmpString.c_str();//.ReleaseBuffer();
 
-/*
+
 				// Convert Nongraphic Characters to Escape sequence
 				CString strNonGraph("\\\a\b\f\n\r\t\"");
 				CString strEscape("\\abfnrt\"");
 
-				for(int i = 0; i < strNonGraph.GetLength(); i++) {
-                    strNewString.Replace(CString(strNonGraph[i]), CString('\\') + strEscape[i]);
+                for(int i = 0; i < strNonGraph.GetLength(); i++)
+                {
+                    strNewString.Replace(CString(strNonGraph[i]), CString("\\" + strEscape[i]));
 				}
-*/
+
 				m_Map.SetAt(ulTotalRead + 6, strNewString);
 				m_Order.Add(ulTotalRead + 6);
 
@@ -91,7 +97,8 @@ void CNamespace::Serialize(CArchive& ar)
 
 			ULONG ulTerminator;
 
-			if (ReadMSBULong(ar, ulTerminator) != 4) {
+            if (ReadMSBULong(ar, ulTerminator) != 4)
+            {
 				printf("Error: Unable read terminator of namespace\n");
 				AfxThrowUserException();
 			}
@@ -130,11 +137,14 @@ void CNamespace::Dump(CArchive& ar)
 {
 	CString strOutLine;
 
-	if (m_Order.IsEmpty()) {
+    if (m_Order.IsEmpty())
+    {
 		ar.WriteString("Empty\n");
 	}
-	else {
-		for(INT_PTR i = 0; i < m_Order.GetSize(); i++) {
+    else
+    {
+        for(unsigned int i = 0; i < m_Order.GetSize(); i++)
+        {
             strOutLine.Format("0x%08X: \"%s\"\n", m_Order.at(i), GetStringByIndex(i).c_str());
 			ar.WriteString(strOutLine);
 		}
@@ -149,7 +159,8 @@ CString CNamespace::operator [] (ULONG ulOffset) const
 {
 	CString strResult;
 
-	if (!m_Map.Lookup(ulOffset, strResult)) {
+    if (!m_Map.Lookup(ulOffset, strResult))
+    {
 		printf("Error: No string at offset 0x%08x\n", ulOffset);
 		AfxThrowUserException();
 	}

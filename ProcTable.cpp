@@ -89,18 +89,22 @@ void CProcDescriptor::Dump(CArchive& ar)
 	CString strOutLine;
 	CString strType;
 
-	if (m_ulType != 0x00000000) {
+    if (m_ulType != 0x00000000)
+    {
 		strType = "( ";
 
-		if (m_ulType & P_TIMED) {
+        if (m_ulType & P_TIMED)
+        {
 			strType += "timed ";
 		}
 
-		if (m_ulType & P_CONDITIONAL) {
+        if (m_ulType & P_CONDITIONAL)
+        {
 			strType += "conditional ";
 		}
 
-		if (m_ulType & P_IMPORT) {
+        if (m_ulType & P_IMPORT)
+        {
 			strType += "import ";
 		}
 
@@ -191,7 +195,8 @@ void CProcTable::Serialize(CArchive& ar)
 
 		ulRead = ReadMSBULong(ar, ulSizeOfTable);
 
-		if (ulRead != sizeof(ulSizeOfTable)) {
+        if (ulRead != sizeof(ulSizeOfTable))
+        {
 			printf("Error: Unable read size of procedures table\n");
 			AfxThrowUserException();
 		}
@@ -285,8 +290,10 @@ void CProcTable::Dump(CArchive& ar)
 {
 	CString strOutLine;
 
-	for(INT_PTR i = 0; i < m_Table.GetSize(); i++) {
+    for(unsigned int i = 0; i < m_Table.GetSize(); i++)
+    {
 		strOutLine.Format("======== Procedure %d ========\n", i);
+
 		ar.WriteString(strOutLine);
         m_Table.at(i).Dump(ar);
 		ar.WriteString("\n");

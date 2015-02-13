@@ -36,9 +36,10 @@ class CMap
 
         bool Lookup(ULONG offset, C& value) const
         {
-            if (_map.find(offset) != _map.end())
+            auto it = _map.find(offset);
+            if (it != _map.end())
             {
-                value = _map.at(offset);
+                value = it->second;
                 return true;
             }
             return false;

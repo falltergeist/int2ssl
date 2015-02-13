@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef OPCODE_H
 #define OPCODE_H
 
@@ -8,7 +6,8 @@
 #include "Hacks/CMap.h"
 
 // COpcode
-class COpcode : public CObject {
+class COpcode
+{
 public:
 	enum Size {
 		OPERATOR_SIZE = 2,
@@ -765,7 +764,8 @@ public:
 	};
 
 	// COpcodeAttributes
-	class COpcodeAttributes {
+    class COpcodeAttributes
+    {
 	public:
 		enum Type {
 			TYPE_STATEMENT,
@@ -778,22 +778,21 @@ public:
 		};
 
 	public:
-		COpcodeAttributes(LPCTSTR lpszMnemonic = "", LPCTSTR lpszName = "", ULONG ulNumArgs = 0,
-						  Type type = TYPE_STATEMENT, Category category = CATEGORY_PREFIX, ULONG *procArgs = NULL, ULONG numProcArgs = 0);
+        COpcodeAttributes(std::string mnemonic = "",
+                          std::string name = "",
+                          ULONG ulNumArgs = 0,
+                          Type type = TYPE_STATEMENT,
+                          Category category = CATEGORY_PREFIX,
+                          ULONG* procArgs = NULL,
+                          ULONG numProcArgs = 0);
 		COpcodeAttributes(const COpcodeAttributes& attributes);
-
-	public:
 		COpcodeAttributes& operator = (const COpcodeAttributes& attributes);
-
-	public:
 		void InitAttributes();
 
 	public:
 		CString m_strMnemonic;
-
 		CString m_strName;
 		ULONG m_ulNumArgs;
-
 		Type m_Type;
 		Category m_Category;
 		ULONG *m_procArgs;

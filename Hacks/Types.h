@@ -4,17 +4,19 @@
 #include <string>
 #include <cstdint>
 
-typedef char BYTE;
-typedef const char * LPCTSTR;
-typedef char * LPTSTR;
-typedef unsigned int ULONG;
-typedef uint16_t WORD;
-typedef uint32_t DWORD;
+typedef int BOOL;
+typedef unsigned char BYTE;
+typedef const char* LPCSTR;
+typedef LPCSTR LPCTSTR;
+typedef char* LPSTR;
+typedef LPSTR LPTSTR;
+typedef unsigned short WORD;
+typedef unsigned long DWORD;
 typedef unsigned int UINT;
-typedef bool BOOL;
 typedef char TCHAR;
-#define TRUE true
-#define FALSE false
-typedef size_t INT_PTR;
+#define TRUE 1
+#define FALSE 0
+typedef int INT_PTR;
+typedef unsigned int ULONG;
 
 #endif // TYPES_H

@@ -1,0 +1,12 @@
+CMakeFiles
+CMakeCache.txt
+CMakeLists.txt.user
+Makefile
+*.dump
+*.int
+*.ssl
+*.cmake
+*.cbp
+*.exe
+int2ssl
+
