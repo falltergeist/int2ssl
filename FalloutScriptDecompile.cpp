@@ -5,6 +5,8 @@
 #include "FalloutScript.h"
 #include "ObjectAttributes.h"
 
+#include <iostream>
+
 // Globals
 extern BOOL g_bIgnoreWrongNumOfArgs;
 extern BOOL g_bInsOmittedArgsBackward;
@@ -18,13 +20,16 @@ void CFalloutScript::InitDefinitions()
 
 	m_Definitions.RemoveAll();
 
-	for(INT_PTR i = 0; i < m_Namespace.GetSize(); i++) {
+    for(INT_PTR i = 0; i < m_Namespace.GetSize(); i++)
+    {
 		ulNameOffset = m_Namespace.GetOffsetByIndex(i);
 		
-		if ((nObjectIndex = GetIndexOfProc(ulNameOffset)) != -1) {
+        if ((nObjectIndex = GetIndexOfProc(ulNameOffset)) != -1)
+        {
 			m_Definitions.SetAt(ulNameOffset, CDefObject(CDefObject::OBJECT_PROCEDURE, 0, ULONG(nObjectIndex)));
 		}
-		else if ((nObjectIndex = GetIndexOfExportedVariable(ulNameOffset)) != -1) {
+        else if ((nObjectIndex = GetIndexOfExportedVariable(ulNameOffset)) != -1)
+        {
             WORD wOpcode = m_ExportedVarValue.at(nObjectIndex).GetOperator();
             ULONG ulValue = m_ExportedVarValue.at(nObjectIndex).GetArgument();
 
@@ -34,7 +39,8 @@ void CFalloutScript::InitDefinitions()
 
 	m_GlobalVarsNames.SetSize(m_GlobalVar.GetSize());
 
-	for(INT_PTR i = 0; i < m_GlobalVarsNames.GetSize(); i++) {
+    for(INT_PTR i = 0; i < m_GlobalVarsNames.GetSize(); i++)
+    {
         m_GlobalVarsNames.at(i).Format(c_strGlobalVarTemplate.c_str(), i);
 	}
 }
@@ -48,7 +54,7 @@ void CFalloutScript::ProcessCode()
 	
     for(INT_PTR i = 0; i < m_ProcTable.GetSize(); i++)
     {
-		printf("        Procedure: %d\r", i);
+        printf("        Procedure: %d\n", i);
         BuildTree(m_ProcBodies.at(i));
 	}
 
@@ -379,57 +385,59 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
         opcodeAttributes = NodeArray.at(j).m_Opcode.GetAttributes();
 		nNumOfArgs = INT_PTR(opcodeAttributes.m_ulNumArgs);
 
+std::cout << std::hex << wOperator << std::endl;
+
         switch(wOperator)
         {
-		case COpcode::O_FETCH_EXTERNAL:
-		case COpcode::O_STORE_EXTERNAL:
-        {
-				INT_PTR nExtVarNameNodeIndex = NextNodeIndex(NodeArray, j, -1);
-                WORD wOpeartor = NodeArray.at(nExtVarNameNodeIndex).m_Opcode.GetOperator();
-                ULONG ulArgument = NodeArray.at(nExtVarNameNodeIndex).m_Opcode.GetArgument();
+            case COpcode::O_FETCH_EXTERNAL:
+            case COpcode::O_STORE_EXTERNAL:
+            {
+                    INT_PTR nExtVarNameNodeIndex = NextNodeIndex(NodeArray, j, -1);
+                    WORD wOpeartor = NodeArray.at(nExtVarNameNodeIndex).m_Opcode.GetOperator();
+                    ULONG ulArgument = NodeArray.at(nExtVarNameNodeIndex).m_Opcode.GetArgument();
 
-                if ((wOpeartor != COpcode::O_STRINGOP) && (wOpeartor != COpcode::O_INTOP))
+                    if ((wOpeartor != COpcode::O_STRINGOP) && (wOpeartor != COpcode::O_INTOP))
+                    {
+                        printf("Error: Invalid reference to external variable\n");
+                        AfxThrowUserException();
+                    }
+
+                    SetExternalVariable(ulArgument);
+                }
+
+                break;
+
+            case COpcode::O_CALL:
                 {
-					printf("Error: Invalid reference to external variable\n");
-					AfxThrowUserException();
-				}
+                    INT_PTR nProcNumOfArgsNodeIndex = NextNodeIndex(NodeArray, j, -2);
+                    WORD wProcNumOfArgsOperator = NodeArray.at(nProcNumOfArgsNodeIndex).m_Opcode.GetOperator();
+                    ULONG ulProcNumOfArgs = NodeArray.at(nProcNumOfArgsNodeIndex).m_Opcode.GetArgument();
 
-				SetExternalVariable(ulArgument);
-			}
+                    if (wProcNumOfArgsOperator != COpcode::O_INTOP) {
+                        printf("Error: Invalid opcode for procedure\'s number of arguments\n");
+                        AfxThrowUserException();
+                    }
 
-			break;
+                    nNumOfArgs = INT_PTR(ulProcNumOfArgs) + 2;
+                }
 
-		case COpcode::O_CALL:
-			{
-				INT_PTR nProcNumOfArgsNodeIndex = NextNodeIndex(NodeArray, j, -2);
-                WORD wProcNumOfArgsOperator = NodeArray.at(nProcNumOfArgsNodeIndex).m_Opcode.GetOperator();
-                ULONG ulProcNumOfArgs = NodeArray.at(nProcNumOfArgsNodeIndex).m_Opcode.GetArgument();
+                break;
 
-				if (wProcNumOfArgsOperator != COpcode::O_INTOP) {
-					printf("Error: Invalid opcode for procedure\'s number of arguments\n");
-					AfxThrowUserException();
-				}
+            case COpcode::O_ADDREGION:
+                {
+                    INT_PTR nAddRegionNumOfArgsNodeIndex = NextNodeIndex(NodeArray, j, -1);
+                    WORD wAddRegionNumOfArgsOperator = NodeArray.at(nAddRegionNumOfArgsNodeIndex).m_Opcode.GetOperator();
+                    ULONG ulAddRegionNumOfArgs = NodeArray.at(nAddRegionNumOfArgsNodeIndex).m_Opcode.GetArgument();
 
-				nNumOfArgs = INT_PTR(ulProcNumOfArgs) + 2;
-			}
+                    if (wAddRegionNumOfArgsOperator != COpcode::O_INTOP) {
+                        printf("Error: Invalid opcode for addRegion number of arguments\n");
+                        AfxThrowUserException();
+                    }
 
-			break;
+                    nNumOfArgs = INT_PTR(ulAddRegionNumOfArgs) + 1;
+                }
 
-		case COpcode::O_ADDREGION:
-			{
-				INT_PTR nAddRegionNumOfArgsNodeIndex = NextNodeIndex(NodeArray, j, -1);
-                WORD wAddRegionNumOfArgsOperator = NodeArray.at(nAddRegionNumOfArgsNodeIndex).m_Opcode.GetOperator();
-                ULONG ulAddRegionNumOfArgs = NodeArray.at(nAddRegionNumOfArgsNodeIndex).m_Opcode.GetArgument();
-
-				if (wAddRegionNumOfArgsOperator != COpcode::O_INTOP) {
-					printf("Error: Invalid opcode for addRegion number of arguments\n");
-					AfxThrowUserException();
-				}
-
-				nNumOfArgs = INT_PTR(ulAddRegionNumOfArgs) + 1;
-			}
-
-			break;
+                break;
 		}
 
 		// Check nodes
@@ -437,21 +445,27 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
 		COpcode::COpcodeAttributes checkOpcodeAttributes;
 		INT_PTR nNodeIndex = j;
 
-		for(INT_PTR k = 0; k < nNumOfArgs; k++) {
+        for(INT_PTR k = 0; k < nNumOfArgs; k++)
+        {
 			nNodeIndex = NextNodeIndex(NodeArray, nNodeIndex, -1);
-            if (!NodeArray.at(nNodeIndex).IsExpression()) {
-				if (g_bIgnoreWrongNumOfArgs) {
-					if (IsOmittetArgsAllowed(wOperator)) {
+            if (!NodeArray.at(nNodeIndex).IsExpression())
+            {
+                if (g_bIgnoreWrongNumOfArgs)
+                {
+                    if (IsOmittetArgsAllowed(wOperator))
+                    {
 						printf("Warning: Omitted expression found\n");
 						nOmittedArgStartIndex = k;
 						break;
 					}
-					else {
+                    else
+                    {
                         printf("Error: Not enough arguments for %X\n", NodeArray.at(j).m_ulOffset);
 						AfxThrowUserException();
 					}
 				}
-				else {
+                else
+                {
                     printf("Error: Expression required for %X\n", NodeArray.at(j).m_ulOffset);
 					AfxThrowUserException();
 				}
@@ -480,15 +494,20 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
 			}
 		}
 
-		if (wOperator == COpcode::O_IF) { // process possible conditional expression - this may be either normal IF statement or (x IF y ELSE z) expression
+        if (wOperator == COpcode::O_IF)
+        {
+            // process possible conditional expression - this may be either normal IF statement or (x IF y ELSE z) expression
             ULONG ulElseOffset = NodeArray.at(j).m_Arguments.at(0).m_Opcode.GetArgument();
 			ULONG ulElseIndex, ulSkipIndex = -1;
 			ulElseIndex = BuildTreeBranch(NodeArray, j + 1, ulElseOffset); // true branch
-            if (NodeArray.at(ulElseIndex - 1).m_Opcode.GetOperator() == COpcode::O_JMP) {
+            if (NodeArray.at(ulElseIndex - 1).m_Opcode.GetOperator() == COpcode::O_JMP)
+            {
                 ULONG ulSkipOffset = NodeArray.at(ulElseIndex - 1).m_Opcode.GetArgument();
-                if (ulSkipOffset > NodeArray.at(j).m_ulOffset) {
+                if (ulSkipOffset > NodeArray.at(j).m_ulOffset)
+                {
 					ulSkipIndex = BuildTreeBranch(NodeArray, ulElseIndex, ulSkipOffset); // false branch
-                    if (NodeArray.at(ulElseIndex - 2).IsExpression() && NodeArray.at(ulSkipIndex - 1).IsExpression()) { // conditional expression
+                    if (NodeArray.at(ulElseIndex - 2).IsExpression() && NodeArray.at(ulSkipIndex - 1).IsExpression())
+                    { // conditional expression
                         NodeArray.at(j).m_Type = CNode::TYPE_CONDITIONAL_EXPRESSION;
                         NodeArray.at(j).m_Arguments.RemoveAt(0); // address not needed anymore
                         NodeArray.at(j).m_Arguments.InsertAt(0, NodeArray.at(ulElseIndex - 2)); // true expression
