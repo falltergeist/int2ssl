@@ -87,7 +87,8 @@ int main(int argc, char* argv[])
 
                         printf("File %s dumped successfuly\n", g_strInputFileName.c_str());
 					}
-					else  {
+                    else
+                    {
 						printf("Decompiling...\n");
 
 						printf("  Init definitions\n");

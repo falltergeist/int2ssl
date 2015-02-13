@@ -44,6 +44,11 @@ CString& CString::operator+(const char* value)
     return *this;
 }
 
+bool CString::operator==(CString& other)
+{
+    return _string == other._string;
+}
+
 CString::operator const char* () const
 {
     return _string.c_str();

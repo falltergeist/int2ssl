@@ -1,6 +1,3 @@
-// FalloutScript.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "FalloutScript.h"
 
@@ -30,15 +27,19 @@ void CFalloutScript::Dump(CArchive& ar)
 
 	ar.WriteString("============== Global variables values ==================\n");
 
-	if (m_GlobalVar.IsEmpty()) {
+    if (m_GlobalVar.IsEmpty())
+    {
 		ar.WriteString("Not found\n");
 	}
-	else {
-		for(INT_PTR i = 0; i < m_GlobalVar.GetSize(); i++) {
+    else
+    {
+        for(unsigned int i = 0; i < m_GlobalVar.GetSize(); i++)
+        {
             wOperator = m_GlobalVar.at(i).GetOperator();
             ulArgument = m_GlobalVar.at(i).GetArgument();
 
-			switch(wOperator) {
+            switch(wOperator)
+            {
 				case COpcode::O_STRINGOP:
 				case COpcode::O_INTOP:
 					strOutLine.Format("%d: %s(0x%08x)   // %u (%d)\n", 

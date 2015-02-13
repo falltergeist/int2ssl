@@ -41,20 +41,11 @@ COpcode& COpcode::operator = (const COpcode& opcode)
 
 void COpcode::Serialize(CArchive& ar)
 {
-    //if (ar.IsStoring()) {
-    if (false)
-    {
-    //	ASSERT(FALSE);
-	}
-    else
-    {
 		if (ReadMSBWord(ar, m_wOperator) != OPERATOR_SIZE) {
 
 			printf("Error: Unable read opcode\n");
 			AfxThrowUserException();
 		}
-
-        std::cout << std::hex << m_wOperator << std::endl;
 
 		if ((m_wOperator < O_OPERATOR) ||
 			((m_wOperator >= O_END_OP) && 
@@ -72,7 +63,6 @@ void COpcode::Serialize(CArchive& ar)
 				AfxThrowUserException();
 			}
 		}
-	}
 }
 
 void COpcode::Expect(CArchive& ar, WORD wOperator, BOOL bArgumentFound, ULONG ulArgument)

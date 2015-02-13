@@ -41,7 +41,7 @@ private:
 	BOOL CheckSetExportedVarValueCode(WORD wOperator, INT_PTR nIndex);
 	BOOL CheckExportProcCode(WORD wOperator, INT_PTR nIndex);
 
-	INT_PTR GetIndexOfProc(LPCTSTR lpszName);
+    INT_PTR GetIndexOfProc(const char* lpszName);
 	INT_PTR GetIndexOfProc(ULONG ulNameOffset);
 	INT_PTR GetIndexOfExportedVariable(ULONG ulNameOffset);
 

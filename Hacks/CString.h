@@ -18,6 +18,7 @@ public:
 
     const char* c_str() const;
     CString& operator=(const char* value);
+    bool operator==(CString& other);
     CString& operator+=(const char* value);
     CString& operator+(const char* value);
     operator const char* () const;

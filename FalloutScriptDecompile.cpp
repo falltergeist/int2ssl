@@ -98,7 +98,7 @@ void CFalloutScript::ProcessCode()
 	TryRenameImportedVariables();
 }
 
-INT_PTR CFalloutScript::GetIndexOfProc(LPCTSTR lpszName)
+INT_PTR CFalloutScript::GetIndexOfProc(const char* lpszName)
 {
 	INT_PTR nResult = -1;
 	CString strName(lpszName);
@@ -123,8 +123,10 @@ INT_PTR CFalloutScript::GetIndexOfProc(ULONG ulNameOffset)
 {
 	INT_PTR nResult = -1;
 
-	for(INT_PTR i = 0; i < m_ProcTable.GetSize(); i++) {
-        if (m_ProcTable[i].m_ulNameOffset == ulNameOffset) {
+    for(INT_PTR i = 0; i < m_ProcTable.GetSize(); i++)
+    {
+        if (m_ProcTable[i].m_ulNameOffset == ulNameOffset)
+        {
 			nResult = i;
 			break;
 		}
