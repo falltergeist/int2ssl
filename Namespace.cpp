@@ -122,12 +122,12 @@ INT_PTR CNamespace::GetSize() const
 
 CString CNamespace::GetStringByIndex(INT_PTR nIndex)
 {
-    return (this->operator [] (m_Order.at(nIndex)));
+    return (this->operator [] (m_Order[nIndex]));
 }
 
 ULONG CNamespace::GetOffsetByIndex(INT_PTR nIndex)
 {
-    return m_Order.at(nIndex);
+    return m_Order[nIndex];
 }
 
 void CNamespace::Dump(CArchive& ar)
@@ -142,7 +142,7 @@ void CNamespace::Dump(CArchive& ar)
     {
         for(unsigned int i = 0; i < m_Order.GetSize(); i++)
         {
-            strOutLine.Format("0x%08X: \"%s\"\n", m_Order.at(i), GetStringByIndex(i).c_str());
+            strOutLine.Format("0x%08X: \"%s\"\n", m_Order[i], GetStringByIndex(i).c_str());
             ar.WriteString(strOutLine);
         }
 

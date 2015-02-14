@@ -23,11 +23,11 @@ void CFalloutScript::StoreTree(CArchive& ar)
             ar.WriteString("Condition\n");
             ar.WriteString("===============================\n");
 
-            for(INT_PTR i = 0; i < m_Conditions.at(nIndexOfProc).GetSize(); i++)
+            for(INT_PTR i = 0; i < m_Conditions[nIndexOfProc].GetSize(); i++)
             {
-                strOutLine.Format("0x%08X: ", m_Conditions.at(nIndexOfProc).at(i).m_ulOffset);
+                strOutLine.Format("0x%08X: ", m_Conditions[nIndexOfProc][i].m_ulOffset);
                 ar.WriteString(strOutLine);
-                m_Conditions.at(nIndexOfProc).at(i).StoreTree(ar, 0, 0);
+                m_Conditions[nIndexOfProc][i].StoreTree(ar, 0, 0);
             }
 
             ar.WriteString("\n");
@@ -35,11 +35,11 @@ void CFalloutScript::StoreTree(CArchive& ar)
             ar.WriteString("===============================\n");
         }
 
-        for(INT_PTR i = 0; i < m_ProcBodies.at(nIndexOfProc).GetSize(); i++)
+        for(INT_PTR i = 0; i < m_ProcBodies[nIndexOfProc].GetSize(); i++)
         {
-            strOutLine.Format("0x%08X: ", m_ProcBodies.at(nIndexOfProc).at(i).m_ulOffset);
+            strOutLine.Format("0x%08X: ", m_ProcBodies[nIndexOfProc][i].m_ulOffset);
             ar.WriteString(strOutLine);
-            m_ProcBodies.at(nIndexOfProc).at(i).StoreTree(ar, 0, 0);
+            m_ProcBodies[nIndexOfProc][i].StoreTree(ar, 0, 0);
         }
 
         ar.WriteString("\n");
@@ -79,11 +79,11 @@ void CFalloutScript::StoreDefinitions(CArchive& ar)
 
         for(INT_PTR i = 0; i < m_GlobalVar.GetSize(); i++)
         {
-            ulVarValue = m_GlobalVar.at(i).GetArgument();
+            ulVarValue = m_GlobalVar[i].GetArgument();
             strDefinition += "variable ";
-            strDefinition += m_GlobalVarsNames.at(i);
+            strDefinition += m_GlobalVarsNames[i];
 
-            switch(m_GlobalVar.at(i).GetOperator())
+            switch(m_GlobalVar[i].GetOperator())
             {
                 case COpcode::O_STRINGOP:
                     strDefinition.Format(strDefinition + " := \"%s\"", m_Stringspace[ulVarValue].c_str());
@@ -103,7 +103,7 @@ void CFalloutScript::StoreDefinitions(CArchive& ar)
 
             strDefinition += ";";
 
-            if ((m_GlobalVar.at(i).GetOperator() == COpcode::O_INTOP) && (ulVarValue & 0x80000000))
+            if ((m_GlobalVar[i].GetOperator() == COpcode::O_INTOP) && (ulVarValue & 0x80000000))
             {
                 strDefinition.Format(strDefinition + " /* (%d) */", ulVarValue);
             }
@@ -381,7 +381,7 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
         }
         else if (procDescriptor.m_ulType & P_CONDITIONAL)
         {
-            strOutLine.Format(strOutLine + " when (%s)", GetSource(m_Conditions.at(i).at(0), FALSE, procDescriptor.m_ulNumArgs).c_str());
+            strOutLine.Format(strOutLine + " when (%s)", GetSource(m_Conditions[i][0], FALSE, procDescriptor.m_ulNumArgs).c_str());
         }
 
         ar.WriteString(strOutLine + "\n");
@@ -391,11 +391,11 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
         INT_PTR nIndentLevel = 0;
         CNode::Type prevNodeType = CNode::TYPE_NORMAL;
 
-        for(INT_PTR nNodeIndex = 0; nNodeIndex < m_ProcBodies.at(i).GetSize(); nNodeIndex++)
+        for(INT_PTR nNodeIndex = 0; nNodeIndex < m_ProcBodies[i].GetSize(); nNodeIndex++)
         {
-            if (m_ProcBodies.at(i).at(nNodeIndex).m_Type == CNode::TYPE_BEGIN_OF_BLOCK)
+            if (m_ProcBodies[i][nNodeIndex].m_Type == CNode::TYPE_BEGIN_OF_BLOCK)
             {
-                if ((nNodeIndex - 1 > 0) && (m_ProcBodies.at(i).at(nNodeIndex - 1).m_Type == CNode::TYPE_END_OF_BLOCK))
+                if ((nNodeIndex - 1 > 0) && (m_ProcBodies[i][nNodeIndex - 1].m_Type == CNode::TYPE_END_OF_BLOCK))
                 {
                     ar.WriteString(GetIndentString(nIndentLevel) + "else begin\n");
                     nIndentLevel++;
@@ -407,7 +407,7 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
                 }
                 prevNodeType = CNode::TYPE_BEGIN_OF_BLOCK;
             }
-            else if (m_ProcBodies.at(i).at(nNodeIndex).m_Type == CNode::TYPE_END_OF_BLOCK)
+            else if (m_ProcBodies[i][nNodeIndex].m_Type == CNode::TYPE_END_OF_BLOCK)
             {
                 nIndentLevel--;
                 ar.WriteString(GetIndentString(nIndentLevel) + "end\n");
@@ -416,12 +416,12 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
             else
             {
                 prevNodeType = CNode::TYPE_NORMAL;
-                WORD wOperator = m_ProcBodies.at(i).at(nNodeIndex).m_Opcode.GetOperator();
+                WORD wOperator = m_ProcBodies[i][nNodeIndex].m_Opcode.GetOperator();
 
-                if ((m_ProcBodies.at(i).at(nNodeIndex).m_Opcode.GetAttributes().m_Type == COpcode::COpcodeAttributes::TYPE_EXPRESSION) &&
+                if ((m_ProcBodies[i][nNodeIndex].m_Opcode.GetAttributes().m_Type == COpcode::COpcodeAttributes::TYPE_EXPRESSION) &&
                     (wOperator != COpcode::O_STRINGOP) && (wOperator != COpcode::O_FLOATOP) && (wOperator != COpcode::O_INTOP))
                 {
-                    printf("Warning: Result of expression is left in stack. (Opcode 0x%04X at 0x%08X)\n", wOperator, m_ProcBodies.at(i).at(nNodeIndex).m_ulOffset);
+                    printf("Warning: Result of expression is left in stack. (Opcode 0x%04X at 0x%08X)\n", wOperator, m_ProcBodies[i][nNodeIndex].m_ulOffset);
                 }
 
                 switch(wOperator)
@@ -439,40 +439,40 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
                         str += c_strLocalVarTemplate + " := ";
 
                         strOutLine.Format(str.c_str(), ulLocalVarIndex);
-                        ar.WriteString(GetIndentString(nIndentLevel) + strOutLine + GetSource(m_ProcBodies.at(i).at(nNodeIndex), FALSE, procDescriptor.m_ulNumArgs) + ";\n");
+                        ar.WriteString(GetIndentString(nIndentLevel) + strOutLine + GetSource(m_ProcBodies[i][nNodeIndex], FALSE, procDescriptor.m_ulNumArgs) + ";\n");
                         ulLocalVarIndex++;
                         break;
                     }
                     case COpcode::O_IF:
-                        ar.WriteString(GetIndentString(nIndentLevel) + GetSource(m_ProcBodies.at(i).at(nNodeIndex), FALSE, procDescriptor.m_ulNumArgs) + " then ");
+                        ar.WriteString(GetIndentString(nIndentLevel) + GetSource(m_ProcBodies[i][nNodeIndex], FALSE, procDescriptor.m_ulNumArgs) + " then ");
                         break;
 
                     case COpcode::O_WHILE:
-                        if (m_ProcBodies.at(i).at(nNodeIndex).m_Type == CNode::TYPE_FOR_LOOP)
+                        if (m_ProcBodies[i][nNodeIndex].m_Type == CNode::TYPE_FOR_LOOP)
                         {
                             CString str = GetIndentString(nIndentLevel) + "for (";
-                            for (INT_PTR j = 0; j < m_ProcBodies.at(i).at(nNodeIndex).m_Arguments.GetSize(); j++)
+                            for (INT_PTR j = 0; j < m_ProcBodies[i][nNodeIndex].m_Arguments.GetSize(); j++)
                             {
                                 if (j > 0)
                                 {
                                     str += "; ";
                                 }
-                                str += GetSource(m_ProcBodies.at(i).at(nNodeIndex).m_Arguments.at(j), FALSE, procDescriptor.m_ulNumArgs);
+                                str += GetSource(m_ProcBodies[i][nNodeIndex].m_Arguments[j], FALSE, procDescriptor.m_ulNumArgs);
                             }
                             str += ") ";
                             ar.WriteString(str);
                         }
                         else
                         {
-                            ar.WriteString(GetIndentString(nIndentLevel) + GetSource(m_ProcBodies.at(i).at(nNodeIndex), FALSE, procDescriptor.m_ulNumArgs) + " do ");
+                            ar.WriteString(GetIndentString(nIndentLevel) + GetSource(m_ProcBodies[i][nNodeIndex], FALSE, procDescriptor.m_ulNumArgs) + " do ");
                         }
                         break;
 
                     default:
-                        ar.WriteString(GetIndentString(nIndentLevel) + GetSource(m_ProcBodies.at(i).at(nNodeIndex), FALSE, procDescriptor.m_ulNumArgs) + ";\n");
+                        ar.WriteString(GetIndentString(nIndentLevel) + GetSource(m_ProcBodies[i][nNodeIndex], FALSE, procDescriptor.m_ulNumArgs) + ";\n");
 
-                        if ((m_ProcBodies.at(i).at(nNodeIndex).m_Type != CNode::TYPE_BEGIN_OF_BLOCK) &&
-                            (m_ProcBodies.at(i).at(nNodeIndex).m_Type != CNode::TYPE_END_OF_BLOCK))
+                        if ((m_ProcBodies[i][nNodeIndex].m_Type != CNode::TYPE_BEGIN_OF_BLOCK) &&
+                            (m_ProcBodies[i][nNodeIndex].m_Type != CNode::TYPE_END_OF_BLOCK))
                         {
                             bLocalVar = FALSE;
                         }
@@ -561,48 +561,50 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
 
         case COpcode::O_POP_RETURN:
             strResult = "return ";
-            strResult += GetSource(node.m_Arguments.at(0), FALSE, ulNumArgs);
+            strResult += GetSource(node.m_Arguments[0], FALSE, ulNumArgs);
             break;
 
         case COpcode::O_LOOKUP_STRING_PROC:
-            strResult = GetSource(node.m_Arguments.at(0), FALSE, ulNumArgs);
+            strResult = GetSource(node.m_Arguments[0], FALSE, ulNumArgs);
             break;
 
         case COpcode::O_FETCH_GLOBAL:
-            if (node.m_Arguments.at(0).m_Opcode.GetOperator() != COpcode::O_INTOP)
+            if (node.m_Arguments[0].m_Opcode.GetOperator() != COpcode::O_INTOP)
             {
                 printf("Error: Invalid argument to O_FETCH_GLOBAL opcode\n");
                 AfxThrowUserException();
             }
 
-            if (INT_PTR(node.m_Arguments.at(0).m_Opcode.GetArgument()) > m_GlobalVarsNames.GetUpperBound())
+            if (INT_PTR(node.m_Arguments[0].m_Opcode.GetArgument()) > m_GlobalVarsNames.GetUpperBound())
             {
                 printf("Error: Invalid index of global variable\n");
                 AfxThrowUserException();
             }
 
-            strResult = m_GlobalVarsNames.at(node.m_Arguments.at(0).m_Opcode.GetArgument());
+            strResult = m_GlobalVarsNames[node.m_Arguments[0].m_Opcode.GetArgument()];
             break;
 
         case COpcode::O_STORE_GLOBAL:
-            if (node.m_Arguments.at(1).m_Opcode.GetOperator() != COpcode::O_INTOP)
+            if (node.m_Arguments[1].m_Opcode.GetOperator() != COpcode::O_INTOP)
             {
                 printf("Error: Invalid argument to O_STORE_GLOBAL opcode\n");
                 AfxThrowUserException();
             }
 
-            if (INT_PTR(node.m_Arguments.at(1).m_Opcode.GetArgument()) > m_GlobalVarsNames.GetUpperBound())
+            if (INT_PTR(node.m_Arguments[1].m_Opcode.GetArgument()) > m_GlobalVarsNames.GetUpperBound())
             {
                 printf("Error: Invalid index of global variable\n");
                 AfxThrowUserException();
             }
 
-            strResult = m_GlobalVarsNames.at(node.m_Arguments.at(1).m_Opcode.GetArgument()) + " := " + GetSource(node.m_Arguments.at(0), FALSE, ulNumArgs);
+            strResult = m_GlobalVarsNames[node.m_Arguments[1].m_Opcode.GetArgument()];
+            strResult += " := ";
+            strResult += GetSource(node.m_Arguments[0], FALSE, ulNumArgs);
             break;
 
         case COpcode::O_FETCH_EXTERNAL:
             {
-                WORD wOperator = node.m_Arguments.at(0).m_Opcode.GetOperator();
+                WORD wOperator = node.m_Arguments[0].m_Opcode.GetOperator();
 
                 if ((wOperator != COpcode::O_STRINGOP) && (wOperator != COpcode::O_INTOP))
                 {
@@ -611,12 +613,12 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
                 }
             }
 
-            strResult = GetSource(node.m_Arguments.at(0), TRUE, ulNumArgs);
+            strResult = GetSource(node.m_Arguments[0], TRUE, ulNumArgs);
             break;
 
         case COpcode::O_STORE_EXTERNAL:
             {
-                WORD wOperator = node.m_Arguments.at(1).m_Opcode.GetOperator();
+                WORD wOperator = node.m_Arguments[1].m_Opcode.GetOperator();
 
                 if ((wOperator != COpcode::O_STRINGOP) && (wOperator != COpcode::O_INTOP))
                 {
@@ -625,18 +627,20 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
                 }
             }
 
-            strResult = GetSource(node.m_Arguments.at(1), TRUE, ulNumArgs) + " := " + GetSource(node.m_Arguments.at(0), FALSE, ulNumArgs);
+            strResult = GetSource(node.m_Arguments[1], TRUE, ulNumArgs);
+            strResult += " := ";
+            strResult += GetSource(node.m_Arguments[0], FALSE, ulNumArgs);
             break;
 
         case COpcode::O_FETCH:
-            if (node.m_Arguments.at(0).m_Opcode.GetOperator() != COpcode::O_INTOP)
+            if (node.m_Arguments[0].m_Opcode.GetOperator() != COpcode::O_INTOP)
             {
                 printf("Error: Invalid argument to O_FETCH opcode\n");
                 AfxThrowUserException();
             }
 
             {
-                ULONG ulVarNum = node.m_Arguments.at(0).m_Opcode.GetArgument();
+                ULONG ulVarNum = node.m_Arguments[0].m_Opcode.GetArgument();
 
                 if (ulVarNum < ulNumArgs)
                 {
@@ -651,14 +655,14 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
             break;
 
         case COpcode::O_STORE:
-            if (node.m_Arguments.at(1).m_Opcode.GetOperator() != COpcode::O_INTOP)
+            if (node.m_Arguments[1].m_Opcode.GetOperator() != COpcode::O_INTOP)
             {
                 printf("Error: Invalid argument to O_STORE opcode\n");
                 AfxThrowUserException();
             }
 
             {
-                ULONG ulVarNum = node.m_Arguments.at(1).m_Opcode.GetArgument();
+                ULONG ulVarNum = node.m_Arguments[1].m_Opcode.GetArgument();
                 if (ulVarNum < ulNumArgs)
                 {
                     strResult.Format(c_strArgumentTemplate.c_str(), ulVarNum);
@@ -668,30 +672,29 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
                     strResult.Format(c_strLocalVarTemplate.c_str(), ulVarNum);
                 }
                 strResult += " := ";
-                strResult += GetSource(node.m_Arguments.at(0), FALSE, ulNumArgs);
+                strResult += GetSource(node.m_Arguments[0], FALSE, ulNumArgs);
             }
 
             break;
 
         case COpcode::O_POP:
-            strResult = GetSource(node.m_Arguments.at(0), FALSE, ulNumArgs);
+            strResult = GetSource(node.m_Arguments[0], FALSE, ulNumArgs);
 
-            if (node.m_Arguments.at(0).m_Opcode.GetOperator() == COpcode::O_CALL)
+            if (node.m_Arguments[0].m_Opcode.GetOperator() == COpcode::O_CALL)
             {
-                strResult = "call ";
-                strResult += strResult;
+                strResult = "call " + strResult.str();
             }
 
             break;
 
         case COpcode::O_CALL:
-            if (node.m_Arguments.at(node.m_Arguments.GetUpperBound()).m_Opcode.GetOperator() == COpcode::O_INTOP)
+            if (node.m_Arguments[node.m_Arguments.GetUpperBound()].m_Opcode.GetOperator() == COpcode::O_INTOP)
             {
-                strResult = m_Namespace[m_ProcTable[node.m_Arguments.at(node.m_Arguments.GetUpperBound()).m_Opcode.GetArgument()].m_ulNameOffset];
+                strResult = m_Namespace[m_ProcTable[node.m_Arguments[node.m_Arguments.GetUpperBound()].m_Opcode.GetArgument()].m_ulNameOffset];
             }
             else
             {
-                strResult = GetSource(node.m_Arguments.at(node.m_Arguments.GetUpperBound()), FALSE, ulNumArgs);
+                strResult = GetSource(node.m_Arguments[node.m_Arguments.GetUpperBound()], FALSE, ulNumArgs);
             }
 
             strResult += "(";
@@ -700,12 +703,12 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
             {
                 if (nArgIndex == 0)
                 {
-                    strResult += GetSource(node.m_Arguments.at(nArgIndex), FALSE, ulNumArgs);
+                    strResult += GetSource(node.m_Arguments[nArgIndex], FALSE, ulNumArgs);
                 }
                 else 
                 {
                     strResult += ", ";
-                    strResult +=  GetSource(node.m_Arguments.at(nArgIndex), FALSE, ulNumArgs);
+                    strResult +=  GetSource(node.m_Arguments[nArgIndex], FALSE, ulNumArgs);
                 }
             }
 
@@ -716,49 +719,49 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
         case COpcode::O_CALL_AT:
             strResult = "call ";
 
-            if (node.m_Arguments.at(1).m_Opcode.GetOperator() == COpcode::O_INTOP)
+            if (node.m_Arguments[1].m_Opcode.GetOperator() == COpcode::O_INTOP)
             {
-                strResult += m_Namespace[m_ProcTable[node.m_Arguments.at(1).m_Opcode.GetArgument()].m_ulNameOffset];
+                strResult += m_Namespace[m_ProcTable[node.m_Arguments[1].m_Opcode.GetArgument()].m_ulNameOffset];
             }
             else
             {
-                strResult += GetSource(node.m_Arguments.at(1), FALSE, ulNumArgs);
+                strResult += GetSource(node.m_Arguments[1], FALSE, ulNumArgs);
             }
 
             strResult += " in (";
-            strResult +=  GetSource(node.m_Arguments.at(0), FALSE, ulNumArgs) + ")";
+            strResult +=  GetSource(node.m_Arguments[0], FALSE, ulNumArgs) + ")";
             break;
 
         case COpcode::O_CALL_CONDITION:
             strResult = "call ";
 
-            if (node.m_Arguments.at(1).m_Opcode.GetOperator() == COpcode::O_INTOP)
+            if (node.m_Arguments[1].m_Opcode.GetOperator() == COpcode::O_INTOP)
             {
-                strResult += m_Namespace[m_ProcTable[node.m_Arguments.at(1).m_Opcode.GetArgument()].m_ulNameOffset];
+                strResult += m_Namespace[m_ProcTable[node.m_Arguments[1].m_Opcode.GetArgument()].m_ulNameOffset];
             }
             else
             {
-                strResult += GetSource(node.m_Arguments.at(1), FALSE, ulNumArgs);
+                strResult += GetSource(node.m_Arguments[1], FALSE, ulNumArgs);
             }
 
             strResult += " when (";
-            strResult +=  GetSource(node.m_Arguments.at(0), FALSE, ulNumArgs) + ")";
+            strResult +=  GetSource(node.m_Arguments[0], FALSE, ulNumArgs) + ")";
             break;
 
         case COpcode::O_ADDREGION:
             strResult = "addRegion ";
-            strResult += GetSource(node.m_Arguments.at(0), FALSE, ulNumArgs) + " { ";
+            strResult += GetSource(node.m_Arguments[0], FALSE, ulNumArgs) + " { ";
 
             for(INT_PTR nArgIndex = 1; nArgIndex < node.m_Arguments.GetUpperBound(); nArgIndex++)
             {
                 if (nArgIndex == 1)
                 {
-                    strResult += GetSource(node.m_Arguments.at(nArgIndex), FALSE, ulNumArgs);
+                    strResult += GetSource(node.m_Arguments[nArgIndex], FALSE, ulNumArgs);
                 }
                 else
                 {
                     strResult += ", ";
-                    strResult += GetSource(node.m_Arguments.at(nArgIndex), FALSE, ulNumArgs);
+                    strResult += GetSource(node.m_Arguments[nArgIndex], FALSE, ulNumArgs);
                 }
             }
 
@@ -791,7 +794,7 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
 
         case COpcode::O_SAYOPTION:
             {
-                if (node.m_Arguments.at(1).m_Opcode.GetOperator() == COpcode::O_INTOP)
+                if (node.m_Arguments[1].m_Opcode.GetOperator() == COpcode::O_INTOP)
                 {
                     ULONG aulProcArg[2] = { 2 };
                     strResult = GetSource(node, bLabel, ulNumArgs, aulProcArg, 1);
@@ -799,7 +802,7 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
                 else
                 {
                     strResult = "sayOption(";
-                    strResult += GetSource(node.m_Arguments.at(0), FALSE, ulNumArgs) + ", " + GetSource(node.m_Arguments.at(1), FALSE, ulNumArgs) + ")";
+                    strResult += GetSource(node.m_Arguments[0], FALSE, ulNumArgs) + ", " + GetSource(node.m_Arguments[1], FALSE, ulNumArgs) + ")";
                 }
             }
 
@@ -862,26 +865,26 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
             break;
 
         case COpcode::O_CANCEL:
-            if (node.m_Arguments.at(0).m_Opcode.GetOperator() != COpcode::O_INTOP)
+            if (node.m_Arguments[0].m_Opcode.GetOperator() != COpcode::O_INTOP)
             {
                 printf("Error: Invalid argument to O_CANCEL opcode\n");
                 AfxThrowUserException();
             }
 
             strResult = "cancel(";
-            strResult += m_Namespace[m_ProcTable[node.m_Arguments.at(0).m_Opcode.GetArgument()].m_ulNameOffset] + ")";
+            strResult += m_Namespace[m_ProcTable[node.m_Arguments[0].m_Opcode.GetArgument()].m_ulNameOffset] + ")";
             break;
 
         case COpcode::O_NEGATE:
-            if (node.m_Arguments.at(0).m_Opcode.GetAttributes().m_Category == COpcode::COpcodeAttributes::CATEGORY_INFIX)
+            if (node.m_Arguments[0].m_Opcode.GetAttributes().m_Category == COpcode::COpcodeAttributes::CATEGORY_INFIX)
             {
                 strResult = "-(";
-                strResult += GetSource(node.m_Arguments.at(0), bLabel, ulNumArgs) + ")";
+                strResult += GetSource(node.m_Arguments[0], bLabel, ulNumArgs) + ")";
             }
             else
             {
                 strResult = "-";
-                strResult += GetSource(node.m_Arguments.at(0), bLabel, ulNumArgs);
+                strResult += GetSource(node.m_Arguments[0], bLabel, ulNumArgs);
             }
 
             break;
@@ -906,36 +909,36 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
                 strResult = "";
                 for(INT_PTR i = 0; i < node.m_Arguments.GetSize(); i++)
                 {
-                    bool bParens = ArgNeedParens(node, node.m_Arguments.at(i), CFalloutScript::RIGHT_ASSOC);
-                    strResult += (bParens ? CString("(") : CString("")) + GetSource(node.m_Arguments.at(i), bLabel, ulNumArgs) + (bParens ? ")" : "") + sPostfix[i];
+                    bool bParens = ArgNeedParens(node, node.m_Arguments[i], CFalloutScript::RIGHT_ASSOC);
+                    strResult += (bParens ? CString("(") : CString("")) + GetSource(node.m_Arguments[i], bLabel, ulNumArgs) + (bParens ? ")" : "") + sPostfix[i];
                 }
                 break;
             }
             switch(attributes.m_Category)
             {
                 case COpcode::COpcodeAttributes::CATEGORY_INFIX:
-                    if (ArgNeedParens(node, node.m_Arguments.at(0), CFalloutScript::LEFT_ASSOC))
+                    if (ArgNeedParens(node, node.m_Arguments[0], CFalloutScript::LEFT_ASSOC))
                     {
                         strResult = "(";
-                        strResult += GetSource(node.m_Arguments.at(0), FALSE, ulNumArgs) + ")";
+                        strResult += GetSource(node.m_Arguments[0], FALSE, ulNumArgs) + ")";
                     }
                     else
                     {
-                        strResult = GetSource(node.m_Arguments.at(0), FALSE, ulNumArgs);
+                        strResult = GetSource(node.m_Arguments[0], FALSE, ulNumArgs);
                     }
 
                     strResult += " ";
                     strResult += attributes.m_strName + " ";
 
                     
-                    if (ArgNeedParens(node, node.m_Arguments.at(1), CFalloutScript::RIGHT_ASSOC))
+                    if (ArgNeedParens(node, node.m_Arguments[1], CFalloutScript::RIGHT_ASSOC))
                     {
                         strResult += "(";
-                        strResult += GetSource(node.m_Arguments.at(1), FALSE, ulNumArgs) + ")";
+                        strResult += GetSource(node.m_Arguments[1], FALSE, ulNumArgs) + ")";
                     }
                     else
                     {
-                        strResult += GetSource(node.m_Arguments.at(1), FALSE, ulNumArgs);
+                        strResult += GetSource(node.m_Arguments[1], FALSE, ulNumArgs);
                     }
 
                     break;
@@ -956,12 +959,12 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
                         {
                             if (i == 0)
                             {
-                                strResult += GetSource(node.m_Arguments.at(i), FALSE, ulNumArgs);
+                                strResult += GetSource(node.m_Arguments[i], FALSE, ulNumArgs);
                             }
                             else
                             {
                                 strResult += ", ";
-                                strResult += GetSource(node.m_Arguments.at(i), FALSE, ulNumArgs);
+                                strResult += GetSource(node.m_Arguments[i], FALSE, ulNumArgs);
                             }
                         }
 
@@ -997,28 +1000,28 @@ CString CFalloutScript::GetSource( CNode& node, BOOL bLabel, ULONG ulNumArgs, UL
 
         if (bIsProcArg)
         {
-            if (node.m_Arguments.at(nArgIndex).m_Opcode.GetOperator() == COpcode::O_INTOP)
+            if (node.m_Arguments[nArgIndex].m_Opcode.GetOperator() == COpcode::O_INTOP)
             {
                 try
                 {
-                    strArgument = m_Namespace[m_ProcTable[node.m_Arguments.at(nArgIndex).m_Opcode.GetArgument()].m_ulNameOffset];
+                    strArgument = m_Namespace[m_ProcTable[node.m_Arguments[nArgIndex].m_Opcode.GetArgument()].m_ulNameOffset];
                 }
 
                 catch(UserException& e)
                 {
                     printf("Warning: Restoration after exception. Object name replaced with '/* Fake object name */'\n");
-                    strArgument.Format("/* Fake object name: %u (%d)*/", node.m_Arguments.at(nArgIndex).m_Opcode.GetArgument(), node.m_Arguments.at(nArgIndex).m_Opcode.GetArgument());
+                    strArgument.Format("/* Fake object name: %u (%d)*/", node.m_Arguments[nArgIndex].m_Opcode.GetArgument(), node.m_Arguments[nArgIndex].m_Opcode.GetArgument());
                 }
 
             }
             else
             {
-                strArgument = GetSource(node.m_Arguments.at(nArgIndex), FALSE, ulNumArgs);
+                strArgument = GetSource(node.m_Arguments[nArgIndex], FALSE, ulNumArgs);
             }
         }
         else
         {
-            strArgument = GetSource(node.m_Arguments.at(nArgIndex), FALSE, ulNumArgs);
+            strArgument = GetSource(node.m_Arguments[nArgIndex], FALSE, ulNumArgs);
         }
 
         if (nArgIndex == 0)

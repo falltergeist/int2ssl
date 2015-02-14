@@ -41,23 +41,23 @@ int main(int argc, char* argv[])
     printf("  --: end of options\n");
     printf("\n");
 
-//    if (argc < 2)
-//    {
-//        PrintUsage(argv[0]);
-//        cin.get();
-//        return 1;
-//    }
+    if (argc < 2)
+    {
+        PrintUsage(argv[0]);
+        cin.get();
+        return 1;
+    }
 
-//    if (!ProcessCommandLine(argc, argv))
-//    {
-//      return 1;
-//    }
+    if (!ProcessCommandLine(argc, argv))
+    {
+      return 1;
+    }
 
     CFile fileInput;
     CFile fileOutput;
 
-    g_strInputFileName = "BECA.int";
-    g_strOutputFileName = "BECA.int.ssl";
+    //g_strInputFileName = "BECA.int";
+    //g_strOutputFileName = "BECA.int.ssl";
 
     if (!fileInput.Open(g_strInputFileName, CFile::modeRead | CFile::shareDenyWrite))
     {

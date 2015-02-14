@@ -34,8 +34,8 @@ void CFalloutScript::Dump(CArchive& ar)
     {
         for(unsigned int i = 0; i < m_GlobalVar.GetSize(); i++)
         {
-            wOperator = m_GlobalVar.at(i).GetOperator();
-            ulArgument = m_GlobalVar.at(i).GetArgument();
+            wOperator = m_GlobalVar[i].GetOperator();
+            ulArgument = m_GlobalVar[i].GetArgument();
 
             switch(wOperator)
             {
@@ -43,7 +43,7 @@ void CFalloutScript::Dump(CArchive& ar)
                 case COpcode::O_INTOP:
                     strOutLine.Format("%d: %s(0x%08x)   // %u (%d)\n", 
                                     i,
-                                    m_GlobalVar.at(i).GetAttributes().m_strMnemonic.c_str(),
+                                    m_GlobalVar[i].GetAttributes().m_strMnemonic.c_str(),
                                     ulArgument,
                                     ulArgument,
                                     ulArgument);
@@ -53,7 +53,7 @@ void CFalloutScript::Dump(CArchive& ar)
                 case COpcode::O_FLOATOP:
                     strOutLine.Format("%d: %s(0x%08x)   // %05f\n", 
                                     i,
-                                    m_GlobalVar.at(i).GetAttributes().m_strMnemonic.c_str(),
+                                    m_GlobalVar[i].GetAttributes().m_strMnemonic.c_str(),
                                     ulArgument,
                                     *((float*)(&ulArgument)));
                     ar.WriteString(strOutLine);
@@ -74,9 +74,9 @@ void CFalloutScript::Dump(CArchive& ar)
     {
         for(INT_PTR i = 0; i < m_ExportedVarValue.GetSize(); i += 2)
         {
-            wOperator = m_ExportedVarValue.at(i).GetOperator();
-            ulArgument = m_ExportedVarValue.at(i).GetArgument();
-            ULONG ulNameArgument = m_ExportedVarValue.at(i + 1).GetArgument();
+            wOperator = m_ExportedVarValue[i].GetOperator();
+            ulArgument = m_ExportedVarValue[i].GetArgument();
+            ULONG ulNameArgument = m_ExportedVarValue[i + 1].GetArgument();
 
             switch(wOperator)
             {
@@ -118,20 +118,20 @@ void CFalloutScript::Dump(CArchive& ar)
         ar.WriteString(strOutLine);
         ar.WriteString("===============================\n");
 
-        for(INT_PTR i = 0; i < m_ProcBodies.at(nIndexOfProc).GetSize(); i++)
+        for(INT_PTR i = 0; i < m_ProcBodies[nIndexOfProc].GetSize(); i++)
         {
-            wOperator = m_ProcBodies.at(nIndexOfProc).at(i).m_Opcode.GetOperator();
-            ulArgument = m_ProcBodies.at(nIndexOfProc).at(i).m_Opcode.GetArgument();
+            wOperator = m_ProcBodies[nIndexOfProc][i].m_Opcode.GetOperator();
+            ulArgument = m_ProcBodies[nIndexOfProc][i].m_Opcode.GetArgument();
 
             switch(wOperator)
             {
                 case COpcode::O_STRINGOP:
                 case COpcode::O_INTOP:
                     strOutLine.Format("0x%08X: 0x%04X 0x%08x - %s(0x%08x)   // %u (%d)\n", 
-                                      m_ProcBodies.at(nIndexOfProc).at(i).m_ulOffset,
+                                      m_ProcBodies[nIndexOfProc][i].m_ulOffset,
                                       wOperator,
                                       ulArgument,
-                                      m_ProcBodies.at(nIndexOfProc).at(i).m_Opcode.GetAttributes().m_strMnemonic.c_str(),
+                                      m_ProcBodies[nIndexOfProc][i].m_Opcode.GetAttributes().m_strMnemonic.c_str(),
                                       ulArgument,
                                       ulArgument,
                                       ulArgument);
@@ -140,19 +140,19 @@ void CFalloutScript::Dump(CArchive& ar)
 
                 case COpcode::O_FLOATOP:
                     strOutLine.Format("0x%08X: 0x%04X 0x%08X - %s // %05f\n",
-                                      m_ProcBodies.at(nIndexOfProc).at(i).m_ulOffset,
+                                      m_ProcBodies[nIndexOfProc][i].m_ulOffset,
                                       wOperator,
                                       ulArgument,
-                                      m_ProcBodies.at(nIndexOfProc).at(i).m_Opcode.GetAttributes().m_strMnemonic.c_str(),
+                                      m_ProcBodies[nIndexOfProc][i].m_Opcode.GetAttributes().m_strMnemonic.c_str(),
                                       *((float*)(&ulArgument)));
                     ar.WriteString(strOutLine);
                     break;
 
                 default:
                     strOutLine.Format("0x%08X: 0x%04X            - %s\n", 
-                                      m_ProcBodies.at(nIndexOfProc).at(i).m_ulOffset,
+                                      m_ProcBodies[nIndexOfProc][i].m_ulOffset,
                                       wOperator, 
-                                      m_ProcBodies.at(nIndexOfProc).at(i).m_Opcode.GetAttributes().m_strMnemonic.c_str());
+                                      m_ProcBodies[nIndexOfProc][i].m_Opcode.GetAttributes().m_strMnemonic.c_str());
                     ar.WriteString(strOutLine);
             }
         }

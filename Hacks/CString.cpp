@@ -28,7 +28,7 @@ const char * CString::c_str() const
 
 CString& CString::operator=(const char* value)
 {
-    _string += value;
+    _string = value;
     return *this;
 }
 
@@ -40,7 +40,7 @@ CString& CString::operator+=(const char* value)
 
 CString& CString::operator+(const char* value)
 {
-    _string += value;
+    _string = _string + value;
     return *this;
 }
 

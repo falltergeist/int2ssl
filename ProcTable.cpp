@@ -207,20 +207,20 @@ void CProcTable::Serialize(CArchive& ar)
     for(ULONG i = 0; i < ulSizeOfTable; i++)
     {
 //      printf("======== %u =========\n", i);
-        m_Table.at(i).Serialize(ar);
-        m_ProcSize.at(i) = 0;       // Initialize size of procedure
+        m_Table[i].Serialize(ar);
+        m_ProcSize[i] = 0;       // Initialize size of procedure
 
-        if (!(m_Table.at(i).m_ulType & P_IMPORT))
+        if (!(m_Table[i].m_ulType & P_IMPORT))
         {
-            if ((m_Table.at(i).m_ulBodyOffset != 0) && (m_Table.at(i).m_ulBodyOffset != ulSizeOfFile))
+            if ((m_Table[i].m_ulBodyOffset != 0) && (m_Table[i].m_ulBodyOffset != ulSizeOfFile))
             {
                 pOffsets[ulIndexOfProcOffset].m_ulProcIndex = i;
-                pOffsets[ulIndexOfProcOffset].m_ulBodyOffset = m_Table.at(i).m_ulBodyOffset;
+                pOffsets[ulIndexOfProcOffset].m_ulBodyOffset = m_Table[i].m_ulBodyOffset;
                 ulIndexOfProcOffset++;
             }
             else
             {
-                m_Table.at(i).m_ulType |= P_NOTIMPLEMENTED;
+                m_Table[i].m_ulType |= P_NOTIMPLEMENTED;
             }
         }
     }
@@ -235,7 +235,7 @@ void CProcTable::Serialize(CArchive& ar)
     {
         if (pOffsets[i + 1].m_ulBodyOffset >=  pOffsets[i].m_ulBodyOffset)
         {
-            m_ProcSize.at(pOffsets[i].m_ulProcIndex) = pOffsets[i + 1].m_ulBodyOffset -  pOffsets[i].m_ulBodyOffset;
+            m_ProcSize[pOffsets[i].m_ulProcIndex] = pOffsets[i + 1].m_ulBodyOffset -  pOffsets[i].m_ulBodyOffset;
         }
         else
         {
@@ -248,9 +248,9 @@ void CProcTable::Serialize(CArchive& ar)
 
     for(ULONG i = 0; i < ulSizeOfTable; i++)
     {
-        if (m_Table.at(i).m_ulBodyOffset != 0)
+        if (m_Table[i].m_ulBodyOffset != 0)
         {
-            m_ulOffsetOfProcSection = m_Table.at(i).m_ulBodyOffset;
+            m_ulOffsetOfProcSection = m_Table[i].m_ulBodyOffset;
             break;
         }
     }
@@ -260,7 +260,7 @@ void CProcTable::Serialize(CArchive& ar)
 
 //    for(i = 0; i < ulSizeOfTable; i++)
 //    {
-//        printf("Offset: 0x%08X, size: 0x%08X\n", m_Table.at(i).m_ulBodyOffset, m_ProcSize.at(i));
+//        printf("Offset: 0x%08X, size: 0x%08X\n", m_Table[i].m_ulBodyOffset, m_ProcSize[i]);
 //    }
 
 //    printf("m_ulOffsetOfProcSection: 0x%08X\n", m_ulOffsetOfProcSection);
@@ -279,7 +279,7 @@ ULONG CProcTable::GetSizeOfProc(INT_PTR nIndex)
         AfxThrowUserException();
     }
 
-    return m_ProcSize.at(nIndex);
+    return m_ProcSize[nIndex];
 }
 
 ULONG CProcTable::GetOffsetOfProcSection()
@@ -297,7 +297,7 @@ void CProcTable::Dump(CArchive& ar)
         strOutLine.Format("======== Procedure %d ========\n", i);
 
         ar.WriteString(strOutLine);
-        m_Table.at(i).Dump(ar);
+        m_Table[i].Dump(ar);
         ar.WriteString("\n");
     }
 }
@@ -311,5 +311,5 @@ CProcDescriptor& CProcTable::operator [] (INT_PTR nIndex)
         AfxThrowUserException();
     }
 
-    return m_Table.at(nIndex);
+    return m_Table[nIndex];
 }

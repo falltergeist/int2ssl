@@ -13,6 +13,16 @@ public:
     {
     }
 
+    A& operator[](ULONG offset)
+    {
+        return _vector[offset];
+    }
+
+    const A& operator[](ULONG offset) const
+    {
+        return _vector[offset];
+    }
+
     void RemoveAll()
     {
         while (!_vector.empty()) _vector.pop_back();
@@ -54,13 +64,9 @@ public:
         _vector.insert(_vector.begin() + position, value);
     }
 
-    A& at(ULONG n)
-    {
-        return _vector.at(n);
-    }
-
     void Copy(CArray source)
     {
+        _vector.clear();
         for (auto it = source._vector.begin(); it != source._vector.end(); ++it)
         {
             _vector.push_back(*it);

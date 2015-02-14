@@ -58,7 +58,7 @@ void CFalloutScript::Serialize(CArchive& ar)
         INT_PTR nIndexOfStart = GetIndexOfProc("start");
         ULONG ulStartProcAddress = (nIndexOfStart != -1) ? m_ProcTable[nIndexOfStart].m_ulBodyOffset : 18;
 
-        opcode = HeaderTail.at(HeaderTail.GetUpperBound());
+        opcode = HeaderTail[HeaderTail.GetUpperBound()];
 
         if (opcode.GetOperator() == COpcode::O_JMP)
         {
@@ -72,7 +72,7 @@ void CFalloutScript::Serialize(CArchive& ar)
             }
             else
             {
-                opcode = HeaderTail.at(HeaderTail.GetUpperBound());
+                opcode = HeaderTail[HeaderTail.GetUpperBound()];
 
                 if (opcode.GetOperator() == COpcode::O_INTOP)
                 {
@@ -108,7 +108,7 @@ void CFalloutScript::Serialize(CArchive& ar)
 
     if (!HeaderTail.IsEmpty())
     {
-        opcode = HeaderTail.at(HeaderTail.GetUpperBound());
+        opcode = HeaderTail[HeaderTail.GetUpperBound()];
 
         if (opcode.GetOperator() == COpcode::O_CRITICAL_DONE)
         {
@@ -116,7 +116,7 @@ void CFalloutScript::Serialize(CArchive& ar)
 
             if (!HeaderTail.IsEmpty())
             {
-                opcode = HeaderTail.at(HeaderTail.GetUpperBound());
+                opcode = HeaderTail[HeaderTail.GetUpperBound()];
 
                 if (opcode.HasArgument())
                 {
@@ -167,7 +167,7 @@ void CFalloutScript::Serialize(CArchive& ar)
 
     for(INT_PTR i = 0; i < HeaderTail.GetSize(); i++)
     {
-        WORD wGlobalVarOperator = HeaderTail.at(i).GetOperator();
+        WORD wGlobalVarOperator = HeaderTail[i].GetOperator();
 
         if ((wGlobalVarOperator != COpcode::O_STRINGOP) &&
             (wGlobalVarOperator != COpcode::O_FLOATOP) &&
@@ -177,7 +177,7 @@ void CFalloutScript::Serialize(CArchive& ar)
             AfxThrowUserException();
         }
 
-        m_GlobalVar.Add(HeaderTail.at(i));
+        m_GlobalVar.Add(HeaderTail[i]);
     }
 
     // Procedures bodyes
@@ -201,7 +201,7 @@ void CFalloutScript::Serialize(CArchive& ar)
         {
             node.m_Opcode.Serialize(ar);
             node.m_ulOffset = ulOffset;
-            m_ProcBodies.at(i).Add(node);
+            m_ProcBodies[i].Add(node);
             ulOffset += node.m_Opcode.GetSize();
         }
     }
@@ -213,7 +213,7 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
 
     for(; i < Source.GetSize(); i++)
     {
-        if (Source.at(i).GetOperator() == wDelimeter)
+        if (Source[i].GetOperator() == wDelimeter)
         {
             break;
         }
@@ -227,11 +227,11 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
             AfxThrowUserException();
         }
 
-        while(Source.at(i).GetOperator() == wDelimeter)
+        while(Source[i].GetOperator() == wDelimeter)
         {
             for(INT_PTR j = 0; j < nSizeOfCodeItem - 1; j++)
             {
-                if (!((this->*pCheckFunc)(Source.at(i - nSizeOfCodeItem + 1 + j).GetOperator(), j)))
+                if (!((this->*pCheckFunc)(Source[i - nSizeOfCodeItem + 1 + j].GetOperator(), j)))
                 {
                     printf(lpszErrorMessage);
                     AfxThrowUserException();
@@ -240,7 +240,7 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
 
             for(INT_PTR j = 0; j < nSizeOfCodeItem - 1; j++)
             {
-                Destination.Add(Source.at(i - nSizeOfCodeItem + 1));
+                Destination.Add(Source[i - nSizeOfCodeItem + 1]);
                 Source.RemoveAt(i - nSizeOfCodeItem + 1);
             }
 

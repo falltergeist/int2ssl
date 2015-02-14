@@ -87,7 +87,7 @@ void CNode::StoreTree(CArchive& ar, int nIndent, int nIndex)
     {
         for(int i = 0; i < m_Arguments.GetSize(); i++)
         {
-            m_Arguments.at(i).StoreTree(ar, nIndent + 1, i);
+            m_Arguments[i].StoreTree(ar, nIndent + 1, i);
         }
     }
     else
@@ -101,7 +101,7 @@ ULONG CNode::GetTopOffset()
 {
     if (m_Arguments.GetSize() > 0)
     {
-        return m_Arguments.at(0).GetTopOffset();
+        return m_Arguments[0].GetTopOffset();
     }
     else
     {

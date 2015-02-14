@@ -27,8 +27,8 @@ void CFalloutScript::InitDefinitions()
         }
         else if ((nObjectIndex = GetIndexOfExportedVariable(ulNameOffset)) != -1)
         {
-            WORD wOpcode = m_ExportedVarValue.at(nObjectIndex).GetOperator();
-            ULONG ulValue = m_ExportedVarValue.at(nObjectIndex).GetArgument();
+            WORD wOpcode = m_ExportedVarValue[nObjectIndex].GetOperator();
+            ULONG ulValue = m_ExportedVarValue[nObjectIndex].GetArgument();
 
             m_Definitions.SetAt(ulNameOffset, CDefObject(CDefObject::OBJECT_VARIABLE, V_EXPORT | wOpcode, ulValue));
         }
@@ -38,7 +38,7 @@ void CFalloutScript::InitDefinitions()
 
     for(INT_PTR i = 0; i < m_GlobalVarsNames.GetSize(); i++)
     {
-        m_GlobalVarsNames.at(i).Format(c_strGlobalVarTemplate.c_str(), i);
+        m_GlobalVarsNames[i].Format(c_strGlobalVarTemplate.c_str(), i);
     }
 }
 
@@ -52,7 +52,7 @@ void CFalloutScript::ProcessCode()
     for(INT_PTR i = 0; i < m_ProcTable.GetSize(); i++)
     {
         printf("        Procedure: %d\n", i);
-        BuildTree(m_ProcBodies.at(i));
+        BuildTree(m_ProcBodies[i]);
     }
 
     printf("    Extracting and reducing conditions\n");
@@ -61,15 +61,15 @@ void CFalloutScript::ProcessCode()
     {
         if (m_ProcTable[i].m_ulType & P_CONDITIONAL)
         {
-            ExtractAndReduceCondition(m_ProcBodies.at(i), m_Conditions.at(i), 0);
+            ExtractAndReduceCondition(m_ProcBodies[i], m_Conditions[i], 0);
         }
 
-        for(INT_PTR j = 0; j < m_ProcBodies.at(i).GetSize(); j++)
+        for(INT_PTR j = 0; j < m_ProcBodies[i].GetSize(); j++)
         {
-            if (m_ProcBodies.at(i).at(j).m_Opcode.GetOperator() == COpcode::O_CALL_CONDITION)
+            if (m_ProcBodies[i][j].m_Opcode.GetOperator() == COpcode::O_CALL_CONDITION)
             {
                 CNodeArray Condition;
-                CNode node = m_ProcBodies.at(i).at(j).m_Arguments.at(0);
+                CNode node = m_ProcBodies[i][j].m_Arguments[0];
 
                 if (node.m_Opcode.GetOperator() != COpcode::O_INTOP)
                 {
@@ -81,14 +81,14 @@ void CFalloutScript::ProcessCode()
 
                 do
                 {
-                    node = m_ProcBodies.at(i).at(j = NextNodeIndex(m_ProcBodies.at(i), j, -1));
+                    node = m_ProcBodies[i][j = NextNodeIndex(m_ProcBodies[i], j, -1)];
                 } 
                 while(node.m_ulOffset != ulCondStartAddress);
 
-                j = NextNodeIndex(m_ProcBodies.at(i), j, -1);   // For O_JMP opcode
+                j = NextNodeIndex(m_ProcBodies[i], j, -1);   // For O_JMP opcode
 
-                ExtractAndReduceCondition(m_ProcBodies.at(i), Condition, j);
-                m_ProcBodies.at(i).at(j).m_Arguments.at(0) = Condition.at(0);
+                ExtractAndReduceCondition(m_ProcBodies[i], Condition, j);
+                m_ProcBodies[i][j].m_Arguments[0] = Condition[0];
             }
         }
     }
@@ -99,7 +99,7 @@ void CFalloutScript::ProcessCode()
     for(INT_PTR i = 0; i < m_ProcTable.GetSize(); i++)
     {
         printf("        Procedure: %d\r", i);
-        SetBordersOfBlocks(m_ProcBodies.at(i));
+        SetBordersOfBlocks(m_ProcBodies[i]);
     }
 
     printf("    Renaming global variables\n");
@@ -154,7 +154,7 @@ INT_PTR CFalloutScript::GetIndexOfExportedVariable(ULONG ulNameOffset)
 
     for(INT_PTR i = 0; i < m_ExportedVarValue.GetSize(); i += 2)
     {
-        if (m_ExportedVarValue.at(i + 1).GetArgument() == ulNameOffset)
+        if (m_ExportedVarValue[i + 1].GetArgument() == ulNameOffset)
         {
             nResult = i;
             break;
@@ -190,11 +190,11 @@ void CFalloutScript::TryRenameGlobalVariables()
             if (!m_Definitions.Lookup(m_Namespace.GetOffsetByIndex(i), defObject))
             {
                 defObject.m_ObjectType = CDefObject::OBJECT_VARIABLE;
-                defObject.m_ulAttributes = V_GLOBAL | m_GlobalVar.at(nGlobalVarIndex).GetOperator();
-                defObject.m_ulVarValue = m_GlobalVar.at(nGlobalVarIndex).GetArgument();
+                defObject.m_ulAttributes = V_GLOBAL | m_GlobalVar[nGlobalVarIndex].GetOperator();
+                defObject.m_ulVarValue = m_GlobalVar[nGlobalVarIndex].GetArgument();
 
                 m_Definitions.SetAt(m_Namespace.GetOffsetByIndex(i), defObject);
-                m_GlobalVarsNames.at(nGlobalVarIndex) = m_Namespace.GetStringByIndex(i);
+                m_GlobalVarsNames[nGlobalVarIndex] = m_Namespace.GetStringByIndex(i);
                 nGlobalVarIndex++;
             }
         }
@@ -246,7 +246,7 @@ BOOL CFalloutScript::RemoveSequenceOfNodes(CNodeArray& NodeArray, INT_PTR nStart
     {
         nCurrentNodeIndex = NextNodeIndex(NodeArray, nCurrentNodeIndex, 1);
 
-        if (NodeArray.at(nCurrentNodeIndex).m_Opcode.GetOperator() != wSequence[nCurrentNodeIndex - nStartIndex])
+        if (NodeArray[nCurrentNodeIndex].m_Opcode.GetOperator() != wSequence[nCurrentNodeIndex - nStartIndex])
         {
             return FALSE;
         }
@@ -325,12 +325,12 @@ void CFalloutScript::InitialReduce()
     for(INT_PTR i = 0 ; i < m_ProcBodies.GetSize(); i++)
     {
         // Tail
-        if (!m_ProcBodies.at(i).IsEmpty())
+        if (!m_ProcBodies[i].IsEmpty())
         {
             pwCode = (m_ProcTable[i].m_ulType & P_CRITICAL) ? awTailOfCriticalProc : awTailOfProc;
             nCount = (m_ProcTable[i].m_ulType & P_CRITICAL) ? 4 : 3;
 
-            if (!RemoveSequenceOfNodes(m_ProcBodies.at(i), m_ProcBodies.at(i).GetSize() - nCount, nCount, pwCode, nCount))
+            if (!RemoveSequenceOfNodes(m_ProcBodies[i], m_ProcBodies[i].GetSize() - nCount, nCount, pwCode, nCount))
             {
                 printf("Error: Invalid tail of procedure\'s body\n");
                 AfxThrowUserException();
@@ -338,35 +338,35 @@ void CFalloutScript::InitialReduce()
         }
 
         // Body
-        for(INT_PTR j = 0; j < m_ProcBodies.at(i).GetSize(); j++)
+        for(INT_PTR j = 0; j < m_ProcBodies[i].GetSize(); j++)
         {
-            switch(m_ProcBodies.at(i).at(j).m_Opcode.GetOperator())
+            switch(m_ProcBodies[i][j].m_Opcode.GetOperator())
             {
                 case COpcode::O_DUP:
                     // 'Check procedure's arguments count' statement
-                    if (!RemoveSequenceOfNodes(m_ProcBodies.at(i), j, 3, awCheckArgCount, 3))
+                    if (!RemoveSequenceOfNodes(m_ProcBodies[i], j, 3, awCheckArgCount, 3))
                     {
                         // short circuit AND
-                        UINT actualOperator = CheckSequenceOfNodes(m_ProcBodies.at(i), j, awShortCircuitAnd, 5)
+                        UINT actualOperator = CheckSequenceOfNodes(m_ProcBodies[i], j, awShortCircuitAnd, 5)
                                         ? COpcode::O_AND 
-                                        : (CheckSequenceOfNodes(m_ProcBodies.at(i), j, awShortCircuitOr, 6)
+                                        : (CheckSequenceOfNodes(m_ProcBodies[i], j, awShortCircuitOr, 6)
                                             ? COpcode::O_OR
                                             : 0);
                         if (actualOperator)
                         {
-                            UINT k, skipOffset = m_ProcBodies.at(i).at(j+1).m_Opcode.GetArgument();
+                            UINT k, skipOffset = m_ProcBodies[i][j+1].m_Opcode.GetArgument();
                             CNode node;
                             k = j - 1;
                             do
                             {
-                                k = NextNodeIndex(m_ProcBodies.at(i), k, 1);
+                                k = NextNodeIndex(m_ProcBodies[i], k, 1);
                             }
-                            while (skipOffset > m_ProcBodies.at(i).at(k).m_ulOffset);
+                            while (skipOffset > m_ProcBodies[i][k].m_ulOffset);
 
-                            m_ProcBodies.at(i).InsertAt(k, m_ProcBodies.at(i).at(j));
-                            m_ProcBodies.at(i).at(k).m_Opcode.SetOperator(actualOperator); // place AND/OR here, so BuildTree() will treat it as a regular binary operator
-                            m_ProcBodies.at(i).at(k).m_ulOffset = m_ProcBodies.at(i).at(k-1).m_ulOffset + COpcode::OPERATOR_SIZE; // adjust offset
-                            m_ProcBodies.at(i).RemoveAt(j, (actualOperator == COpcode::O_AND) ? 5 : 6); // reduce
+                            m_ProcBodies[i].InsertAt(k, m_ProcBodies[i][j]);
+                            m_ProcBodies[i][k].m_Opcode.SetOperator(actualOperator); // place AND/OR here, so BuildTree() will treat it as a regular binary operator
+                            m_ProcBodies[i][k].m_ulOffset = m_ProcBodies[i][k-1].m_ulOffset + COpcode::OPERATOR_SIZE; // adjust offset
+                            m_ProcBodies[i].RemoveAt(j, (actualOperator == COpcode::O_AND) ? 5 : 6); // reduce
                         }
                         else
                         {
@@ -383,9 +383,9 @@ void CFalloutScript::InitialReduce()
                     pwCode = (m_ProcTable[i].m_ulType & P_CRITICAL) ? awCriticalReturn : awReturn;
                     nCount = (m_ProcTable[i].m_ulType & P_CRITICAL) ? 7 : 6;
 
-                    if (!RemoveSequenceOfNodes(m_ProcBodies.at(i), j, nCount - 1, pwCode, nCount))
+                    if (!RemoveSequenceOfNodes(m_ProcBodies[i], j, nCount - 1, pwCode, nCount))
                     {
-                        if (!RemoveSequenceOfNodes(m_ProcBodies.at(i), j - 1, 2, awStoreReturnAdress, 2))
+                        if (!RemoveSequenceOfNodes(m_ProcBodies[i], j - 1, 2, awStoreReturnAdress, 2))
                         {
                             printf("Error: Unknown sequence of opcodes\n");
                             AfxThrowUserException();
@@ -408,12 +408,12 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
 
     COpcode::COpcodeAttributes opcodeAttributes;
     INT_PTR j;
-    for (j = nStartIndex; (j < NodeArray.GetSize() && NodeArray.at(j).m_ulOffset < ulEndOffset); j++)
+    for (j = nStartIndex; (j < NodeArray.GetSize() && NodeArray[j].m_ulOffset < ulEndOffset); j++)
     {
-        wOperator = NodeArray.at(j).m_Opcode.GetOperator();
-        ulArgument = NodeArray.at(j).m_Opcode.GetArgument();
+        wOperator = NodeArray[j].m_Opcode.GetOperator();
+        ulArgument = NodeArray[j].m_Opcode.GetArgument();
 
-        opcodeAttributes = NodeArray.at(j).m_Opcode.GetAttributes();
+        opcodeAttributes = NodeArray[j].m_Opcode.GetAttributes();
         nNumOfArgs = INT_PTR(opcodeAttributes.m_ulNumArgs);
 
         switch(wOperator)
@@ -422,8 +422,8 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
             case COpcode::O_STORE_EXTERNAL:
             {
                 INT_PTR nExtVarNameNodeIndex = NextNodeIndex(NodeArray, j, -1);
-                WORD wOpeartor = NodeArray.at(nExtVarNameNodeIndex).m_Opcode.GetOperator();
-                ULONG ulArgument = NodeArray.at(nExtVarNameNodeIndex).m_Opcode.GetArgument();
+                WORD wOpeartor = NodeArray[nExtVarNameNodeIndex].m_Opcode.GetOperator();
+                ULONG ulArgument = NodeArray[nExtVarNameNodeIndex].m_Opcode.GetArgument();
 
                 if ((wOpeartor != COpcode::O_STRINGOP) && (wOpeartor != COpcode::O_INTOP))
                 {
@@ -438,8 +438,8 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
             case COpcode::O_CALL:
             {
                 INT_PTR nProcNumOfArgsNodeIndex = NextNodeIndex(NodeArray, j, -2);
-                WORD wProcNumOfArgsOperator = NodeArray.at(nProcNumOfArgsNodeIndex).m_Opcode.GetOperator();
-                ULONG ulProcNumOfArgs = NodeArray.at(nProcNumOfArgsNodeIndex).m_Opcode.GetArgument();
+                WORD wProcNumOfArgsOperator = NodeArray[nProcNumOfArgsNodeIndex].m_Opcode.GetOperator();
+                ULONG ulProcNumOfArgs = NodeArray[nProcNumOfArgsNodeIndex].m_Opcode.GetArgument();
 
                 if (wProcNumOfArgsOperator != COpcode::O_INTOP)
                 {
@@ -454,8 +454,8 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
             case COpcode::O_ADDREGION:
             {
                 INT_PTR nAddRegionNumOfArgsNodeIndex = NextNodeIndex(NodeArray, j, -1);
-                WORD wAddRegionNumOfArgsOperator = NodeArray.at(nAddRegionNumOfArgsNodeIndex).m_Opcode.GetOperator();
-                ULONG ulAddRegionNumOfArgs = NodeArray.at(nAddRegionNumOfArgsNodeIndex).m_Opcode.GetArgument();
+                WORD wAddRegionNumOfArgsOperator = NodeArray[nAddRegionNumOfArgsNodeIndex].m_Opcode.GetOperator();
+                ULONG ulAddRegionNumOfArgs = NodeArray[nAddRegionNumOfArgsNodeIndex].m_Opcode.GetArgument();
 
                 if (wAddRegionNumOfArgsOperator != COpcode::O_INTOP)
                 {
@@ -476,7 +476,7 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
         for(INT_PTR k = 0; k < nNumOfArgs; k++)
         {
             nNodeIndex = NextNodeIndex(NodeArray, nNodeIndex, -1);
-            if (!NodeArray.at(nNodeIndex).IsExpression())
+            if (!NodeArray[nNodeIndex].IsExpression())
             {
                 if (g_bIgnoreWrongNumOfArgs)
                 {
@@ -488,13 +488,13 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
                     }
                     else
                     {
-                        printf("Error: Not enough arguments for %X\n", NodeArray.at(j).m_ulOffset);
+                        printf("Error: Not enough arguments for %X\n", NodeArray[j].m_ulOffset);
                         AfxThrowUserException();
                     }
                 }
                 else
                 {
-                    printf("Error: Expression required for %X\n", NodeArray.at(j).m_ulOffset);
+                    printf("Error: Expression required for %X\n", NodeArray[j].m_ulOffset);
                     AfxThrowUserException();
                 }
             }
@@ -505,7 +505,7 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
         {
             if (k < nOmittedArgStartIndex)
             {
-                NodeArray.at(j).m_Arguments.InsertAt(0, NodeArray.at(j - 1));
+                NodeArray[j].m_Arguments.InsertAt(0, NodeArray[j-1]);
                 NodeArray.RemoveAt(j - 1);
                 j--;
             }
@@ -513,11 +513,11 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
             {
                 if (g_bInsOmittedArgsBackward)
                 {
-                    NodeArray.at(j).m_Arguments.Add(CNode(CNode::TYPE_OMITTED_ARGUMENT));
+                    NodeArray[j].m_Arguments.Add(CNode(CNode::TYPE_OMITTED_ARGUMENT));
                 }
                 else
                 {
-                    NodeArray.at(j).m_Arguments.InsertAt(0, CNode(CNode::TYPE_OMITTED_ARGUMENT));
+                    NodeArray[j].m_Arguments.InsertAt(0, CNode(CNode::TYPE_OMITTED_ARGUMENT));
                 }
             }
         }
@@ -525,21 +525,21 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
         if (wOperator == COpcode::O_IF)
         {
             // process possible conditional expression - this may be either normal IF statement or (x IF y ELSE z) expression
-            ULONG ulElseOffset = NodeArray.at(j).m_Arguments.at(0).m_Opcode.GetArgument();
+            ULONG ulElseOffset = NodeArray[j].m_Arguments[0].m_Opcode.GetArgument();
             ULONG ulElseIndex, ulSkipIndex = -1;
             ulElseIndex = BuildTreeBranch(NodeArray, j + 1, ulElseOffset); // true branch
-            if (NodeArray.at(ulElseIndex - 1).m_Opcode.GetOperator() == COpcode::O_JMP)
+            if (NodeArray[ulElseIndex - 1].m_Opcode.GetOperator() == COpcode::O_JMP)
             {
-                ULONG ulSkipOffset = NodeArray.at(ulElseIndex - 1).m_Opcode.GetArgument();
-                if (ulSkipOffset > NodeArray.at(j).m_ulOffset)
+                ULONG ulSkipOffset = NodeArray[ulElseIndex - 1].m_Opcode.GetArgument();
+                if (ulSkipOffset > NodeArray[j].m_ulOffset)
                 {
                     ulSkipIndex = BuildTreeBranch(NodeArray, ulElseIndex, ulSkipOffset); // false branch
-                    if (NodeArray.at(ulElseIndex - 2).IsExpression() && NodeArray.at(ulSkipIndex - 1).IsExpression())
+                    if (NodeArray[ulElseIndex - 2].IsExpression() && NodeArray[ulSkipIndex - 1].IsExpression())
                     { // conditional expression
-                        NodeArray.at(j).m_Type = CNode::TYPE_CONDITIONAL_EXPRESSION;
-                        NodeArray.at(j).m_Arguments.RemoveAt(0); // address not needed anymore
-                        NodeArray.at(j).m_Arguments.InsertAt(0, NodeArray.at(ulElseIndex - 2)); // true expression
-                        NodeArray.at(j).m_Arguments.InsertAt(2, NodeArray.at(ulSkipIndex - 1)); // false expression
+                        NodeArray[j].m_Type = CNode::TYPE_CONDITIONAL_EXPRESSION;
+                        NodeArray[j].m_Arguments.RemoveAt(0); // address not needed anymore
+                        NodeArray[j].m_Arguments.InsertAt(0, NodeArray[ulElseIndex - 2]); // true expression
+                        NodeArray[j].m_Arguments.InsertAt(2, NodeArray[ulSkipIndex - 1]); // false expression
                         NodeArray.RemoveAt(j + 1, ulSkipIndex - j - 1);
                         continue;
                     }
@@ -556,7 +556,7 @@ void CFalloutScript::BuildTree(CNodeArray& NodeArray)
 {
     if (NodeArray.GetSize() > 0)
     {
-        BuildTreeBranch(NodeArray, 0, NodeArray.at(NodeArray.GetSize() - 1).m_ulOffset + COpcode::OPERATOR_SIZE);
+        BuildTreeBranch(NodeArray, 0, NodeArray[NodeArray.GetSize() - 1].m_ulOffset + COpcode::OPERATOR_SIZE);
     }
 }
 
@@ -566,7 +566,7 @@ void CFalloutScript::ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& D
     CNode node;
     INT_PTR nNodeIndex;;
 
-    node = Source.at(nNodeIndex = NextNodeIndex(Source, nStartIndex - 1, 1));
+    node = Source[nNodeIndex = NextNodeIndex(Source, nStartIndex - 1, 1)];
 
     if (node.m_Opcode.GetOperator() != COpcode::O_JMP)
     {
@@ -574,7 +574,7 @@ void CFalloutScript::ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& D
         AfxThrowUserException();
     }
 
-    CNode nodeJumpAddress = node.m_Arguments.at(0);
+    CNode nodeJumpAddress = node.m_Arguments[0];
 
     if (nodeJumpAddress.m_Opcode.GetOperator() != COpcode::O_INTOP)
     {
@@ -582,11 +582,11 @@ void CFalloutScript::ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& D
         AfxThrowUserException();
     }
 
-    ULONG ulJumpOffset = node.m_Arguments.at(0).m_Opcode.GetArgument();
+    ULONG ulJumpOffset = node.m_Arguments[0].m_Opcode.GetArgument();
 
     do
     {
-        node = Source.at(nNodeIndex = NextNodeIndex(Source, nNodeIndex, 1));
+        node = Source[nNodeIndex = NextNodeIndex(Source, nNodeIndex, 1)];
     }
     while(node.m_ulOffset < ulJumpOffset);
 
@@ -594,7 +594,7 @@ void CFalloutScript::ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& D
 
     for(INT_PTR j = 0; j < nNodeIndex - nStartIndex; j++)
     {
-        Destination.at(j) = Source.at(nStartIndex + j);
+        Destination[j] = Source[nStartIndex + j];
     }
 
     // Reduce
@@ -630,7 +630,7 @@ void CFalloutScript::ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& D
     }
     else
     {
-        if (Destination.at(0).m_Opcode.GetAttributes().m_Type != COpcode::COpcodeAttributes::TYPE_EXPRESSION)
+        if (Destination[0].m_Opcode.GetAttributes().m_Type != COpcode::COpcodeAttributes::TYPE_EXPRESSION)
         {
             printf("Error: Invalid condition. Expression required\n");
             AfxThrowUserException();
@@ -651,29 +651,29 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
     ULONG ulOffset;
 
     // Start of procedure
-    if (NodeArray.at(0).m_Opcode.GetOperator() == COpcode::O_PUSH_BASE)
+    if (NodeArray[0].m_Opcode.GetOperator() == COpcode::O_PUSH_BASE)
     {
-        ulOffset = NodeArray.at(0).m_ulOffset;
-        NodeArray.at(0) = c_NodeBeginOfBlock;
-        NodeArray.at(0).m_ulOffset = ulOffset;
+        ulOffset = NodeArray[0].m_ulOffset;
+        NodeArray[0] = c_NodeBeginOfBlock;
+        NodeArray[0].m_ulOffset = ulOffset;
     }
 
     // End of procedure
     INT_PTR nLastNodeIndex = NodeArray.GetUpperBound();
 
-    if ((NodeArray.at(nLastNodeIndex).m_Opcode.GetOperator() == COpcode::O_POP_RETURN) &&
-        (NodeArray.at(nLastNodeIndex).m_Opcode.GetArgument() == 0) &&
-        (NodeArray.at(nLastNodeIndex).m_Arguments.at(0).m_Opcode.GetOperator() == COpcode::O_INTOP))
+    if ((NodeArray[nLastNodeIndex].m_Opcode.GetOperator() == COpcode::O_POP_RETURN) &&
+        (NodeArray[nLastNodeIndex].m_Opcode.GetArgument() == 0) &&
+        (NodeArray[nLastNodeIndex].m_Arguments[0].m_Opcode.GetOperator() == COpcode::O_INTOP))
     {
-        ulOffset = NodeArray.at(nLastNodeIndex).m_ulOffset;
-        NodeArray.at(nLastNodeIndex) = c_NodeEndOfBlock;
-        NodeArray.at(nLastNodeIndex).m_ulOffset = ulOffset;
+        ulOffset = NodeArray[nLastNodeIndex].m_ulOffset;
+        NodeArray[nLastNodeIndex] = c_NodeEndOfBlock;
+        NodeArray[nLastNodeIndex].m_ulOffset = ulOffset;
     }
     else
     {
-        ulOffset = NodeArray.at(nLastNodeIndex).m_ulOffset;
+        ulOffset = NodeArray[nLastNodeIndex].m_ulOffset;
         NodeArray.InsertAt(nLastNodeIndex + 1, CNode(c_NodeEndOfBlock));
-        NodeArray.at(nLastNodeIndex).m_ulOffset = ulOffset;
+        NodeArray[nLastNodeIndex].m_ulOffset = ulOffset;
     }
     
     // Body
@@ -681,12 +681,12 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
 
     for(INT_PTR i = 0; i < NodeArray.GetSize(); i++)
     {
-        switch(NodeArray.at(i).m_Opcode.GetOperator())
+        switch(NodeArray[i].m_Opcode.GetOperator())
         {
             case COpcode::O_WHILE:
             {
-                CNode node = NodeArray.at(i).m_Arguments.at(0);
-                ULONG loopOffset = NodeArray.at(i).m_Arguments.at(1).GetTopOffset();
+                CNode node = NodeArray[i].m_Arguments[0];
+                ULONG loopOffset = NodeArray[i].m_Arguments[1].GetTopOffset();
 
                 if (node.m_Opcode.GetOperator() != COpcode::O_INTOP)
                 {
@@ -695,7 +695,7 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                 }
 
                 NodeArray.InsertAt(i + 1, CNode(c_NodeBeginOfBlock));
-                NodeArray.at(i + 1).m_ulOffset = NodeArray.at(i).m_ulOffset;
+                NodeArray[i + 1].m_ulOffset = NodeArray[i].m_ulOffset;
                 ulOffset = node.m_Opcode.GetArgument();
 
                 INT_PTR nNodeIndex = i + 1;
@@ -703,17 +703,17 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                     
                 do
                 {
-                    node = NodeArray.at(nNodeIndex = NextNodeIndex(NodeArray, nNodeIndex, 1));
+                    node = NodeArray[nNodeIndex = NextNodeIndex(NodeArray, nNodeIndex, 1)];
                     if (node.m_Opcode.GetOperator() == COpcode::O_JMP && node.m_Type == CNode::TYPE_NORMAL && node.m_Arguments.GetSize() > 0)
                     {
-                        ULONG ofs = node.m_Arguments.at(0).m_Opcode.GetArgument();
+                        ULONG ofs = node.m_Arguments[0].m_Opcode.GetArgument();
                         if (ofs == ulOffset)
                         {
-                            NodeArray.at(nNodeIndex).m_Type = CNode::TYPE_BREAK;
+                            NodeArray[nNodeIndex].m_Type = CNode::TYPE_BREAK;
                         }
                         else if (ofs == loopOffset)
                         {
-                            NodeArray.at(nNodeIndex).m_Type = CNode::TYPE_CONTINUE; // continue in "while" loop
+                            NodeArray[nNodeIndex].m_Type = CNode::TYPE_CONTINUE; // continue in "while" loop
                         }
                         else
                         {
@@ -724,23 +724,23 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                 while(node.m_ulOffset < ulOffset);
 
                 bool isForLoop = false;
-                if (NodeArray.at(nNodeIndex - 2).m_Arguments.GetSize() > 0 && i > 0)
+                if (NodeArray[nNodeIndex - 2].m_Arguments.GetSize() > 0 && i > 0)
                 { // *might* be a "for" loop
-                    loopOffset = NodeArray.at(nNodeIndex - 2).GetTopOffset();
+                    loopOffset = NodeArray[nNodeIndex - 2].GetTopOffset();
                     for (INT_PTR j=0; j<jumps.GetSize(); j++)
                     {
-                        if (NodeArray.at(jumps.at(j)).m_Arguments.at(0).m_Opcode.GetArgument() == loopOffset)
+                        if (NodeArray[jumps[j]].m_Arguments[0].m_Opcode.GetArgument() == loopOffset)
                         { // jump points to the last statement in loop
-                            NodeArray.at(jumps.at(j)).m_Type = CNode::TYPE_CONTINUE; // it's a continue
+                            NodeArray[jumps[j]].m_Type = CNode::TYPE_CONTINUE; // it's a continue
                             isForLoop = true; // in a "for" loop
                         }
                     }
                 }
 
                 NodeArray.InsertAt(nNodeIndex, CNode(c_NodeEndOfBlock));
-                NodeArray.at(nNodeIndex).m_ulOffset = NodeArray.at(nNodeIndex + 1).m_ulOffset;
+                NodeArray[nNodeIndex].m_ulOffset = NodeArray[nNodeIndex + 1].m_ulOffset;
 
-                node = NodeArray.at(nNodeIndex - 1);
+                node = NodeArray[nNodeIndex - 1];
 
                 if (node.m_Opcode.GetOperator() != COpcode::O_JMP)
                 {
@@ -748,7 +748,7 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                     AfxThrowUserException();
                 }
 
-                if (node.m_Arguments.at(0).m_Opcode.GetOperator() != COpcode::O_INTOP)
+                if (node.m_Arguments[0].m_Opcode.GetOperator() != COpcode::O_INTOP)
                 {
                     printf("Error: Invalid opcode for jump-address\n");
                     AfxThrowUserException();
@@ -756,28 +756,28 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
 
                 if (isForLoop)
                 {
-                    NodeArray.at(i).m_Type = CNode::TYPE_FOR_LOOP;
-                    NodeArray.at(i).m_Arguments.at(0) = NodeArray.at(i - 1); // "for" initializer
-                    NodeArray.at(i).m_Arguments.Add(NodeArray.at(nNodeIndex - 2)); // "for" increment
+                    NodeArray[i].m_Type = CNode::TYPE_FOR_LOOP;
+                    NodeArray[i].m_Arguments[0] = NodeArray[i - 1]; // "for" initializer
+                    NodeArray[i].m_Arguments.Add(NodeArray[nNodeIndex - 2]); // "for" increment
                     NodeArray.RemoveAt(i - 1); // eat statement before "while"
                     NodeArray.RemoveAt(nNodeIndex - 3, 2); // eat last statement in loop along with jmp
                 }
                 else
                 {
                     NodeArray.RemoveAt(nNodeIndex - 1);
-                    NodeArray.at(i).m_Arguments.RemoveAt(0);
+                    NodeArray[i].m_Arguments.RemoveAt(0);
                 }
             }
             break;
 
             case COpcode::O_IF:
             {
-                if (NodeArray.at(i).m_Type == CNode::TYPE_CONDITIONAL_EXPRESSION)
+                if (NodeArray[i].m_Type == CNode::TYPE_CONDITIONAL_EXPRESSION)
                 {
                     printf("Error: Conditional expression left in stack\n");
                     AfxThrowUserException();
                 }
-                CNode node = NodeArray.at(i).m_Arguments.at(0);
+                CNode node = NodeArray[i].m_Arguments[0];
 
                 if (node.m_Opcode.GetOperator() != COpcode::O_INTOP)
                 {
@@ -786,55 +786,55 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                 }
 
                 NodeArray.InsertAt(i + 1, CNode(c_NodeBeginOfBlock));
-                NodeArray.at(i + 1).m_ulOffset = NodeArray.at(i + 2).m_ulOffset;
+                NodeArray[i + 1].m_ulOffset = NodeArray[i + 2].m_ulOffset;
                 ulOffset = node.m_Opcode.GetArgument(); // offset for jump
                     
                 INT_PTR nNodeIndex = i + 1;
 
                 do
                 {
-                    node = NodeArray.at(nNodeIndex = NextNodeIndex(NodeArray, nNodeIndex, 1));
+                    node = NodeArray[nNodeIndex = NextNodeIndex(NodeArray, nNodeIndex, 1)];
                 }
                 while(node.m_ulOffset < ulOffset);
 
                 NodeArray.InsertAt(nNodeIndex, CNode(c_NodeEndOfBlock));
-                NodeArray.at(nNodeIndex).m_ulOffset = NodeArray.at(nNodeIndex + 1).m_ulOffset;
+                NodeArray[nNodeIndex].m_ulOffset = NodeArray[nNodeIndex + 1].m_ulOffset;
 
-                node = NodeArray.at(nNodeIndex - 1);
+                node = NodeArray[nNodeIndex - 1];
 
                 if (node.m_Opcode.GetOperator() == COpcode::O_JMP && node.m_Type != CNode::TYPE_BREAK && node.m_Type != CNode::TYPE_CONTINUE)
                 { // else block
-                    if (node.m_Arguments.at(0).m_Opcode.GetOperator() != COpcode::O_INTOP)
+                    if (node.m_Arguments[0].m_Opcode.GetOperator() != COpcode::O_INTOP)
                     {
                         printf("Error: Invalid opcode for jump-address\n");
                         AfxThrowUserException();
                     }
                     //ULONG jumpPastElseOffset = 
-                    ulOffset = node.m_Arguments.at(0).m_Opcode.GetArgument();
+                    ulOffset = node.m_Arguments[0].m_Opcode.GetArgument();
                     //printf("(else) goto %x > %x", ulOffset, node.m_ulOffset);
                     if (ulOffset > node.m_ulOffset)
                     {
                         NodeArray.RemoveAt(nNodeIndex - 1); // remove jump
                         NodeArray.InsertAt(nNodeIndex, CNode(c_NodeBeginOfBlock));
-                        NodeArray.at(nNodeIndex).m_ulOffset = NodeArray.at(nNodeIndex + 1).m_ulOffset;
+                        NodeArray[nNodeIndex].m_ulOffset = NodeArray[nNodeIndex + 1].m_ulOffset;
 
-                        CNode Bnode = NodeArray.at(nNodeIndex - 1);
-                        CNode Cnode = NodeArray.at(nNodeIndex + 1);
+                        CNode Bnode = NodeArray[nNodeIndex - 1];
+                        CNode Cnode = NodeArray[nNodeIndex + 1];
                         if ((Bnode.m_Type == CNode::TYPE_END_OF_BLOCK)/* &&
                                 (Cnode.m_Opcode.GetOperator() != COpcode::O_IF)*/)
                         {
                             do
                             {
-                                node = NodeArray.at(nNodeIndex = NextNodeIndex(NodeArray, nNodeIndex, 1));
+                                node = NodeArray[nNodeIndex = NextNodeIndex(NodeArray, nNodeIndex, 1)];
                             }
                             while(node.m_ulOffset < ulOffset);
                             NodeArray.InsertAt(nNodeIndex, CNode(c_NodeEndOfBlock));
-                            NodeArray.at(nNodeIndex).m_ulOffset = NodeArray.at(nNodeIndex + 1).m_ulOffset;
+                            NodeArray[nNodeIndex].m_ulOffset = NodeArray[nNodeIndex + 1].m_ulOffset;
                         }
                     }
                 }
             }
-            NodeArray.at(i).m_Arguments.RemoveAt(0);
+            NodeArray[i].m_Arguments.RemoveAt(0);
             i++;
 
             break;
@@ -853,7 +853,7 @@ void CFalloutScript::ReduceConditionalExpressions(CNodeArray& NodeArray)
 
     for (INT_PTR i = 0; i < NodeArray.GetSize(); i++)
     {
-        if (NodeArray.at(i).m_Opcode.GetOperator() == COpcode::O_IF)
+        if (NodeArray[i].m_Opcode.GetOperator() == COpcode::O_IF)
         {
             if (ReduceExpressionBlock(NodeArray, i+1))
             {
