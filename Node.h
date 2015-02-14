@@ -1,22 +1,15 @@
-#pragma once
-
 #ifndef NODE_H
 #define NODE_H
 
 #include "Namespace.h"
 #include "Opcode.h"
 
-
-// Forward declaration of CNode
 class CNode;
-
-
-// CNodeArray
 typedef CArray<CNode, CNode&> CNodeArray;
+typedef CArray<CNodeArray, CNodeArray&> CArrayOfNodeArray;
 
-
-// CNode
-class CNode : public CObject {
+class CNode
+{
 public:
     enum Type {
         TYPE_NORMAL,
@@ -51,15 +44,8 @@ public:
     CNodeArray m_Arguments;
 };
 
-
-// CNodeArray
-typedef CArray<CNode, CNode&> CNodeArray;
-
-// CArrayOfNodeArray
-typedef CArray<CNodeArray, CNodeArray&> CArrayOfNodeArray;
-
 // 'Begin' end 'End of block' 'End Else Begin' nodes
 const CNode c_NodeBeginOfBlock(CNode::TYPE_BEGIN_OF_BLOCK);
 const CNode c_NodeEndOfBlock(CNode::TYPE_END_OF_BLOCK);
 
-#endif
+#endif //NODE_H

@@ -1,11 +1,5 @@
-// Node.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "Node.h"
-
-
-// CNode
 
 CNode::CNode(Type type) :
     m_ulOffset(0),
@@ -28,28 +22,31 @@ CNode::~CNode()
 
 CNode& CNode::operator = (const CNode& node)
 {
-    if (&node != this) {
+    if (&node != this)
+    {
         m_ulOffset = node.m_ulOffset;
         m_Opcode = node.m_Opcode;
         m_Type = node.m_Type;
         m_Arguments.Copy(node.m_Arguments);
     }
-
     return (*this);
 }
 
 void CNode::StoreTree(CArchive& ar, int nIndent, int nIndex)
 {
     // Indent
-    if (nIndex != 0) {
+    if (nIndex != 0)
+    {
         ar.WriteString("            ");
 
-        for(int i = 0; i < nIndent; i++) {
+        for(int i = 0; i < nIndent; i++)
+        {
             ar.WriteString("                  ");
         }
     }
 
-    switch(m_Type) {
+    switch(m_Type)
+    {
         case TYPE_BEGIN_OF_BLOCK:
             ar.WriteString("========= begin of block =========\n");
             return;
@@ -64,7 +61,8 @@ void CNode::StoreTree(CArchive& ar, int nIndent, int nIndex)
     WORD wOperator = m_Opcode.GetOperator();
     ULONG ulArgument = m_Opcode.GetArgument();
 
-    switch(wOperator) {
+    switch(wOperator)
+    {
         case COpcode::O_STRINGOP:
         case COpcode::O_INTOP:
             strOutLine.Format("0x%04X 0x%08x ", 
@@ -85,12 +83,15 @@ void CNode::StoreTree(CArchive& ar, int nIndent, int nIndex)
                                 wOperator);
             ar.WriteString(strOutLine);
     }
-    if (!m_Arguments.IsEmpty()) {
-        for(int i = 0; i < m_Arguments.GetSize(); i++) {
+    if (!m_Arguments.IsEmpty())
+    {
+        for(int i = 0; i < m_Arguments.GetSize(); i++)
+        {
             m_Arguments.at(i).StoreTree(ar, nIndent + 1, i);
         }
     }
-    else {
+    else
+    {
         ar.WriteString("\n");
     }
 
@@ -99,9 +100,13 @@ void CNode::StoreTree(CArchive& ar, int nIndent, int nIndex)
 ULONG CNode::GetTopOffset()
 {
     if (m_Arguments.GetSize() > 0)
+    {
         return m_Arguments.at(0).GetTopOffset();
+    }
     else
+    {
         return m_ulOffset;
+    }
 }
 
 bool CNode::IsExpression() const

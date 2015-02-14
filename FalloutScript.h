@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef FALLOUT_SCRIPT_H
 #define FALLOUT_SCRIPT_H
 
@@ -8,11 +6,8 @@
 #include "Namespace.h"
 #include "Node.h"
 
-
-// Constants
-
-// CFalloutScript
-class CFalloutScript : public CObject {
+class CFalloutScript
+{
 public:
     CFalloutScript();
     virtual ~CFalloutScript();
@@ -73,8 +68,9 @@ private:
     Assoc GetAssociation(WORD wOperator);
 
 private:
-    // CDefObject
-    class CDefObject {
+    
+    class CDefObject
+    {
     public:
         enum ObjectType {
             OBJECT_VARIABLE,

@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef STARTUP_CODE_H
 #define STARTUP_CODE_H
 

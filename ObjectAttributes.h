@@ -1,8 +1,5 @@
-#pragma once
-
 #ifndef OBJECT_ATTRIBUTES_H
 #define OBJECT_ATTRIBUTES_H
-
 
 // ProcedureAttributes
 enum ProcAttributes {
@@ -15,7 +12,6 @@ enum ProcAttributes {
     P_NOTIMPLEMENTED = 0x80000000
 };
 
-
 // VariableAtributes
 enum VariableAtributes {
     V_GLOBAL = 0x00010000,
@@ -23,4 +19,4 @@ enum VariableAtributes {
     V_EXPORT = 0x00040000
 };
 
-#endif
+#endif //OBJECT_ATTRIBUTES_H

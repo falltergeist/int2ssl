@@ -1,13 +1,11 @@
-#pragma once
-
 #ifndef NAMESPACE_H
 #define NAMESPACE_H
 
 #include "Hacks/CArchive.h"
 #include "Hacks/CMap.h"
 
-// CNamespace
-class CNamespace : public CObject {
+class CNamespace
+{
 public:
     CNamespace();
     virtual ~CNamespace();
@@ -33,4 +31,4 @@ private:
     CDWordArray m_Order;
 };
 
-#endif
+#endif //NAMESPACE_H

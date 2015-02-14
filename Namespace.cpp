@@ -25,88 +25,87 @@ CNamespace::~CNamespace()
 
 void CNamespace::Serialize(CArchive& ar)
 {
-    //if (ar.IsStoring()) {
-    if (false)
+    m_Map.RemoveAll();
+    m_Order.RemoveAll();
+
+    ULONG ulLength;
+
+    if (ReadMSBULong(ar, ulLength) != 4)
     {
-        //ASSERT(FALSE);
+        printf("Error: Unable read length of namespace\n");
+        AfxThrowUserException();
     }
-    else {
-        m_Map.RemoveAll();
-        m_Order.RemoveAll();
 
-        ULONG ulLength;
+    if (ulLength == 0xFFFFFFFF) return;
 
-        if (ReadMSBULong(ar, ulLength) != 4)
+    ULONG ulTotalRead = 0;
+    WORD wLengthOfString;
+    LPTSTR  lpszNewString;
+
+    while(ulTotalRead < ulLength)
+    {
+        CString strNewString;
+
+        if (ReadMSBWord(ar, wLengthOfString) != 2)
         {
-            printf("Error: Unable read length of namespace\n");
+            printf("Error: Unable read length of string\n");
+            AfxThrowUserException();
+        };
+
+        if ((wLengthOfString < 2) || (wLengthOfString & 0x0001))
+        {
+            printf("Error: Invalid length of string\n");
             AfxThrowUserException();
         }
 
-        if (ulLength != 0xFFFFFFFF)
+        lpszNewString = strNewString.GetBuffer(wLengthOfString);
+
+        if (ar.Read(lpszNewString, wLengthOfString) != wLengthOfString)
         {
-            ULONG ulTotalRead = 0;
-            WORD wLengthOfString;
-            LPTSTR  lpszNewString;
+            strNewString.ReleaseBufferSetLength(0);
+            printf("Error: Unable read string in namespace\n");
+            AfxThrowUserException();
+        }
 
-            while(ulTotalRead < ulLength)
-            {
-                CString strNewString;
+        if ((lpszNewString[wLengthOfString - 1] != '\x00') && (lpszNewString[wLengthOfString - 2] != '\x00'))
+        {
+            strNewString.ReleaseBufferSetLength(0);
+            printf("Error: Invalid end of string in namespace\n");
+            AfxThrowUserException();
+        }
 
-                if (ReadMSBWord(ar, wLengthOfString) != 2) {
-                    printf("Error: Unable read length of string\n");
-                    AfxThrowUserException();
-                };
-
-                if ((wLengthOfString < 2) || (wLengthOfString & 0x0001)) {
-                    printf("Error: Invalid length of string\n");
-                    AfxThrowUserException();
-                }
-
-                lpszNewString = strNewString.GetBuffer(wLengthOfString);
-
-                if (ar.Read(lpszNewString, wLengthOfString) != wLengthOfString) {
-                    strNewString.ReleaseBufferSetLength(0);
-                    printf("Error: Unable read string in namespace\n");
-                    AfxThrowUserException();
-                }
-
-                if ((lpszNewString[wLengthOfString - 1] != '\x00') && (lpszNewString[wLengthOfString - 2] != '\x00')) {
-                    strNewString.ReleaseBufferSetLength(0);
-                    printf("Error: Invalid end of string in namespace\n");
-                    AfxThrowUserException();
-                }
-
-                std::string tmpString(lpszNewString);
-                strNewString = tmpString.c_str();//.ReleaseBuffer();
+        std::string tmpString(lpszNewString);
+        strNewString = tmpString.c_str();//.ReleaseBuffer();
 
 
-                // Convert Nongraphic Characters to Escape sequence
-                CString strNonGraph("\\\a\b\f\n\r\t\"");
-                CString strEscape("\\abfnrt\"");
+        // Convert Nongraphic Characters to Escape sequence
+        CString strNonGraph("\\\a\b\f\n\r\t\"");
+        CString strEscape("\\abfnrt\"");
 
-                for(int i = 0; i < strNonGraph.GetLength(); i++)
-                {
-                    strNewString.Replace(CString(strNonGraph[i]), CString("\\" + strEscape[i]));
-                }
+        for(int i = 0; i < strNonGraph.GetLength(); i++)
+        {
+            strNewString.Replace(CString(strNonGraph[i]), CString("\\" + strEscape[i]));
+        }
 
-                m_Map.SetAt(ulTotalRead + 6, strNewString);
-                m_Order.Add(ulTotalRead + 6);
+        m_Map.SetAt(ulTotalRead + 6, strNewString);
+        m_Order.Add(ulTotalRead + 6);
 
-                ulTotalRead += (2 + wLengthOfString);
-            }
+        ulTotalRead += (2 + wLengthOfString);
+    }
 
-            ULONG ulTerminator;
+    ULONG ulTerminator;
 
-            if (ReadMSBULong(ar, ulTerminator) != 4)
-            {
-                printf("Error: Unable read terminator of namespace\n");
-                AfxThrowUserException();
-            }
+    if (ReadMSBULong(ar, ulTerminator) != 4)
+    {
+        printf("Error: Unable read terminator of namespace\n");
+        AfxThrowUserException();
+    }
 
-            if (ulTerminator != 0xFFFFFFFF) {
-                printf("Error: Invalid terminator of namespace\n");
-                AfxThrowUserException();
-            }
+    if (ulTerminator != 0xFFFFFFFF)
+    {
+        printf("Error: Invalid terminator of namespace\n");
+        AfxThrowUserException();
+    }
 
 //          //For debugging only
 //          for(INT_PTR i = 0; i < GetSize(); i++) {
@@ -114,8 +113,6 @@ void CNamespace::Serialize(CArchive& ar)
 //          }
 //
 //          printf("\n");
-        }
-    }
 }
 
 INT_PTR CNamespace::GetSize() const

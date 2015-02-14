@@ -5,7 +5,6 @@
 #include "Hacks/CArchive.h"
 #include "Hacks/CMap.h"
 
-// COpcode
 class COpcode
 {
 public:
@@ -20,8 +19,6 @@ public:
         O_INT       = 0x4000,
         O_OPERATOR  = 0x8000
     };
-
-    // const O_IF_EXPR = 1000;
 
     enum O_Core {
         O_NOOP = O_OPERATOR,
@@ -800,13 +797,15 @@ public:
     };
 
     // CF2OpcodeAttributesMap
-    class CF2OpcodeAttributesMap : public CMap<WORD, WORD, COpcodeAttributes, const COpcodeAttributes&> {
+    class CF2OpcodeAttributesMap : public CMap<WORD, WORD, COpcodeAttributes, const COpcodeAttributes&>
+    {
     public:
         CF2OpcodeAttributesMap();
     };
 
     // C12OpcodeAttributesMap
-    class CF1OpcodeAttributesMap : public CMap<WORD, WORD, COpcodeAttributes, const COpcodeAttributes&> {
+    class CF1OpcodeAttributesMap : public CMap<WORD, WORD, COpcodeAttributes, const COpcodeAttributes&>
+    {
     public:
         CF1OpcodeAttributesMap();
     };
@@ -838,7 +837,6 @@ private:
     ULONG m_ulArgument;
 };
 
-// COpcodeArray
 typedef CArray<COpcode, COpcode&> COpcodeArray;
 
 #endif

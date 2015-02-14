@@ -1,19 +1,7 @@
-// FalloutScript.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "FalloutScript.h"
 
 #include <iostream>
-
-// Constants
-//c_strBogusProcedureName = "..............";
-//c_strArgumentTemplate = "arg%u";
-//c_strGlobalVarTemplate = "GVar%u";
-//c_strLocalVarTemplate = "LVar%u";
-
-
-// CFalloutScript
 
 CFalloutScript::CFalloutScript()
 {
@@ -118,37 +106,45 @@ void CFalloutScript::Serialize(CArchive& ar)
 
     CString strNumOfArgsWarning("Warning: Omitted  \"# of argument to \'start\' procedure\"\n");
 
-    if (!HeaderTail.IsEmpty()) {
+    if (!HeaderTail.IsEmpty())
+    {
         opcode = HeaderTail.at(HeaderTail.GetUpperBound());
 
-        if (opcode.GetOperator() == COpcode::O_CRITICAL_DONE) {
+        if (opcode.GetOperator() == COpcode::O_CRITICAL_DONE)
+        {
             HeaderTail.RemoveAt(HeaderTail.GetUpperBound());
 
-            if (!HeaderTail.IsEmpty()) {
+            if (!HeaderTail.IsEmpty())
+            {
                 opcode = HeaderTail.at(HeaderTail.GetUpperBound());
 
-                if (opcode.HasArgument()) {
+                if (opcode.HasArgument())
+                {
                     HeaderTail.RemoveAt(HeaderTail.GetUpperBound());
                 }
-                else {
+                else
+                {
                     printf("\n");
                     printf("%s", strNumOfArgsWarning.c_str());
                     printf("\n");
                 }
             }
-            else {
+            else
+            {
                 printf("\n");
                 printf("%s", strNumOfArgsWarning.c_str());
                 printf("\n");
             }
         }
-        else {
+        else
+        {
             printf("\n");
             printf("Warning: Omitted expected opcode 0x8003. Opcode with # of arguments will be not analysed\n");
             printf("\n");
         }
     }
-    else {
+    else
+    {
         printf("\n");
         printf("%s", strNumOfArgsWarning.c_str());
         printf("\n");
@@ -169,12 +165,14 @@ void CFalloutScript::Serialize(CArchive& ar)
     // Global variables
     printf("    Extract \"Global variables\" section\n");
 
-    for(INT_PTR i = 0; i < HeaderTail.GetSize(); i++) {
+    for(INT_PTR i = 0; i < HeaderTail.GetSize(); i++)
+    {
         WORD wGlobalVarOperator = HeaderTail.at(i).GetOperator();
 
         if ((wGlobalVarOperator != COpcode::O_STRINGOP) &&
             (wGlobalVarOperator != COpcode::O_FLOATOP) &&
-            (wGlobalVarOperator != COpcode::O_INTOP)) {
+            (wGlobalVarOperator != COpcode::O_INTOP)) 
+        {
             printf("Error: Malformed \"Global variables\" section\n");
             AfxThrowUserException();
         }
@@ -213,27 +211,35 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
 {
     INT_PTR i = 0;
 
-    for(; i < Source.GetSize(); i++) {
-        if (Source.at(i).GetOperator() == wDelimeter) {
+    for(; i < Source.GetSize(); i++)
+    {
+        if (Source.at(i).GetOperator() == wDelimeter)
+        {
             break;
         }
     }
 
-    if (i < Source.GetSize()) {
-        if (i < nSizeOfCodeItem - 1) {
+    if (i < Source.GetSize())
+    {
+        if (i < nSizeOfCodeItem - 1)
+        {
             printf(lpszErrorMessage);
             AfxThrowUserException();
         }
 
-        while(Source.at(i).GetOperator() == wDelimeter) {
-            for(INT_PTR j = 0; j < nSizeOfCodeItem - 1; j++) {
-                if (!((this->*pCheckFunc)(Source.at(i - nSizeOfCodeItem + 1 + j).GetOperator(), j))) {
+        while(Source.at(i).GetOperator() == wDelimeter)
+        {
+            for(INT_PTR j = 0; j < nSizeOfCodeItem - 1; j++)
+            {
+                if (!((this->*pCheckFunc)(Source.at(i - nSizeOfCodeItem + 1 + j).GetOperator(), j)))
+                {
                     printf(lpszErrorMessage);
                     AfxThrowUserException();
                 }
             }
 
-            for(INT_PTR j = 0; j < nSizeOfCodeItem - 1; j++) {
+            for(INT_PTR j = 0; j < nSizeOfCodeItem - 1; j++)
+            {
                 Destination.Add(Source.at(i - nSizeOfCodeItem + 1));
                 Source.RemoveAt(i - nSizeOfCodeItem + 1);
             }
@@ -241,7 +247,8 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
             Source.RemoveAt(i - nSizeOfCodeItem + 1);   // Delimeter
 
 
-            if (i > Source.GetUpperBound()) {
+            if (i > Source.GetUpperBound())
+            {
                 break;
             }
         }
@@ -255,7 +262,8 @@ BOOL CFalloutScript::CheckExportVarCode(WORD wOperator, INT_PTR nIndex)
 
 BOOL CFalloutScript::CheckSetExportedVarValueCode(WORD wOperator, INT_PTR nIndex)
 {
-    switch(nIndex) {
+    switch(nIndex)
+    {
         case 0:
             return (wOperator == COpcode::O_STRINGOP) || 
                    (wOperator == COpcode::O_FLOATOP)  || 
@@ -279,3 +287,4 @@ bool CFalloutScript::ArgNeedParens( const CNode& node, const CNode& argument, CF
         && ((GetPriority(argument.m_Opcode.GetOperator()) != GetPriority(node.m_Opcode.GetOperator()))
             || (GetAssociation(node.m_Opcode.GetOperator()) != assoc)));
 }
+

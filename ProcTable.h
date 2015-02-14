@@ -6,7 +6,8 @@
 #include "Hacks/CArchive.h"
 
 // CProcDescriptor
-class CProcDescriptor : public CObject {
+class CProcDescriptor
+{
 public:
     CProcDescriptor();
     CProcDescriptor(const CProcDescriptor& Item);
@@ -29,9 +30,8 @@ public:
     ULONG m_ulNumArgs;              // Number of args to procedure
 };
 
-
-// CProcTable
-class CProcTable : public CObject {
+class CProcTable
+{
 public:
     CProcTable();
     virtual ~CProcTable();

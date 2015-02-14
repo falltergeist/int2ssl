@@ -1,15 +1,6 @@
-// OpcodeMnemonic.cpp : COpcode class implementation file
-//
-
 #include "stdafx.h"
 #include "Opcode.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#endif
-
-
-// COpcode::COpcodeAttributes
 COpcode::COpcodeAttributes::COpcodeAttributes(std::string mnemonic,
                                               std::string name,
                                               ULONG ulNumArgs,
@@ -40,7 +31,8 @@ COpcode::COpcodeAttributes::COpcodeAttributes(const COpcodeAttributes& attribute
 
 COpcode::COpcodeAttributes& COpcode::COpcodeAttributes::operator = (const COpcodeAttributes& attributes)
 {
-    if (&attributes != this) {
+    if (&attributes != this)
+    {
         m_strMnemonic = attributes.m_strMnemonic;
         m_strName = attributes.m_strName;
         m_ulNumArgs = attributes.m_ulNumArgs;

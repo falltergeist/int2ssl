@@ -10,12 +10,6 @@
 
 class CString;
 
-class CObject
-{
-public :
-    CObject();
-};
-
 
 class CDWordArray : public CArray<WORD, WORD>
 {
