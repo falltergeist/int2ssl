@@ -9,28 +9,28 @@
 // CNamespace
 class CNamespace : public CObject {
 public:
-	CNamespace();
-	virtual ~CNamespace();
+    CNamespace();
+    virtual ~CNamespace();
 
 public:
-	virtual void Serialize(CArchive& ar);
+    virtual void Serialize(CArchive& ar);
 
 public:
-	INT_PTR GetSize() const;
+    INT_PTR GetSize() const;
     CString GetStringByIndex(INT_PTR nIndex) ;
     ULONG GetOffsetByIndex(INT_PTR nIndex) ;
 
-	void Dump(CArchive& ar);
+    void Dump(CArchive& ar);
 
 public:
-	CString operator [] (ULONG ulOffset) const;
+    CString operator [] (ULONG ulOffset) const;
 
 private:
-	// CMapDWordToString
-	typedef CMap<DWORD, DWORD, CString, LPCTSTR> CMapDWordToString;
+    // CMapDWordToString
+    typedef CMap<DWORD, DWORD, CString, LPCTSTR> CMapDWordToString;
 
-	CMapDWordToString m_Map;
-	CDWordArray m_Order;
+    CMapDWordToString m_Map;
+    CDWordArray m_Order;
 };
 
 #endif

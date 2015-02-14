@@ -18,37 +18,37 @@ typedef CArray<CNode, CNode&> CNodeArray;
 // CNode
 class CNode : public CObject {
 public:
-	enum Type {
-		TYPE_NORMAL,
-		TYPE_BEGIN_OF_BLOCK,
-		TYPE_END_OF_BLOCK,
-		TYPE_OMITTED_ARGUMENT,
-		TYPE_BREAK,
-		TYPE_CONTINUE,
-		TYPE_FOR_LOOP,
-		TYPE_CONDITIONAL_EXPRESSION
-	};
+    enum Type {
+        TYPE_NORMAL,
+        TYPE_BEGIN_OF_BLOCK,
+        TYPE_END_OF_BLOCK,
+        TYPE_OMITTED_ARGUMENT,
+        TYPE_BREAK,
+        TYPE_CONTINUE,
+        TYPE_FOR_LOOP,
+        TYPE_CONDITIONAL_EXPRESSION
+    };
 
 public:
-	CNode(Type type = TYPE_NORMAL);
-	CNode(const CNode& node);
-	virtual ~CNode();
+    CNode(Type type = TYPE_NORMAL);
+    CNode(const CNode& node);
+    virtual ~CNode();
 
 public:
-	CNode& operator = (const CNode& node);
+    CNode& operator = (const CNode& node);
 
 public:
-	void StoreTree(CArchive& ar, int nIndent, int nIndex);
-	ULONG  GetTopOffset();
-	bool IsExpression() const;
-	bool IsInfix() const;
+    void StoreTree(CArchive& ar, int nIndent, int nIndex);
+    ULONG  GetTopOffset();
+    bool IsExpression() const;
+    bool IsInfix() const;
 
 public:
-	ULONG   m_ulOffset;
-	COpcode m_Opcode;
+    ULONG   m_ulOffset;
+    COpcode m_Opcode;
 
-	Type m_Type;
-	CNodeArray m_Arguments;
+    Type m_Type;
+    CNodeArray m_Arguments;
 };
 
 

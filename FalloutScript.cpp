@@ -184,7 +184,7 @@ void CFalloutScript::Serialize(CArchive& ar)
 
     // Procedures bodyes
     printf("  Read procedure\'s bodies\n");
-    m_ProcBodies.RemoveAll();	// Destroy old data
+    m_ProcBodies.RemoveAll();   // Destroy old data
     m_Conditions.RemoveAll();
     m_ProcBodies.SetSize(m_ProcTable.GetSize());
     m_Conditions.SetSize(m_ProcTable.GetSize());
@@ -211,71 +211,71 @@ void CFalloutScript::Serialize(CArchive& ar)
 
 void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Destination, WORD wDelimeter, int nSizeOfCodeItem, LPCTSTR lpszErrorMessage, BOOL (CFalloutScript::*pCheckFunc)(WORD, INT_PTR))
 {
-	INT_PTR i = 0;
+    INT_PTR i = 0;
 
-	for(; i < Source.GetSize(); i++) {
+    for(; i < Source.GetSize(); i++) {
         if (Source.at(i).GetOperator() == wDelimeter) {
-			break;
-		}
-	}
+            break;
+        }
+    }
 
-	if (i < Source.GetSize()) {
-		if (i < nSizeOfCodeItem - 1) {
-			printf(lpszErrorMessage);
-			AfxThrowUserException();
-		}
+    if (i < Source.GetSize()) {
+        if (i < nSizeOfCodeItem - 1) {
+            printf(lpszErrorMessage);
+            AfxThrowUserException();
+        }
 
         while(Source.at(i).GetOperator() == wDelimeter) {
-			for(INT_PTR j = 0; j < nSizeOfCodeItem - 1; j++) {
+            for(INT_PTR j = 0; j < nSizeOfCodeItem - 1; j++) {
                 if (!((this->*pCheckFunc)(Source.at(i - nSizeOfCodeItem + 1 + j).GetOperator(), j))) {
-					printf(lpszErrorMessage);
-					AfxThrowUserException();
-				}
-			}
+                    printf(lpszErrorMessage);
+                    AfxThrowUserException();
+                }
+            }
 
-			for(INT_PTR j = 0; j < nSizeOfCodeItem - 1; j++) {
+            for(INT_PTR j = 0; j < nSizeOfCodeItem - 1; j++) {
                 Destination.Add(Source.at(i - nSizeOfCodeItem + 1));
-				Source.RemoveAt(i - nSizeOfCodeItem + 1);
-			}
+                Source.RemoveAt(i - nSizeOfCodeItem + 1);
+            }
 
-			Source.RemoveAt(i - nSizeOfCodeItem + 1);	// Delimeter
+            Source.RemoveAt(i - nSizeOfCodeItem + 1);   // Delimeter
 
 
-			if (i > Source.GetUpperBound()) {
-				break;
-			}
-		}
-	}
+            if (i > Source.GetUpperBound()) {
+                break;
+            }
+        }
+    }
 }
 
 BOOL CFalloutScript::CheckExportVarCode(WORD wOperator, INT_PTR nIndex)
 {
-	return (nIndex == 0) && (wOperator == COpcode::O_STRINGOP);
+    return (nIndex == 0) && (wOperator == COpcode::O_STRINGOP);
 }
 
 BOOL CFalloutScript::CheckSetExportedVarValueCode(WORD wOperator, INT_PTR nIndex)
 {
-	switch(nIndex) {
-		case 0:
-			return (wOperator == COpcode::O_STRINGOP) || 
-				   (wOperator == COpcode::O_FLOATOP)  || 
-				   (wOperator == COpcode::O_INTOP);
-		case 1:
-			return (wOperator == COpcode::O_STRINGOP);
+    switch(nIndex) {
+        case 0:
+            return (wOperator == COpcode::O_STRINGOP) || 
+                   (wOperator == COpcode::O_FLOATOP)  || 
+                   (wOperator == COpcode::O_INTOP);
+        case 1:
+            return (wOperator == COpcode::O_STRINGOP);
 
-		default:
-			return FALSE;
-	}
+        default:
+            return FALSE;
+    }
 }
 
 BOOL CFalloutScript::CheckExportProcCode(WORD wOperator, INT_PTR nIndex)
 {
-	return ((nIndex == 0) || (nIndex == 1)) && (wOperator == COpcode::O_INTOP);
+    return ((nIndex == 0) || (nIndex == 1)) && (wOperator == COpcode::O_INTOP);
 }
 
 bool CFalloutScript::ArgNeedParens( const CNode& node, const CNode& argument, CFalloutScript::Assoc assoc)
 {
-	return (argument.IsInfix()
-		&& ((GetPriority(argument.m_Opcode.GetOperator()) != GetPriority(node.m_Opcode.GetOperator()))
-			|| (GetAssociation(node.m_Opcode.GetOperator()) != assoc)));
+    return (argument.IsInfix()
+        && ((GetPriority(argument.m_Opcode.GetOperator()) != GetPriority(node.m_Opcode.GetOperator()))
+            || (GetAssociation(node.m_Opcode.GetOperator()) != assoc)));
 }
