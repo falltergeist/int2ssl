@@ -56,9 +56,6 @@ int main(int argc, char* argv[])
     CFile fileInput;
     CFile fileOutput;
 
-    //g_strInputFileName = "BECA.int";
-    //g_strOutputFileName = "BECA.int.ssl";
-
     if (!fileInput.Open(g_strInputFileName, CFile::modeRead | CFile::shareDenyWrite))
     {
         printf("Error: Unable open input file %s.\n", g_strInputFileName.c_str());
@@ -235,21 +232,25 @@ BOOL ProcessCommandLine(int argc, char* argv[])
     }
     else
     {
-        g_strOutputFileName = g_strInputFileName;
+        std::string outputFileName = g_strInputFileName.str();
+        std::string extension = outputFileName.substr(outputFileName.length() - 4);
 
-//        if (g_strOutputFileName.Right(4).MakeLower() == ".int")
-//        {
-//            g_strOutputFileName = g_strOutputFileName.Left(g_strOutputFileName.GetLength() - 4);
-//        }
+        if (extension == ".int")
+        {
+            outputFileName = outputFileName.substr(0, outputFileName.length() - 4);
+        }
+
+        g_strOutputFileName = g_strInputFileName;
 
         if (g_bDump)
         {
-            g_strOutputFileName += ".dump";
+            outputFileName += ".dump";
         }
         else
         {
-               g_strOutputFileName += ".ssl";
+            outputFileName += ".ssl";
         }
+        g_strOutputFileName = outputFileName;
     }
     return TRUE;
 }
