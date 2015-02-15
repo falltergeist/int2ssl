@@ -1,8 +1,13 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+// C++ standard includes
 #include <string>
 #include <cstdint>
+
+// int2ssl includes
+
+// Third party includes
 
 typedef int BOOL;
 typedef unsigned char BYTE;

@@ -1,9 +1,13 @@
 #ifndef CFILE_H
 #define CFILE_H
 
+// C++ standard includes
 #include <fstream>
 
+// int2ssl includes
 #include "../Hacks/Types.h"
+
+// Third party includes
 
 class CFile
 {

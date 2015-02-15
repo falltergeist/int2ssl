@@ -1,10 +1,14 @@
 #ifndef CARCHIVE_H
 #define CARCHIVE_H
 
+// C++ standard includes
+#include <fstream>
+
+// int2ssl includes
 #include "../Hacks/Types.h"
 #include "../Hacks/CFile.h"
 
-#include <fstream>
+// Third party includes
 
 class CArchive
 {

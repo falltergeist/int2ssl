@@ -1,8 +1,13 @@
 #ifndef NAMESPACE_H
 #define NAMESPACE_H
 
+// C++ standard includes
+
+// int2ssl includes
 #include "Hacks/CArchive.h"
 #include "Hacks/CMap.h"
+
+// Third party includes
 
 class CNamespace
 {
@@ -23,8 +28,7 @@ public:
 public:
     std::string operator [] (ULONG ulOffset) const;
 
-private:
-    // CMapDWordToString
+private:    
     typedef CMap<DWORD, DWORD, std::string, LPCTSTR> CMapDWordToString;
 
     CMapDWordToString m_Map;

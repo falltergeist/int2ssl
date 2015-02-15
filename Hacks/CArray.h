@@ -1,8 +1,13 @@
 #ifndef CARRAY_H
 #define CARRAY_H
 
-#include "../Hacks/Types.h"
+// C++ standard includes
 #include <vector>
+
+// int2ssl includes
+#include "../Hacks/Types.h"
+
+// Third party includes
 
 template<typename A, typename B>
 class CArray

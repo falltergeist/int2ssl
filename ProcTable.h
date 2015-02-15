@@ -1,11 +1,13 @@
-#pragma once
-
 #ifndef PROC_TABLE_H
 #define PROC_TABLE_H
 
+// C++ standard includes
+
+// int2ssl includes
 #include "Hacks/CArchive.h"
 
-// CProcDescriptor
+// Third party includes
+
 class CProcDescriptor
 {
 public:
@@ -57,4 +59,4 @@ private:
     ULONG m_ulOffsetOfProcSection;
 };
 
-#endif
+#endif //PROC_TABLE_H

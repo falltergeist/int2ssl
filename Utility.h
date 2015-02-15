@@ -1,12 +1,14 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
-#include "Hacks/CArchive.h"
-
+// C++ standard includes
 #include <stdarg.h>
 
+// int2ssl includes
+#include "Hacks/CArchive.h"
 
-// Utility functions
+// Third party includes
+
 UINT ReadMSBWord(CArchive& ar, WORD& wValue);
 UINT ReadMSBULong(CArchive& ar, ULONG& ulValue);
 

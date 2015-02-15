@@ -1,8 +1,13 @@
 #ifndef CMAP_H
 #define CMAP_H
 
+// C++ standard includes
 #include <map>
+
+// int2ssl includes
 #include "../Hacks/Types.h"
+
+// Third party includes
 
 template<typename A, typename B, typename C,typename D>
 class CMap

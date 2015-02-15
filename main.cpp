@@ -1,8 +1,13 @@
+// C++ standard includes
+#include <iostream>
+
+// int2ssl includes
 #include "stdafx.h"
 #include "FalloutScript.h"
 #include "XGetopt.h"
 #include "Utility.h"
-#include <iostream>
+
+// third party includes
 
 using namespace std;
 

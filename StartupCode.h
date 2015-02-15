@@ -1,10 +1,13 @@
 #ifndef STARTUP_CODE_H
 #define STARTUP_CODE_H
 
+// C++ standard includes
 
+// int2ssl includes
 #include "Opcode.h"
 
-// CStartupCode
+// Third party includes
+
 class CStartupCode
 {
 public:
@@ -21,4 +24,4 @@ private:
     COpcode m_Code[17];
 };
 
-#endif
+#endif // STARTUP_CODE_H

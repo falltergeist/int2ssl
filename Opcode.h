@@ -1,8 +1,13 @@
 #ifndef OPCODE_H
 #define OPCODE_H
 
+// C++ standard includes
+
+// int2ssl includes
 #include "Hacks/CArchive.h"
 #include "Hacks/CMap.h"
+
+// Third party includes
 
 class COpcode
 {
@@ -838,4 +843,4 @@ private:
 
 typedef CArray<COpcode, COpcode&> COpcodeArray;
 
-#endif
+#endif // OPCODE_H

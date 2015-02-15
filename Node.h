@@ -1,8 +1,13 @@
 #ifndef NODE_H
 #define NODE_H
 
+// C++ standard includes
+
+// int2ssl includes
 #include "Namespace.h"
 #include "Opcode.h"
+
+// Third party includes
 
 class CNode;
 typedef CArray<CNode, CNode&> CNodeArray;

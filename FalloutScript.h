@@ -1,12 +1,16 @@
 #ifndef FALLOUT_SCRIPT_H
 #define FALLOUT_SCRIPT_H
 
+// C++ standard includes
+#include <vector>
+
+// int2ssl includes
 #include "StartupCode.h"
 #include "ProcTable.h"
 #include "Namespace.h"
 #include "Node.h"
 
-#include <vector>
+// Third party includes
 
 class CFalloutScript
 {
@@ -113,4 +117,4 @@ private:
     std::vector<std::string> m_GlobalVarsNames;
 };
 
-#endif
+#endif //FALLOUT_SCRIPT_H
