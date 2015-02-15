@@ -23,16 +23,4 @@ class CDWordArray : public CArray<uint16_t, uint16_t>
 
 };
 
-class UserException
-{
-
-};
-
-
-
-
-
-void AfxThrowUserException();
-
-
 #endif

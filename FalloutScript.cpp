@@ -187,7 +187,7 @@ void CFalloutScript::Serialize(CArchive& ar)
             (wGlobalVarOperator != COpcode::O_INTOP)) 
         {
             printf("Error: Malformed \"Global variables\" section\n");
-            AfxThrowUserException();
+            throw std::exception();
         }
 
         m_GlobalVar.Add(HeaderTail[i]);
@@ -237,7 +237,7 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
         if (i < nSizeOfCodeItem - 1)
         {
             printf(lpszErrorMessage);
-            AfxThrowUserException();
+            throw std::exception();
         }
 
         while(Source[i].GetOperator() == wDelimeter)
@@ -247,7 +247,7 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
                 if (!((this->*pCheckFunc)(Source[i - nSizeOfCodeItem + 1 + j].GetOperator(), j)))
                 {
                     printf(lpszErrorMessage);
-                    AfxThrowUserException();
+                    throw std::exception();
                 }
             }
 

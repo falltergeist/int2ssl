@@ -88,7 +88,7 @@ void CFalloutScript::ProcessCode()
                 if (node.m_Opcode.GetOperator() != COpcode::O_INTOP)
                 {
                     printf("Error: Invalid opcode for start address of condition\n");
-                    AfxThrowUserException();
+                    throw std::exception();
                 }
 
                 uint32_t ulCondStartAddress = node.m_Opcode.GetArgument();
@@ -241,7 +241,7 @@ int32_t CFalloutScript::NextNodeIndex( CNodeArray& NodeArray, int32_t nCurrentIn
     if ((nResult < 0) || (nResult > NodeArray.GetUpperBound()))
     {
         printf("Error: Index of node out of range\n");
-        AfxThrowUserException();
+        throw std::exception();
     }
 
     return nResult;
@@ -347,7 +347,7 @@ void CFalloutScript::InitialReduce()
             if (!RemoveSequenceOfNodes(m_ProcBodies[i], m_ProcBodies[i].GetSize() - nCount, nCount, pwCode, nCount))
             {
                 printf("Error: Invalid tail of procedure\'s body\n");
-                AfxThrowUserException();
+                throw std::exception();
             }
         }
 
@@ -385,7 +385,7 @@ void CFalloutScript::InitialReduce()
                         else
                         {
                             printf("Error: Unknown sequence of opcodes\n");
-                            AfxThrowUserException();
+                            throw std::exception();
                         }
                     }
 
@@ -402,7 +402,7 @@ void CFalloutScript::InitialReduce()
                         if (!RemoveSequenceOfNodes(m_ProcBodies[i], j - 1, 2, awStoreReturnAdress, 2))
                         {
                             printf("Error: Unknown sequence of opcodes\n");
-                            AfxThrowUserException();
+                            throw std::exception();
                         }
                     }
 
@@ -442,7 +442,7 @@ uint32_t CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, uint32_t nStartI
                 if ((wOpeartor != COpcode::O_STRINGOP) && (wOpeartor != COpcode::O_INTOP))
                 {
                     printf("Error: Invalid reference to external variable\n");
-                    AfxThrowUserException();
+                    throw std::exception();
                 }
 
                 SetExternalVariable(ulArgument);
@@ -458,7 +458,7 @@ uint32_t CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, uint32_t nStartI
                 if (wProcNumOfArgsOperator != COpcode::O_INTOP)
                 {
                     printf("Error: Invalid opcode for procedure\'s number of arguments\n");
-                    AfxThrowUserException();
+                    throw std::exception();
                 }
 
                 nNumOfArgs = int32_t(ulProcNumOfArgs) + 2;
@@ -474,7 +474,7 @@ uint32_t CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, uint32_t nStartI
                 if (wAddRegionNumOfArgsOperator != COpcode::O_INTOP)
                 {
                     printf("Error: Invalid opcode for addRegion number of arguments\n");
-                    AfxThrowUserException();
+                    throw std::exception();
                 }
 
                 nNumOfArgs = int32_t(ulAddRegionNumOfArgs) + 1;
@@ -503,13 +503,13 @@ uint32_t CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, uint32_t nStartI
                     else
                     {
                         printf("Error: Not enough arguments for %X\n", NodeArray[j].m_ulOffset);
-                        AfxThrowUserException();
+                        throw std::exception();
                     }
                 }
                 else
                 {
                     printf("Error: Expression required for %X\n", NodeArray[j].m_ulOffset);
-                    AfxThrowUserException();
+                    throw std::exception();
                 }
             }
         }
@@ -585,7 +585,7 @@ void CFalloutScript::ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& D
     if (node.m_Opcode.GetOperator() != COpcode::O_JMP)
     {
         printf("Error: Invalid startup of condition\n");
-        AfxThrowUserException();
+        throw std::exception();
     }
 
     CNode nodeJumpAddress = node.m_Arguments[0];
@@ -593,7 +593,7 @@ void CFalloutScript::ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& D
     if (nodeJumpAddress.m_Opcode.GetOperator() != COpcode::O_INTOP)
     {
         printf("Error: Invalid startup of condition\n");
-        AfxThrowUserException();
+        throw std::exception();
     }
 
     uint32_t ulJumpOffset = node.m_Arguments[0].m_Opcode.GetArgument();
@@ -626,28 +626,28 @@ void CFalloutScript::ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& D
     if (!RemoveSequenceOfNodes(Destination, 0, 2, awStartupOfCondition, 2))
     {
         printf("Error: Invalid startup of condition\n");
-        AfxThrowUserException();
+        throw std::exception();
     }
 
     // Cleanup
     if (!RemoveSequenceOfNodes(Destination, Destination.GetSize() - 2, 2, awCleanupOfCondition, 2))
     {
         printf("Error: Invalid cleanup of condition\n");
-        AfxThrowUserException();
+        throw std::exception();
     }
 
     // Check condition
     if (Destination.GetSize() != 1)
     {
         printf("Error: Invalid condition. Only one expression allowed\n");
-        AfxThrowUserException();
+        throw std::exception();
     }
     else
     {
         if (Destination[0].m_Opcode.GetAttributes().m_Type != COpcode::COpcodeAttributes::TYPE_EXPRESSION)
         {
             printf("Error: Invalid condition. Expression required\n");
-            AfxThrowUserException();
+            throw std::exception();
         }
     }
 
@@ -705,7 +705,7 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                 if (node.m_Opcode.GetOperator() != COpcode::O_INTOP)
                 {
                     printf("Error: Invalid opcode for jump-address\n");
-                    AfxThrowUserException();
+                    throw std::exception();
                 }
 
                 NodeArray.InsertAt(i + 1, CNode(c_NodeBeginOfBlock));
@@ -759,13 +759,13 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                 if (node.m_Opcode.GetOperator() != COpcode::O_JMP)
                 {
                     printf("Error: Invalid tail of \'while\' statement\n");
-                    AfxThrowUserException();
+                    throw std::exception();
                 }
 
                 if (node.m_Arguments[0].m_Opcode.GetOperator() != COpcode::O_INTOP)
                 {
                     printf("Error: Invalid opcode for jump-address\n");
-                    AfxThrowUserException();
+                    throw std::exception();
                 }
 
                 if (isForLoop)
@@ -789,14 +789,14 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                 if (NodeArray[i].m_Type == CNode::TYPE_CONDITIONAL_EXPRESSION)
                 {
                     printf("Error: Conditional expression left in stack\n");
-                    AfxThrowUserException();
+                    throw std::exception();
                 }
                 CNode node = NodeArray[i].m_Arguments[0];
 
                 if (node.m_Opcode.GetOperator() != COpcode::O_INTOP)
                 {
                     printf("Error: Invalid opcode for jump-address\n");
-                    AfxThrowUserException();
+                    throw std::exception();
                 }
 
                 NodeArray.InsertAt(i + 1, CNode(c_NodeBeginOfBlock));
@@ -821,7 +821,7 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                     if (node.m_Arguments[0].m_Opcode.GetOperator() != COpcode::O_INTOP)
                     {
                         printf("Error: Invalid opcode for jump-address\n");
-                        AfxThrowUserException();
+                        throw std::exception();
                     }
                     //uint32_t jumpPastElseOffset =
                     ulOffset = node.m_Arguments[0].m_Opcode.GetArgument();

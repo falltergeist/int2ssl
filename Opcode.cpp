@@ -49,7 +49,7 @@ void COpcode::Serialize(CArchive& ar)
     if (ReadMSBWord(ar, m_wOperator) != OPERATOR_SIZE)
     {
         printf("Error: Unable read opcode\n");
-        AfxThrowUserException();
+        throw std::exception();
     }
 
     if ((m_wOperator < O_OPERATOR) ||
@@ -60,7 +60,7 @@ void COpcode::Serialize(CArchive& ar)
     {
         ar.Flush();
         printf("Error: Invalid opcode at 0x%08x\n", ar.GetFile()->GetPosition() - 2);
-        AfxThrowUserException();
+        throw std::exception();
     }
 
     if ((m_wOperator == O_STRINGOP) || (m_wOperator == O_FLOATOP) || (m_wOperator == O_INTOP))
@@ -68,7 +68,7 @@ void COpcode::Serialize(CArchive& ar)
         if (ReadMSBULong(ar, m_ulArgument) != ARGUMENT_SIZE)
         {
             printf("Error: Unable read opcode argument\n");
-            AfxThrowUserException();
+            throw std::exception();
         }
     }
 }
@@ -80,7 +80,7 @@ void COpcode::Expect(CArchive& ar, uint16_t wOperator, bool bArgumentFound, uint
     if (m_wOperator != wOperator)
     {
         printf("Error: Unexpected opcode (0x%04X expected, but 0x%04X found)\n", wOperator, m_wOperator);
-        AfxThrowUserException();
+        throw std::exception();
     }
 
     if (bArgumentFound && ((m_wOperator == O_STRINGOP) || (m_wOperator == O_FLOATOP) || (m_wOperator == O_INTOP)))
@@ -88,7 +88,7 @@ void COpcode::Expect(CArchive& ar, uint16_t wOperator, bool bArgumentFound, uint
         if (m_ulArgument != ulArgument)
         {
             printf("Error: Unexpected argument of opcode. (0x%08X expected, but 0x%08X found)\n", ulArgument, m_ulArgument);
-            AfxThrowUserException();
+            throw std::exception();
         }
     }
 }
@@ -122,7 +122,7 @@ void COpcode::Expect(CArchive& ar, int nCount, uint16_t pwOperators[])
         }
 
         printf(" expected, but 0x%04X found)\n", m_wOperator);
-        AfxThrowUserException();
+        throw std::exception();
     }
 }
 
@@ -176,7 +176,7 @@ const COpcode::COpcodeAttributes COpcode::GetAttributes() const
     if (!f2OpcodeAttributes.Lookup(m_wOperator, result))
     {
         printf("Error: Attempt to obtain attributes of unknown opcode\n");
-        AfxThrowUserException();
+        throw std::exception();
     }
 
     return result;

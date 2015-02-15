@@ -15,8 +15,3 @@
 // Third party includes
 
 
-void AfxThrowUserException()
-{
-    throw UserException();
-}
-

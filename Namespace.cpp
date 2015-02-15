@@ -35,7 +35,7 @@ void CNamespace::Serialize(CArchive& ar)
     if (ReadMSBULong(ar, ulLength) != 4)
     {
         printf("Error: Unable read length of namespace\n");
-        AfxThrowUserException();
+        throw std::exception();
     }
 
     if (ulLength == 0xFFFFFFFF) return;
@@ -51,13 +51,13 @@ void CNamespace::Serialize(CArchive& ar)
         if (ReadMSBWord(ar, wLengthOfString) != 2)
         {
             printf("Error: Unable read length of string\n");
-            AfxThrowUserException();
+            throw std::exception();
         };
 
         if ((wLengthOfString < 2) || (wLengthOfString & 0x0001))
         {
             printf("Error: Invalid length of string\n");
-            AfxThrowUserException();
+            throw std::exception();
         }
 
         strNewString.resize(wLengthOfString);
@@ -67,14 +67,14 @@ void CNamespace::Serialize(CArchive& ar)
         {
             strNewString.resize(0);
             printf("Error: Unable read string in namespace\n");
-            AfxThrowUserException();
+            throw std::exception();
         }
 
         if ((lpszNewString[wLengthOfString - 1] != '\x00') && (lpszNewString[wLengthOfString - 2] != '\x00'))
         {
             strNewString.resize(0);
             printf("Error: Invalid end of string in namespace\n");
-            AfxThrowUserException();
+            throw std::exception();
         }
 
         std::string tmpString(lpszNewString);
@@ -101,13 +101,13 @@ void CNamespace::Serialize(CArchive& ar)
     if (ReadMSBULong(ar, ulTerminator) != 4)
     {
         printf("Error: Unable read terminator of namespace\n");
-        AfxThrowUserException();
+        throw std::exception();
     }
 
     if (ulTerminator != 0xFFFFFFFF)
     {
         printf("Error: Invalid terminator of namespace\n");
-        AfxThrowUserException();
+        throw std::exception();
     }
 
 //          //For debugging only
@@ -162,7 +162,7 @@ std::string CNamespace::operator [] (uint32_t ulOffset) const
     if (!m_Map.Lookup(ulOffset, strResult))
     {
         printf("Error: No string at offset 0x%08x\n", ulOffset);
-        AfxThrowUserException();
+        throw std::exception();
     }
 
     return strResult;

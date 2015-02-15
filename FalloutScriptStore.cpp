@@ -541,8 +541,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
                     strResult += m_Stringspace[ulArgument] + "\"";
                 }
             }
-
-            catch(UserException& e)
+            catch(const std::exception& e)
             {
                 std::cout << "Warning: Restoration after exception. Object name replaced with '/* Fake object name */'" << std::endl;
                 strResult = "/* Fake object name */";
@@ -566,8 +565,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
                     strResult = format("%d", (long)ulArgument);
                 }
             }
-
-            catch(UserException& e)
+            catch(const std::exception& e)
             {
                 std::cout << "Warning: Restoration after exception. Object name replaced with '/* Fake object name */'" << std::endl;
                 strResult = "/* Fake object name */";
@@ -587,13 +585,13 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
             if (node.m_Arguments[0].m_Opcode.GetOperator() != COpcode::O_INTOP)
             {
                 std::cout << "Error: Invalid argument to O_FETCH_GLOBAL opcode" << std::endl;
-                AfxThrowUserException();
+                throw std::exception();
             }
 
             if (int32_t(node.m_Arguments[0].m_Opcode.GetArgument()) > m_GlobalVarsNames.size() - 1)
             {
                 printf("Error: Invalid index of global variable\n");
-                AfxThrowUserException();
+                throw std::exception();
             }
 
             strResult = m_GlobalVarsNames[node.m_Arguments[0].m_Opcode.GetArgument()];
@@ -603,13 +601,13 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
             if (node.m_Arguments[1].m_Opcode.GetOperator() != COpcode::O_INTOP)
             {
                 printf("Error: Invalid argument to O_STORE_GLOBAL opcode\n");
-                AfxThrowUserException();
+                throw std::exception();
             }
 
             if (int32_t(node.m_Arguments[1].m_Opcode.GetArgument()) > m_GlobalVarsNames.size() - 1)
             {
                 printf("Error: Invalid index of global variable\n");
-                AfxThrowUserException();
+                throw std::exception();
             }
 
             strResult = m_GlobalVarsNames[node.m_Arguments[1].m_Opcode.GetArgument()];
@@ -624,7 +622,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
                 if ((wOperator != COpcode::O_STRINGOP) && (wOperator != COpcode::O_INTOP))
                 {
                     printf("Error: Invalid argument to O_FETCH_EXTERNAL opcode\n");
-                    AfxThrowUserException();
+                    throw std::exception();
                 }
             }
 
@@ -638,7 +636,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
                 if ((wOperator != COpcode::O_STRINGOP) && (wOperator != COpcode::O_INTOP))
                 {
                     printf("Error: Invalid argument to O_STORE_EXTERNAL opcode\n");
-                    AfxThrowUserException();
+                    throw std::exception();
                 }
             }
 
@@ -651,7 +649,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
             if (node.m_Arguments[0].m_Opcode.GetOperator() != COpcode::O_INTOP)
             {
                 printf("Error: Invalid argument to O_FETCH opcode\n");
-                AfxThrowUserException();
+                throw std::exception();
             }
 
             {
@@ -673,7 +671,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
             if (node.m_Arguments[1].m_Opcode.GetOperator() != COpcode::O_INTOP)
             {
                 printf("Error: Invalid argument to O_STORE opcode\n");
-                AfxThrowUserException();
+                throw std::exception();
             }
 
             {
@@ -883,7 +881,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
             if (node.m_Arguments[0].m_Opcode.GetOperator() != COpcode::O_INTOP)
             {
                 printf("Error: Invalid argument to O_CANCEL opcode\n");
-                AfxThrowUserException();
+                throw std::exception();
             }
 
             strResult = "cancel(";
@@ -918,7 +916,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
                 if (node.m_Arguments.GetSize() != 3)
                 {
                     printf("Error: Invalid number of arguments in conditional expression\n");
-                    AfxThrowUserException();
+                    throw std::exception();
                 }
                 std::string sPostfix[] = { " if ", " else ", ""};
                 strResult = "";
@@ -1021,13 +1019,11 @@ std::string CFalloutScript::GetSource( CNode& node, bool bLabel, uint32_t ulNumA
                 {
                     strArgument = m_Namespace[m_ProcTable[node.m_Arguments[nArgIndex].m_Opcode.GetArgument()].m_ulNameOffset];
                 }
-
-                catch(UserException& e)
+                catch(const std::exception& e)
                 {
                     printf("Warning: Restoration after exception. Object name replaced with '/* Fake object name */'\n");
                     strArgument = format("/* Fake object name: %u (%d)*/", node.m_Arguments[nArgIndex].m_Opcode.GetArgument(), node.m_Arguments[nArgIndex].m_Opcode.GetArgument());
                 }
-
             }
             else
             {

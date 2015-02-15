@@ -82,7 +82,7 @@ void CProcDescriptor::Serialize(CArchive& ar)
     if (uiTotalRead != (sizeof(uint32_t) * 6))
     {
         printf("Error: Unable read procedure descriptor\n");
-        AfxThrowUserException();
+        throw std::exception();
     }
 }
 
@@ -201,7 +201,7 @@ void CProcTable::Serialize(CArchive& ar)
     if (ulRead != sizeof(ulSizeOfTable))
     {
         printf("Error: Unable read size of procedures table\n");
-        AfxThrowUserException();
+        throw std::exception();
     }
 
     m_Table.SetSize(ulSizeOfTable);
@@ -212,8 +212,7 @@ void CProcTable::Serialize(CArchive& ar)
 
     if (pOffsets == NULL)
     {
-//        AfxThrowMemoryException();
-        throw 1;
+        throw std::exception();
     }
 
     for(uint32_t i = 0; i < ulSizeOfTable; i++)
@@ -252,7 +251,7 @@ void CProcTable::Serialize(CArchive& ar)
         else
         {
             printf("Error: Procedures are not sorted in ascending address order\n");
-            AfxThrowUserException();
+            throw std::exception();
         }
     }
 
@@ -288,7 +287,7 @@ uint32_t CProcTable::GetSizeOfProc(int32_t nIndex)
     if ((nIndex < 0) || (nIndex > m_ProcSize.GetUpperBound()))
     {
         printf("Warning: Invalid index of procedure (%d). Exception will be thrown\n", nIndex);
-        AfxThrowUserException();
+        throw std::exception();
     }
 
     return m_ProcSize[nIndex];
@@ -320,7 +319,7 @@ CProcDescriptor& CProcTable::operator [] (int32_t nIndex)
     if ((nIndex < 0) || (nIndex > m_ProcSize.GetUpperBound()))
     {
         printf("Warning: Invalid index of procedure (%d). Exception will be thrown\n", nIndex);
-        AfxThrowUserException();
+        throw std::exception();
     }
 
     return m_Table[nIndex];

@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    catch (const UserException& e)
+    catch (const std::exception& e)
     {
         // Error message already displayed
         if (g_bStopOnError == true)
