@@ -4,7 +4,6 @@
 #include <fstream>
 
 #include "../Hacks/Types.h"
-#include "../Hacks/CString.h"
 
 class CFile
 {
@@ -25,7 +24,7 @@ class CFile
 
         CFile();
 
-        bool Open(CString name, unsigned int mode);
+        bool Open(std::string name, unsigned int mode);
         ULONG GetPosition();
         void Seek(ULONG position, unsigned int mode);
         ULONG GetLength();

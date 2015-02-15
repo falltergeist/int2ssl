@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "FalloutScript.h"
 #include "ObjectAttributes.h"
+#include "Utility.h"
 
 #include <iostream>
+#include <algorithm>
 
 // Globals
 extern BOOL g_bIgnoreWrongNumOfArgs;
@@ -12,7 +14,7 @@ void CFalloutScript::InitDefinitions()
 {
     ULONG ulNameOffset;
     INT_PTR nObjectIndex;
-    CString c_strGlobalVarTemplate("GVar%u");
+    std::string c_strGlobalVarTemplate("GVar%u");
 
 
     m_Definitions.RemoveAll();
@@ -34,11 +36,11 @@ void CFalloutScript::InitDefinitions()
         }
     }
 
-    m_GlobalVarsNames.SetSize(m_GlobalVar.GetSize());
+    m_GlobalVarsNames.resize(m_GlobalVar.GetSize());
 
-    for(INT_PTR i = 0; i < m_GlobalVarsNames.GetSize(); i++)
+    for(INT_PTR i = 0; i < m_GlobalVarsNames.size(); i++)
     {
-        m_GlobalVarsNames[i].Format(c_strGlobalVarTemplate.c_str(), i);
+        m_GlobalVarsNames[i] = format(c_strGlobalVarTemplate, i);
     }
 }
 
@@ -112,15 +114,15 @@ void CFalloutScript::ProcessCode()
 INT_PTR CFalloutScript::GetIndexOfProc(const char* lpszName)
 {
     INT_PTR nResult = -1;
-    CString strName(lpszName);
-    CString strTestName;
+    std::string strName(lpszName);
+    std::string strTestName;
 
-    strName.MakeLower();
+    std::transform(strName.begin(), strName.end(), strName.begin(), ::tolower);
 
     for(INT_PTR i = 0; i < m_ProcTable.GetSize(); i++)
     {
         strTestName = m_Namespace[m_ProcTable[i].m_ulNameOffset];
-        strTestName.MakeLower();
+        std::transform(strTestName.begin(), strTestName.end(), strTestName.begin(), ::tolower);
 
         if (strTestName == strName)
         {

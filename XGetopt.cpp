@@ -154,12 +154,12 @@
 
 #include <cstring>
 
-TCHAR	*optarg;		// global argument pointer
+char	*optarg;		// global argument pointer
 int		optind = 0; 	// global argv index
 
-int getopt(int argc, TCHAR *argv[], TCHAR *optstring)
+int getopt(int argc, char *argv[], char *optstring)
 {
-	static TCHAR *next = NULL;
+    static char *next = NULL;
 	if (optind == 0)
 		next = NULL;
 
@@ -192,8 +192,8 @@ int getopt(int argc, TCHAR *argv[], TCHAR *optstring)
 		optind++;
 	}
 
-	TCHAR c = *next++;
-    TCHAR *cp = strchr(optstring, c);
+    char c = *next++;
+    char *cp = strchr(optstring, c);
 
     if (cp == NULL || c == ':')
         return '?';

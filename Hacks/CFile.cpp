@@ -6,7 +6,7 @@ CFile::CFile()
 {
 }
 
-bool CFile::Open(CString name, unsigned int mode)
+bool CFile::Open(std::string name, unsigned int mode)
 {
     _mode = (mode & modeRead ? modeRead : modeWrite);
 

@@ -104,7 +104,7 @@ void CFalloutScript::Serialize(CArchive& ar)
     // # of argument to 'start' procedure
     printf("    Check \"# of argument to \'start\' procedure\"\n");
 
-    CString strNumOfArgsWarning("Warning: Omitted  \"# of argument to \'start\' procedure\"\n");
+    std::string strNumOfArgsWarning = "Warning: Omitted  \"# of argument to \'start\' procedure\"\n";
 
     if (!HeaderTail.IsEmpty())
     {

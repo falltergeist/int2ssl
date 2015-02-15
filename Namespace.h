@@ -15,17 +15,17 @@ public:
 
 public:
     INT_PTR GetSize() const;
-    CString GetStringByIndex(INT_PTR nIndex) ;
+    std::string GetStringByIndex(INT_PTR nIndex) ;
     ULONG GetOffsetByIndex(INT_PTR nIndex) ;
 
     void Dump(CArchive& ar);
 
 public:
-    CString operator [] (ULONG ulOffset) const;
+    std::string operator [] (ULONG ulOffset) const;
 
 private:
     // CMapDWordToString
-    typedef CMap<DWORD, DWORD, CString, LPCTSTR> CMapDWordToString;
+    typedef CMap<DWORD, DWORD, std::string, LPCTSTR> CMapDWordToString;
 
     CMapDWordToString m_Map;
     CDWordArray m_Order;

@@ -8,15 +8,7 @@
 #include "Hacks/Types.h"
 #include "Hacks/CArray.h"
 
-class CString;
-
-
 class CDWordArray : public CArray<WORD, WORD>
-{
-
-};
-
-class CStringArray : public CArray<CString, CString>
 {
 
 };

@@ -6,6 +6,8 @@
 #include "Namespace.h"
 #include "Node.h"
 
+#include <vector>
+
 class CFalloutScript
 {
 public:
@@ -59,10 +61,10 @@ private:
     void StoreDefinitions(CArchive& ar);
     void StoreDeclarations(CArchive& ar);
 
-    CString GetSource( CNode& node, BOOL bLabel, ULONG ulNumArgs);
-    CString GetSource( CNode& node, BOOL bLabel, ULONG ulNumArgs, ULONG aulProcArg[], ULONG ulProcArgCount);
+    std::string GetSource( CNode& node, BOOL bLabel, ULONG ulNumArgs);
+    std::string GetSource( CNode& node, BOOL bLabel, ULONG ulNumArgs, ULONG aulProcArg[], ULONG ulProcArgCount);
     bool ArgNeedParens(const CNode& node, const CNode& argument, CFalloutScript::Assoc assoc = CFalloutScript::NON_ASSOC);
-    CString GetIndentString(INT_PTR nLevel);
+    std::string GetIndentString(INT_PTR nLevel);
 
     int GetPriority(WORD wOperator);
     Assoc GetAssociation(WORD wOperator);
@@ -108,7 +110,7 @@ private:
     CArrayOfNodeArray m_Conditions;
 
     CMapULongToDefObject m_Definitions;
-    CStringArray m_GlobalVarsNames;
+    std::vector<std::string> m_GlobalVarsNames;
 };
 
 #endif

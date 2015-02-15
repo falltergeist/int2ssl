@@ -3,7 +3,6 @@
 #include "Utility.h"
 #include "ObjectAttributes.h"
 
-#include "Hacks/CString.h"
 #include <iostream>
 
 CProcDescriptor::CProcDescriptor() :
@@ -76,8 +75,8 @@ void CProcDescriptor::Serialize(CArchive& ar)
 
 void CProcDescriptor::Dump(CArchive& ar)
 {
-    CString strOutLine;
-    CString strType;
+    std::string strOutLine;
+    std::string strType;
 
     if (m_ulType != 0x00000000)
     {
@@ -113,17 +112,17 @@ void CProcDescriptor::Dump(CArchive& ar)
         strType = "No special types";
     }
 
-    strOutLine.Format("Name offset:       0x%08X\n", m_ulNameOffset);
+    strOutLine = format("Name offset:       0x%08X\n", m_ulNameOffset);
     ar.WriteString(strOutLine);
-    strOutLine.Format("Type:              0x%08X  // %s\n", m_ulType, strType.c_str());
+    strOutLine = format("Type:              0x%08X  // %s\n", m_ulType, strType.c_str());
     ar.WriteString(strOutLine);
-    strOutLine.Format("Time:              0x%08X  // %d\n", m_ulTime, m_ulTime);
+    strOutLine = format("Time:              0x%08X  // %d\n", m_ulTime, m_ulTime);
     ar.WriteString(strOutLine);
-    strOutLine.Format("Expression offset: 0x%08X\n", m_ulExpressionOffset);
+    strOutLine = format("Expression offset: 0x%08X\n", m_ulExpressionOffset);
     ar.WriteString(strOutLine);
-    strOutLine.Format("Body offset:       0x%08X\n", m_ulBodyOffset);
+    strOutLine = format("Body offset:       0x%08X\n", m_ulBodyOffset);
     ar.WriteString(strOutLine);
-    strOutLine.Format("Number of args:    0x%08X  // %d\n", m_ulNumArgs, m_ulNumArgs);
+    strOutLine = format("Number of args:    0x%08X  // %d\n", m_ulNumArgs, m_ulNumArgs);
     ar.WriteString(strOutLine);
 }
 
@@ -290,11 +289,11 @@ ULONG CProcTable::GetOffsetOfProcSection()
 
 void CProcTable::Dump(CArchive& ar)
 {
-    CString strOutLine;
+    std::string strOutLine;
 
     for(unsigned int i = 0; i < m_Table.GetSize(); i++)
     {
-        strOutLine.Format("======== Procedure %d ========\n", i);
+        strOutLine = format("======== Procedure %d ========\n", i);
 
         ar.WriteString(strOutLine);
         m_Table[i].Dump(ar);

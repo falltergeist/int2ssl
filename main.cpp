@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "FalloutScript.h"
 #include "XGetopt.h"
+#include "Utility.h"
 #include <iostream>
 
 using namespace std;
@@ -8,57 +9,40 @@ using namespace std;
 // Globals
 BOOL g_bDump = FALSE;
 int g_nFalloutVersion = 2;
-CString g_strIndentFill("\t");
+std::string  g_strIndentFill("\t");
 BOOL g_bIgnoreWrongNumOfArgs = FALSE;
 BOOL g_bInsOmittedArgsBackward = FALSE;
 BOOL g_bStopOnError = FALSE;
 
-CString g_strInputFileName;
-CString g_strOutputFileName;
+std::string g_inputFileName;
+std::string g_outputFileName;
 
 
 // Functions
-void PrintUsage(char* lpszFileName);
+void PrintUsage(std::string filename);
 BOOL ProcessCommandLine(int argc, char* argv[]);
 
 int main(int argc, char* argv[])
 { 
-    int nRetCode = 0;
+    std::cout << "Fallout script decompiler, version 8.3.0 (sfall edition)" << std::endl
+              << "Copyright (C) Anchorite (TeamX), 2005-2009" << std::endl
+              << "anchorite2001@yandex.ru" << std::endl
+              << "Continued by Nirran, phobos2077 (2014-2015)" << std::endl
+              << "Crossplatformed by alexeevdv (2015)" << std::endl;
 
-
-    printf("Fallout script decompiler, version 8.3.0 (sfall edition)\n");
-    printf("Copyright (C) Anchorite (TeamX), 2005-2009\n");
-    printf("anchorite2001@yandex.ru\n");
-    printf("Continued by Nirran, phobos2077 (2014-2015)\n");
-    printf("Usage: int2ssl.exe [options] [-s value] file.int [file.ssl]\n");
-    printf("Example: int2ssl.exe -d-1-a-b-e-s3 random.int\n");
-    printf("  -d: dump file\n");
-    printf("  -1: input file is Fallout 1 script\n");
-    printf("  -a: ignore wrong number of arguments\n");
-    printf("  -b: insert omitted arguments backward\n");
-    printf("  -s: use Space instead of tab to indent\n");
-    printf("  -e: stop decompiling on error\n");
-    printf("  --: end of options\n");
-    printf("\n");
-
-    if (argc < 2)
+    if (argc < 2 || !ProcessCommandLine(argc, argv))
     {
         PrintUsage(argv[0]);
         cin.get();
         return 1;
     }
 
-    if (!ProcessCommandLine(argc, argv))
-    {
-      return 1;
-    }
-
     CFile fileInput;
     CFile fileOutput;
 
-    if (!fileInput.Open(g_strInputFileName, CFile::modeRead | CFile::shareDenyWrite))
+    if (!fileInput.Open(g_inputFileName, CFile::modeRead | CFile::shareDenyWrite))
     {
-        printf("Error: Unable open input file %s.\n", g_strInputFileName.c_str());
+        printf("Error: Unable open input file %s.\n", g_inputFileName.c_str());
         if (g_bStopOnError == TRUE)
         {
             printf("Press ENTER to continue.\n");
@@ -67,12 +51,12 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    if (!fileOutput.Open(g_strOutputFileName, CFile::modeCreate | CFile::modeWrite | CFile::typeText | CFile::shareDenyWrite))
+    if (!fileOutput.Open(g_outputFileName, CFile::modeCreate | CFile::modeWrite | CFile::typeText | CFile::shareDenyWrite))
     {
-        printf("Error: Unable open output file %s.\n", g_strOutputFileName.c_str());
+        std::cout << format("Error: Unable open output file %s", g_outputFileName) << std::endl;
         if (g_bStopOnError == TRUE)
         {
-            printf("Press ENTER to continue.\n");
+            std::cout << "Press ENTER to continue." << std::endl;
             cin.get();
         }
         return 1;
@@ -83,24 +67,24 @@ int main(int argc, char* argv[])
         CArchive arInput(&fileInput, CArchive::load);
         CFalloutScript Script;
 
-        printf("Loading file %s...\n", g_strInputFileName.c_str());
+        std::cout << format("Loading file %s...", g_inputFileName) << std::endl;
         Script.Serialize(arInput);
 
-        printf("File %s loaded successfuly\n", g_strInputFileName.c_str());
-        printf("\n");
+        std::cout << format("File %s loaded successfuly", g_inputFileName) << std::endl
+                  << std::endl;
 
         CArchive arOutput(&fileOutput, CArchive::store);
 
         if (g_bDump)
         {
-            printf("Dumping...\n", g_strInputFileName.c_str());
+            std::cout << format("Dumping %s...", g_inputFileName) << std::endl;
             Script.Dump(arOutput);
 
-            printf("File %s dumped successfuly\n", g_strInputFileName.c_str());
+            std::cout << format("File %s dumped successfuly", g_inputFileName) << std::endl;
         }
         else
         {
-            printf("Decompiling...\n");
+            std::cout << "Decompiling..." << std::endl;
 
             printf("  Init definitions\n");
             Script.InitDefinitions();
@@ -110,7 +94,7 @@ int main(int argc, char* argv[])
 
             printf("  Storing sources\n");
             Script.StoreSource(arOutput);
-            printf("File %s decompiled successfuly\n", g_strInputFileName.c_str());
+            std::cout << format("File %s decompiled successfuly\n", g_inputFileName) << std::endl;
         }
     }
 
@@ -144,19 +128,19 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-void PrintUsage(char* lpszFileName)
+void PrintUsage(std::string filename)
 {
-    printf("Usage: int2ssl.exe [options] [-s value] file.int [file.ssl]\n");
-    printf("Example: int2ssl.exe -d-1-a-b-e-s3 random.int\n");
-    printf("\n");
-    printf("Options\n");
-    printf("  -d: dump file\n");
-    printf("  -1: input file is Fallout 1 script\n");
-    printf("  -a: ignore wrong number of arguments\n");
-    printf("  -b: insert omitted arguments backward\n");
-    printf("  -s: use Space instead of tab to indent\n");
-    printf("  -e: stop decompiling on error\n");
-    printf("  --: end of options\n");
+    std::cout << "Usage: " << filename <<  " [options] [-s value] file.int [file.ssl]" << std::endl
+              << "Example: " << filename << " -d-1-a-b-e-s3 random.int" << std::endl
+              << std::endl
+              << "Options" << std::endl
+              << "  -d: dump file" << std::endl
+              << "  -1: input file is Fallout 1 script" << std::endl
+              << "  -a: ignore wrong number of arguments" << std::endl
+              << "  -b: insert omitted arguments backward" << std::endl
+              << "  -s: use Space instead of tab to indent" << std::endl
+              << "  -e: stop decompiling on error" << std::endl
+              << "  --: end of options" << std::endl;
 }
 
 BOOL ProcessCommandLine(int argc, char* argv[])
@@ -223,34 +207,32 @@ BOOL ProcessCommandLine(int argc, char* argv[])
         return FALSE;
     }
 
-    g_strInputFileName = argv[optind];
+    g_inputFileName = argv[optind];
     optind++;
 
     if (optind < argc)
     {
-        g_strOutputFileName = argv[optind];
+        g_outputFileName = argv[optind];
     }
     else
     {
-        std::string outputFileName = g_strInputFileName.str();
-        std::string extension = outputFileName.substr(outputFileName.length() - 4);
+        g_outputFileName = g_inputFileName;
+
+        std::string extension = g_outputFileName.substr(g_outputFileName.length() - 4);
 
         if (extension == ".int")
         {
-            outputFileName = outputFileName.substr(0, outputFileName.length() - 4);
+            g_outputFileName = g_outputFileName.substr(0, g_outputFileName.length() - 4);
         }
-
-        g_strOutputFileName = g_strInputFileName;
 
         if (g_bDump)
         {
-            outputFileName += ".dump";
+            g_outputFileName += ".dump";
         }
         else
         {
-            outputFileName += ".ssl";
+            g_outputFileName += ".ssl";
         }
-        g_strOutputFileName = outputFileName;
     }
     return TRUE;
 }

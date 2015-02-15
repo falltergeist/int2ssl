@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Node.h"
+#include "Utility.h"
 
 CNode::CNode(Type type) :
     m_ulOffset(0),
@@ -57,7 +58,7 @@ void CNode::StoreTree(CArchive& ar, int nIndent, int nIndex)
     }
 
     // Node
-    CString strOutLine;
+    std::string strOutLine;
     WORD wOperator = m_Opcode.GetOperator();
     ULONG ulArgument = m_Opcode.GetArgument();
 
@@ -65,21 +66,21 @@ void CNode::StoreTree(CArchive& ar, int nIndent, int nIndex)
     {
         case COpcode::O_STRINGOP:
         case COpcode::O_INTOP:
-            strOutLine.Format("0x%04X 0x%08x ", 
+            strOutLine = format("0x%04X 0x%08x ",
                               wOperator,
                               ulArgument);
             ar.WriteString(strOutLine);
             break;
 
         case COpcode::O_FLOATOP:
-            strOutLine.Format("0x%04X 0x%08X ",
+            strOutLine = format("0x%04X 0x%08X ",
                                 wOperator,
                                 ulArgument);
             ar.WriteString(strOutLine);
             break;
 
         default:
-            strOutLine.Format("0x%04X .......... ", 
+            strOutLine = format("0x%04X .......... ",
                                 wOperator);
             ar.WriteString(strOutLine);
     }

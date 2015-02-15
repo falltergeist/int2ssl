@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "FalloutScript.h"
+#include "Utility.h"
 
 void CFalloutScript::Dump(CArchive& ar)
 {
@@ -20,7 +21,7 @@ void CFalloutScript::Dump(CArchive& ar)
     ar.WriteString("\n");
 
 
-    CString strOutLine;
+    std::string strOutLine;
     WORD wOperator;
     ULONG ulArgument = 0;
 
@@ -41,7 +42,7 @@ void CFalloutScript::Dump(CArchive& ar)
             {
                 case COpcode::O_STRINGOP:
                 case COpcode::O_INTOP:
-                    strOutLine.Format("%d: %s(0x%08x)   // %u (%d)\n", 
+                    strOutLine = format("%d: %s(0x%08x)   // %u (%d)\n",
                                     i,
                                     m_GlobalVar[i].GetAttributes().m_strMnemonic.c_str(),
                                     ulArgument,
@@ -51,7 +52,7 @@ void CFalloutScript::Dump(CArchive& ar)
                     break;
 
                 case COpcode::O_FLOATOP:
-                    strOutLine.Format("%d: %s(0x%08x)   // %05f\n", 
+                    strOutLine = format("%d: %s(0x%08x)   // %05f\n",
                                     i,
                                     m_GlobalVar[i].GetAttributes().m_strMnemonic.c_str(),
                                     ulArgument,
@@ -81,14 +82,14 @@ void CFalloutScript::Dump(CArchive& ar)
             switch(wOperator)
             {
                 case COpcode::O_STRINGOP:
-                    strOutLine.Format("%s := \"%s\"\n", 
+                    strOutLine = format("%s := \"%s\"\n",
                                     m_Namespace[ulNameArgument].c_str(),
                                     m_Stringspace[ulArgument].c_str());
                     ar.WriteString(strOutLine);
                     break;
 
                 case COpcode::O_INTOP:
-                    strOutLine.Format("%s := %u (%d)\n", 
+                    strOutLine = format("%s := %u (%d)\n",
                                     m_Namespace[ulNameArgument].c_str(),
                                     ulArgument,
                                     ulArgument); 
@@ -96,7 +97,7 @@ void CFalloutScript::Dump(CArchive& ar)
                     break;
 
                 case COpcode::O_FLOATOP:
-                    strOutLine.Format("%s := %05f\n", 
+                    strOutLine = format("%s := %05f\n",
                                     m_Namespace[ulNameArgument].c_str(),
                                     *((float*)(&ulArgument)));
                     ar.WriteString(strOutLine);
@@ -112,7 +113,7 @@ void CFalloutScript::Dump(CArchive& ar)
 
     for(INT_PTR nIndexOfProc = 0; nIndexOfProc < m_ProcTable.GetSize(); nIndexOfProc++)
     {
-        strOutLine.Format("%d: %s (0x%08x)\n", nIndexOfProc,
+        strOutLine = format("%d: %s (0x%08x)\n", nIndexOfProc,
                                                m_Namespace[m_ProcTable[nIndexOfProc].m_ulNameOffset].c_str(),
                                                m_ProcTable[nIndexOfProc].m_ulBodyOffset);
         ar.WriteString(strOutLine);
@@ -127,7 +128,7 @@ void CFalloutScript::Dump(CArchive& ar)
             {
                 case COpcode::O_STRINGOP:
                 case COpcode::O_INTOP:
-                    strOutLine.Format("0x%08X: 0x%04X 0x%08x - %s(0x%08x)   // %u (%d)\n", 
+                    strOutLine = format("0x%08X: 0x%04X 0x%08x - %s(0x%08x)   // %u (%d)\n",
                                       m_ProcBodies[nIndexOfProc][i].m_ulOffset,
                                       wOperator,
                                       ulArgument,
@@ -139,7 +140,7 @@ void CFalloutScript::Dump(CArchive& ar)
                     break;
 
                 case COpcode::O_FLOATOP:
-                    strOutLine.Format("0x%08X: 0x%04X 0x%08X - %s // %05f\n",
+                    strOutLine = format("0x%08X: 0x%04X 0x%08X - %s // %05f\n",
                                       m_ProcBodies[nIndexOfProc][i].m_ulOffset,
                                       wOperator,
                                       ulArgument,
@@ -149,7 +150,7 @@ void CFalloutScript::Dump(CArchive& ar)
                     break;
 
                 default:
-                    strOutLine.Format("0x%08X: 0x%04X            - %s\n", 
+                    strOutLine = format("0x%08X: 0x%04X            - %s\n",
                                       m_ProcBodies[nIndexOfProc][i].m_ulOffset,
                                       wOperator, 
                                       m_ProcBodies[nIndexOfProc][i].m_Opcode.GetAttributes().m_strMnemonic.c_str());

@@ -1,7 +1,6 @@
 #ifndef OPCODE_H
 #define OPCODE_H
 
-#include "Hacks/CString.h"
 #include "Hacks/CArchive.h"
 #include "Hacks/CMap.h"
 
@@ -787,8 +786,8 @@ public:
         void InitAttributes();
 
     public:
-        CString m_strMnemonic;
-        CString m_strName;
+        std::string m_strMnemonic;
+        std::string m_strName;
         ULONG m_ulNumArgs;
         Type m_Type;
         Category m_Category;

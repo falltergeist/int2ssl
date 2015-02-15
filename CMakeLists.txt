@@ -6,8 +6,6 @@ project(int2ssl)
 
 set(SOURCES main.cpp
 Hacks/Types.h
-Hacks/CString.h
-Hacks/CString.cpp
 Hacks/CArray.h
 Hacks/CArray.cpp
 Hacks/CArchive.h

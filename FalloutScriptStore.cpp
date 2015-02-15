@@ -2,19 +2,23 @@
 #include "FalloutScript.h"
 #include "ObjectAttributes.h"
 
+#include "Utility.h"
+
+#include <iostream>
+
 // Globals
-extern CString g_strIndentFill;
+extern std::string g_strIndentFill;
 
 void CFalloutScript::StoreTree(CArchive& ar)
 {
-    CString strOutLine;
+    std::string strOutLine;
 
     ar.WriteString("============== Procedures ==================\n");
     ar.WriteString("\n");
 
     for(INT_PTR nIndexOfProc = 0; nIndexOfProc < m_ProcTable.GetSize(); nIndexOfProc++)
     {
-        strOutLine.Format("%d: %s (0x%08x)\n", nIndexOfProc, m_Namespace[m_ProcTable[nIndexOfProc].m_ulNameOffset].c_str(), m_ProcTable[nIndexOfProc].m_ulBodyOffset);
+        strOutLine = format("%d: %s (0x%08x)\n", nIndexOfProc, m_Namespace[m_ProcTable[nIndexOfProc].m_ulNameOffset].c_str(), m_ProcTable[nIndexOfProc].m_ulBodyOffset);
         ar.WriteString(strOutLine);
         ar.WriteString("===============================\n");
 
@@ -25,7 +29,7 @@ void CFalloutScript::StoreTree(CArchive& ar)
 
             for(INT_PTR i = 0; i < m_Conditions[nIndexOfProc].GetSize(); i++)
             {
-                strOutLine.Format("0x%08X: ", m_Conditions[nIndexOfProc][i].m_ulOffset);
+                strOutLine = format("0x%08X: ", m_Conditions[nIndexOfProc][i].m_ulOffset);
                 ar.WriteString(strOutLine);
                 m_Conditions[nIndexOfProc][i].StoreTree(ar, 0, 0);
             }
@@ -37,7 +41,7 @@ void CFalloutScript::StoreTree(CArchive& ar)
 
         for(INT_PTR i = 0; i < m_ProcBodies[nIndexOfProc].GetSize(); i++)
         {
-            strOutLine.Format("0x%08X: ", m_ProcBodies[nIndexOfProc][i].m_ulOffset);
+            strOutLine = format("0x%08X: ", m_ProcBodies[nIndexOfProc][i].m_ulOffset);
             ar.WriteString(strOutLine);
             m_ProcBodies[nIndexOfProc][i].StoreTree(ar, 0, 0);
         }
@@ -57,15 +61,15 @@ void CFalloutScript::StoreSource(CArchive& ar)
 
 void CFalloutScript::StoreDefinitions(CArchive& ar)
 {
-    CString c_strBogusProcedureName("..............");
-    CString c_strArgumentTemplate("arg%u");
+    std::string c_strBogusProcedureName("..............");
+    std::string c_strArgumentTemplate("arg%u");
 
     printf("    Storing definitions\n");
 
     // Unnamed global variables
     INT_PTR nNamesCount = m_Namespace.GetSize();
     INT_PTR nDefinitionsCount = m_Definitions.GetSize();
-    CString strDefinition;
+    std::string strDefinition;
     ULONG ulVarValue;
 
     if (nNamesCount != nDefinitionsCount)
@@ -86,17 +90,17 @@ void CFalloutScript::StoreDefinitions(CArchive& ar)
             switch(m_GlobalVar[i].GetOperator())
             {
                 case COpcode::O_STRINGOP:
-                    strDefinition.Format(strDefinition + " := \"%s\"", m_Stringspace[ulVarValue].c_str());
+                    strDefinition = format(strDefinition + " := \"%s\"", m_Stringspace[ulVarValue].c_str());
                     break;
 
                 case COpcode::O_FLOATOP:
-                    strDefinition.Format(strDefinition + " := %.5f", *((float*)(&ulVarValue)));
+                    strDefinition = format(strDefinition + " := %.5f", *((float*)(&ulVarValue)));
                     break;
 
                 case COpcode::O_INTOP:
                     if (ulVarValue != 0)
                     {
-                        strDefinition.Format(strDefinition + " := %d", (long)ulVarValue);
+                        strDefinition = format(strDefinition + " := %d", (long)ulVarValue);
                     }
                     break;
             }
@@ -105,7 +109,7 @@ void CFalloutScript::StoreDefinitions(CArchive& ar)
 
             if ((m_GlobalVar[i].GetOperator() == COpcode::O_INTOP) && (ulVarValue & 0x80000000))
             {
-                strDefinition.Format(strDefinition + " /* (%d) */", ulVarValue);
+                strDefinition = format(strDefinition + " /* (%d) */", ulVarValue);
             }
 
             ar.WriteString(strDefinition + "\n");
@@ -188,11 +192,11 @@ void CFalloutScript::StoreDefinitions(CArchive& ar)
                         {
                             if (i == 0)
                             {
-                                strDefinition.Format(strDefinition + "variable " + c_strArgumentTemplate.c_str(), i);
+                                strDefinition = format(strDefinition + "variable " + c_strArgumentTemplate.c_str(), i);
                             }
                             else
                             {
-                                strDefinition.Format(strDefinition + ", variable " + c_strArgumentTemplate.c_str(), i);
+                                strDefinition = format(strDefinition + ", variable " + c_strArgumentTemplate.c_str(), i);
                             }
                         }
 
@@ -232,17 +236,17 @@ void CFalloutScript::StoreDefinitions(CArchive& ar)
                         switch(defObject.m_ulAttributes & 0xFFFF)
                         {
                             case COpcode::O_STRINGOP:
-                                strDefinition.Format(strDefinition + " := \"%s\"", m_Stringspace[defObject.m_ulVarValue].c_str());
+                                strDefinition = format(strDefinition + " := \"%s\"", m_Stringspace[defObject.m_ulVarValue].c_str());
                                 break;
 
                             case COpcode::O_FLOATOP:
-                                strDefinition.Format(strDefinition + " := %.5f", *((float*)(&defObject.m_ulVarValue)));
+                                strDefinition = format(strDefinition + " := %.5f", *((float*)(&defObject.m_ulVarValue)));
                                 break;
 
                             case COpcode::O_INTOP:
                                 if (defObject.m_ulVarValue != 0)
                                 {
-                                    strDefinition.Format(strDefinition + " := %d", (long)defObject.m_ulVarValue);
+                                    strDefinition = format(strDefinition + " := %d", (long)defObject.m_ulVarValue);
                                 }
                                 break;
                         }
@@ -271,13 +275,13 @@ void CFalloutScript::StoreDefinitions(CArchive& ar)
 
 void CFalloutScript::StoreDeclarations(CArchive& ar)
 {
-    CString c_strBogusProcedureName("..............");
-    CString c_strArgumentTemplate("arg%u");
-    CString c_strLocalVarTemplate("LVar%u");
+    std::string c_strBogusProcedureName("..............");
+    std::string c_strArgumentTemplate("arg%u");
+    std::string c_strLocalVarTemplate("LVar%u");
 
     printf("    Storing declarations\n");
 
-    CString strOutLine;
+    std::string strOutLine;
 
     for(INT_PTR i = 0; i < m_ProcTable.GetSize(); i++)
     {
@@ -298,7 +302,7 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
             strOutLine = "*    Name: ";
             strOutLine+= m_Namespace[m_ProcTable[i].m_ulNameOffset];
 
-            while(strOutLine.GetLength() <  55)
+            while(strOutLine.length() <  55)
             {
                 strOutLine += " ";
             }
@@ -319,7 +323,7 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
                         strOutLine = "*       ";
                         strOutLine+= m_Namespace[m_ProcTable[j].m_ulNameOffset];
 
-                        while(strOutLine.GetLength() <  55)
+                        while(strOutLine.length() <  55)
                         {
                             strOutLine += " ";
                         }
@@ -364,11 +368,11 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
             {
                 if (i == 0)
                 {
-                    strOutLine.Format(strOutLine + "variable " + c_strArgumentTemplate.c_str(), i);
+                    strOutLine = format(strOutLine + "variable " + c_strArgumentTemplate.c_str(), i);
                 }
                 else
                 {
-                    strOutLine.Format(strOutLine + ", variable " + c_strArgumentTemplate.c_str(), i);
+                    strOutLine = format(strOutLine + ", variable " + c_strArgumentTemplate.c_str(), i);
                 }
             }
 
@@ -377,11 +381,11 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
 
         if (procDescriptor.m_ulType & P_TIMED)
         {
-            strOutLine.Format(strOutLine + " in %d", procDescriptor.m_ulTime);
+            strOutLine = format(strOutLine + " in %d", procDescriptor.m_ulTime);
         }
         else if (procDescriptor.m_ulType & P_CONDITIONAL)
         {
-            strOutLine.Format(strOutLine + " when (%s)", GetSource(m_Conditions[i][0], FALSE, procDescriptor.m_ulNumArgs).c_str());
+            strOutLine = format(strOutLine + " when (%s)", GetSource(m_Conditions[i][0], FALSE, procDescriptor.m_ulNumArgs).c_str());
         }
 
         ar.WriteString(strOutLine + "\n");
@@ -438,7 +442,7 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
                         std::string str = "variable ";
                         str += c_strLocalVarTemplate + " := ";
 
-                        strOutLine.Format(str.c_str(), ulLocalVarIndex);
+                        strOutLine = format(str.c_str(), ulLocalVarIndex);
                         ar.WriteString(GetIndentString(nIndentLevel) + strOutLine + GetSource(m_ProcBodies[i][nNodeIndex], FALSE, procDescriptor.m_ulNumArgs) + ";\n");
                         ulLocalVarIndex++;
                         break;
@@ -450,7 +454,7 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
                     case COpcode::O_WHILE:
                         if (m_ProcBodies[i][nNodeIndex].m_Type == CNode::TYPE_FOR_LOOP)
                         {
-                            CString str = GetIndentString(nIndentLevel) + "for (";
+                            std::string str = GetIndentString(nIndentLevel) + "for (";
                             for (INT_PTR j = 0; j < m_ProcBodies[i][nNodeIndex].m_Arguments.GetSize(); j++)
                             {
                                 if (j > 0)
@@ -484,16 +488,16 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
     }
 }
 
-CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
+std::string CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
 {
-    CString c_strArgumentTemplate("arg%u");
-    CString c_strLocalVarTemplate("LVar%u");
+    std::string c_strArgumentTemplate("arg%u");
+    std::string c_strLocalVarTemplate("LVar%u");
 
-    CString strResult("Damn!!!");
+    std::string strResult("Damn!!!");
 
     if (node.m_Type == CNode::TYPE_OMITTED_ARGUMENT)
     {
-        return CString("/* Omitted argument */");
+        return "/* Omitted argument */";
     }
 
     WORD wOperator = node.m_Opcode.GetOperator();
@@ -504,11 +508,11 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
     {
         if (node.m_Type == CNode::TYPE_BREAK)
         {
-            return CString("break");
+            return "break";
         }
         else if (node.m_Type == CNode::TYPE_CONTINUE)
         {
-            return CString("continue");
+            return "continue";
         }
     }
     switch(wOperator)
@@ -529,14 +533,14 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
 
             catch(UserException& e)
             {
-                printf("Warning: Restoration after exception. Object name replaced with '/* Fake object name */'\n");
+                std::cout << "Warning: Restoration after exception. Object name replaced with '/* Fake object name */'" << std::endl;
                 strResult = "/* Fake object name */";
             }
 
             break;
 
         case COpcode::O_FLOATOP:
-            strResult.Format("%.5f", *((float*)(&ulArgument)));
+            strResult = format("%.5f", *((float*)(&ulArgument)));
             break;
 
         case COpcode::O_INTOP:
@@ -548,13 +552,13 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
                 }
                 else
                 {
-                    strResult.Format("%d", (long)ulArgument);
+                    strResult = format("%d", (long)ulArgument);
                 }
             }
 
             catch(UserException& e)
             {
-                printf("Warning: Restoration after exception. Object name replaced with '/* Fake object name */'\n");
+                std::cout << "Warning: Restoration after exception. Object name replaced with '/* Fake object name */'" << std::endl;
                 strResult = "/* Fake object name */";
             }
             break;
@@ -571,11 +575,11 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
         case COpcode::O_FETCH_GLOBAL:
             if (node.m_Arguments[0].m_Opcode.GetOperator() != COpcode::O_INTOP)
             {
-                printf("Error: Invalid argument to O_FETCH_GLOBAL opcode\n");
+                std::cout << "Error: Invalid argument to O_FETCH_GLOBAL opcode" << std::endl;
                 AfxThrowUserException();
             }
 
-            if (INT_PTR(node.m_Arguments[0].m_Opcode.GetArgument()) > m_GlobalVarsNames.GetUpperBound())
+            if (INT_PTR(node.m_Arguments[0].m_Opcode.GetArgument()) > m_GlobalVarsNames.size() - 1)
             {
                 printf("Error: Invalid index of global variable\n");
                 AfxThrowUserException();
@@ -591,7 +595,7 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
                 AfxThrowUserException();
             }
 
-            if (INT_PTR(node.m_Arguments[1].m_Opcode.GetArgument()) > m_GlobalVarsNames.GetUpperBound())
+            if (INT_PTR(node.m_Arguments[1].m_Opcode.GetArgument()) > m_GlobalVarsNames.size() - 1)
             {
                 printf("Error: Invalid index of global variable\n");
                 AfxThrowUserException();
@@ -644,11 +648,11 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
 
                 if (ulVarNum < ulNumArgs)
                 {
-                    strResult.Format(c_strArgumentTemplate.c_str(), ulVarNum);
+                    strResult = format(c_strArgumentTemplate.c_str(), ulVarNum);
                 }
                 else
                 {
-                    strResult.Format(c_strLocalVarTemplate.c_str(), ulVarNum);
+                    strResult = format(c_strLocalVarTemplate.c_str(), ulVarNum);
                 }
             }
 
@@ -665,11 +669,11 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
                 ULONG ulVarNum = node.m_Arguments[1].m_Opcode.GetArgument();
                 if (ulVarNum < ulNumArgs)
                 {
-                    strResult.Format(c_strArgumentTemplate.c_str(), ulVarNum);
+                    strResult = format(c_strArgumentTemplate.c_str(), ulVarNum);
                 }
                 else
                 {
-                    strResult.Format(c_strLocalVarTemplate.c_str(), ulVarNum);
+                    strResult = format(c_strLocalVarTemplate.c_str(), ulVarNum);
                 }
                 strResult += " := ";
                 strResult += GetSource(node.m_Arguments[0], FALSE, ulNumArgs);
@@ -682,7 +686,7 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
 
             if (node.m_Arguments[0].m_Opcode.GetOperator() == COpcode::O_CALL)
             {
-                strResult = "call " + strResult.str();
+                strResult = "call " + strResult;
             }
 
             break;
@@ -905,12 +909,12 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
                     printf("Error: Invalid number of arguments in conditional expression\n");
                     AfxThrowUserException();
                 }
-                CString sPostfix[] = { CString(" if "), CString(" else "), CString("")};
+                std::string sPostfix[] = { " if ", " else ", ""};
                 strResult = "";
                 for(INT_PTR i = 0; i < node.m_Arguments.GetSize(); i++)
                 {
                     bool bParens = ArgNeedParens(node, node.m_Arguments[i], CFalloutScript::RIGHT_ASSOC);
-                    strResult += (bParens ? CString("(") : CString("")) + GetSource(node.m_Arguments[i], bLabel, ulNumArgs) + (bParens ? ")" : "") + sPostfix[i];
+                    strResult += (bParens ? "(" : "") + GetSource(node.m_Arguments[i], bLabel, ulNumArgs) + (bParens ? ")" : "") + sPostfix[i];
                 }
                 break;
             }
@@ -978,11 +982,11 @@ CString CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
     return strResult;
 }
 
-CString CFalloutScript::GetSource( CNode& node, BOOL bLabel, ULONG ulNumArgs, ULONG aulProcArg[], ULONG ulProcArgCount)
+std::string CFalloutScript::GetSource( CNode& node, BOOL bLabel, ULONG ulNumArgs, ULONG aulProcArg[], ULONG ulProcArgCount)
 {
     COpcode::COpcodeAttributes attributes = node.m_Opcode.GetAttributes();
-    CString strResult = attributes.m_strName + "(";
-    CString strArgument;
+    std::string strResult = attributes.m_strName + "(";
+    std::string strArgument;
     BOOL bIsProcArg;
 
     for(INT_PTR nArgIndex = 0; nArgIndex < node.m_Arguments.GetSize(); nArgIndex++)
@@ -1010,7 +1014,7 @@ CString CFalloutScript::GetSource( CNode& node, BOOL bLabel, ULONG ulNumArgs, UL
                 catch(UserException& e)
                 {
                     printf("Warning: Restoration after exception. Object name replaced with '/* Fake object name */'\n");
-                    strArgument.Format("/* Fake object name: %u (%d)*/", node.m_Arguments[nArgIndex].m_Opcode.GetArgument(), node.m_Arguments[nArgIndex].m_Opcode.GetArgument());
+                    strArgument = format("/* Fake object name: %u (%d)*/", node.m_Arguments[nArgIndex].m_Opcode.GetArgument(), node.m_Arguments[nArgIndex].m_Opcode.GetArgument());
                 }
 
             }
@@ -1040,9 +1044,9 @@ CString CFalloutScript::GetSource( CNode& node, BOOL bLabel, ULONG ulNumArgs, UL
     return strResult;
 }
 
-CString CFalloutScript::GetIndentString(INT_PTR nLevel)
+std::string CFalloutScript::GetIndentString(INT_PTR nLevel)
 {
-    CString strResult;
+    std::string strResult;
     
     for(; nLevel > 0; nLevel--)
     {

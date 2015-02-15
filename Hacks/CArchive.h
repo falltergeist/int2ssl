@@ -4,6 +4,8 @@
 #include "../Hacks/Types.h"
 #include "../Hacks/CFile.h"
 
+#include <fstream>
+
 class CArchive
 {
 protected:
@@ -19,9 +21,11 @@ public:
     CFile* GetFile();
 
     void WriteString(const char * value);
+    void WriteString(std::string value);
 
     ULONG Read(char * buffer, ULONG size);
 
+    std::ofstream* ofstream();
 
 };
 

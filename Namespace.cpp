@@ -5,8 +5,6 @@
 #include "Namespace.h"
 #include "Utility.h"
 
-#include "Hacks/CString.h"
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -40,11 +38,11 @@ void CNamespace::Serialize(CArchive& ar)
 
     ULONG ulTotalRead = 0;
     WORD wLengthOfString;
-    LPTSTR  lpszNewString;
+    char*  lpszNewString;
 
     while(ulTotalRead < ulLength)
     {
-        CString strNewString;
+        std::string strNewString;
 
         if (ReadMSBWord(ar, wLengthOfString) != 2)
         {
@@ -58,18 +56,19 @@ void CNamespace::Serialize(CArchive& ar)
             AfxThrowUserException();
         }
 
-        lpszNewString = strNewString.GetBuffer(wLengthOfString);
+        strNewString.resize(wLengthOfString);
+        lpszNewString = (char*)strNewString.data();
 
         if (ar.Read(lpszNewString, wLengthOfString) != wLengthOfString)
         {
-            strNewString.ReleaseBufferSetLength(0);
+            strNewString.resize(0);
             printf("Error: Unable read string in namespace\n");
             AfxThrowUserException();
         }
 
         if ((lpszNewString[wLengthOfString - 1] != '\x00') && (lpszNewString[wLengthOfString - 2] != '\x00'))
         {
-            strNewString.ReleaseBufferSetLength(0);
+            strNewString.resize(0);
             printf("Error: Invalid end of string in namespace\n");
             AfxThrowUserException();
         }
@@ -79,12 +78,12 @@ void CNamespace::Serialize(CArchive& ar)
 
 
         // Convert Nongraphic Characters to Escape sequence
-        CString strNonGraph("\\\a\b\f\n\r\t\"");
-        CString strEscape("\\abfnrt\"");
+        std::string strNonGraph("\\\a\b\f\n\r\t\"");
+        std::string strEscape("\\abfnrt\"");
 
-        for(int i = 0; i < strNonGraph.GetLength(); i++)
+        for(int i = 0; i < strNonGraph.length(); i++)
         {
-            strNewString.Replace(CString(strNonGraph[i]), CString("\\" + strEscape[i]));
+            strNewString = replace(strNewString, "" + strNonGraph[i], "\\" + strEscape[i]);
         }
 
         m_Map.SetAt(ulTotalRead + 6, strNewString);
@@ -120,7 +119,7 @@ INT_PTR CNamespace::GetSize() const
     return m_Map.GetSize();
 }
 
-CString CNamespace::GetStringByIndex(INT_PTR nIndex)
+std::string CNamespace::GetStringByIndex(INT_PTR nIndex)
 {
     return (this->operator [] (m_Order[nIndex]));
 }
@@ -132,7 +131,7 @@ ULONG CNamespace::GetOffsetByIndex(INT_PTR nIndex)
 
 void CNamespace::Dump(CArchive& ar)
 {
-    CString strOutLine;
+    std::string strOutLine;
 
     if (m_Order.IsEmpty())
     {
@@ -142,19 +141,19 @@ void CNamespace::Dump(CArchive& ar)
     {
         for(unsigned int i = 0; i < m_Order.GetSize(); i++)
         {
-            strOutLine.Format("0x%08X: \"%s\"\n", m_Order[i], GetStringByIndex(i).c_str());
+            strOutLine = format("0x%08X: \"%s\"\n", m_Order[i], GetStringByIndex(i).c_str());
             ar.WriteString(strOutLine);
         }
 
         ar.WriteString("==================\n");
-        strOutLine.Format("%d item(s)\n", m_Order.GetSize());
+        strOutLine = format("%d item(s)\n", m_Order.GetSize());
         ar.WriteString(strOutLine);
     }
 }
 
-CString CNamespace::operator [] (ULONG ulOffset) const
+std::string CNamespace::operator [] (ULONG ulOffset) const
 {
-    CString strResult;
+    std::string strResult;
 
     if (!m_Map.Lookup(ulOffset, strResult))
     {
