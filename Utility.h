@@ -12,14 +12,11 @@
 
 // C++ standard includes
 #include <stdarg.h>
+#include <string>
 
 // int2ssl includes
-#include "Hacks/CArchive.h"
 
 // Third party includes
-
-uint32_t ReadMSBWord(CArchive& ar, uint16_t& wValue);
-uint32_t ReadMSBULong(CArchive& ar, uint32_t& ulValue);
 
 std::string format(std::string format, ...);
 std::string format(std::string format, std::string value);

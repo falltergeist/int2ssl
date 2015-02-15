@@ -8,12 +8,18 @@
  */
 
 // C++ standard includes
+#include <iostream>
+#include <fstream>
+#include <algorithm>
 
 // int2ssl includes
 #include "Namespace.h"
 #include "Utility.h"
 
 // Third party includes
+
+extern std::ifstream g_ifstream;
+extern std::ofstream g_ofstream;
 
 CNamespace::CNamespace()
 {
@@ -24,16 +30,18 @@ CNamespace::~CNamespace()
 {
 }
 
-void CNamespace::Serialize(CArchive& ar)
+void CNamespace::Serialize()
 {
     m_Map.RemoveAll();
-    m_Order.clear();;
+    m_Order.clear();
 
     uint32_t ulLength;
+    g_ifstream.read((char*)&ulLength, sizeof(ulLength));
+    std::reverse((char*)&ulLength, (char*)&ulLength + sizeof(ulLength));
 
-    if (ReadMSBULong(ar, ulLength) != 4)
+    if (!g_ifstream)
     {
-        printf("Error: Unable read length of namespace\n");
+        std::cout << "Error: Unable read length of namespace" << std::endl;
         throw std::exception();
     }
 
@@ -47,38 +55,41 @@ void CNamespace::Serialize(CArchive& ar)
     {
         std::string strNewString;
 
-        if (ReadMSBWord(ar, wLengthOfString) != 2)
+        g_ifstream.read((char*)&wLengthOfString, sizeof(wLengthOfString));
+        std::reverse((char*)&wLengthOfString, (char*)&wLengthOfString + sizeof(wLengthOfString));
+
+        if (!g_ifstream)
         {
-            printf("Error: Unable read length of string\n");
+            std::cout << "Error: Unable read length of string" << std::endl;
             throw std::exception();
         };
 
         if ((wLengthOfString < 2) || (wLengthOfString & 0x0001))
         {
-            printf("Error: Invalid length of string\n");
+            std::cout << "Error: Invalid length of string" << std::endl;
             throw std::exception();
         }
 
         strNewString.resize(wLengthOfString);
         lpszNewString = (char*)strNewString.data();
 
-        if (ar.Read(lpszNewString, wLengthOfString) != wLengthOfString)
+        g_ifstream.read(lpszNewString, wLengthOfString);
+        if (!g_ifstream)
         {
             strNewString.resize(0);
-            printf("Error: Unable read string in namespace\n");
+            std::cout << "Error: Unable read string in namespace" << std::endl;
             throw std::exception();
         }
 
         if ((lpszNewString[wLengthOfString - 1] != '\x00') && (lpszNewString[wLengthOfString - 2] != '\x00'))
         {
             strNewString.resize(0);
-            printf("Error: Invalid end of string in namespace\n");
+            std::cout << "Error: Invalid end of string in namespace" << std::endl;
             throw std::exception();
         }
 
         std::string tmpString(lpszNewString);
-        strNewString = tmpString.c_str();//.ReleaseBuffer();
-
+        strNewString = tmpString.c_str();
 
         // Convert Nongraphic Characters to Escape sequence
         std::string strNonGraph("\\\a\b\f\n\r\t\"");
@@ -97,9 +108,12 @@ void CNamespace::Serialize(CArchive& ar)
 
     uint32_t ulTerminator;
 
-    if (ReadMSBULong(ar, ulTerminator) != 4)
+    g_ifstream.read((char*)&ulTerminator, sizeof(ulTerminator));
+    std::reverse((char*)&ulTerminator, (char*)&ulTerminator + sizeof(ulTerminator));
+
+    if (!g_ifstream)
     {
-        printf("Error: Unable read terminator of namespace\n");
+        std::cout << "Error: Unable read terminator of namespace" << std::endl;
         throw std::exception();
     }
 
@@ -132,25 +146,21 @@ uint32_t CNamespace::GetOffsetByIndex(int32_t nIndex)
     return m_Order[nIndex];
 }
 
-void CNamespace::Dump(CArchive& ar)
+void CNamespace::Dump()
 {
-    std::string strOutLine;
-
     if (m_Order.empty())
     {
-        ar.WriteString("Empty\n");
+        g_ofstream << "Empty" << std::endl;
     }
     else
     {
         for(unsigned int i = 0; i < m_Order.size(); i++)
         {
-            strOutLine = format("0x%08X: \"%s\"\n", m_Order[i], GetStringByIndex(i).c_str());
-            ar.WriteString(strOutLine);
+            g_ofstream << format("0x%08X: \"%s\"", m_Order[i], GetStringByIndex(i).c_str()) << std::endl;
         }
 
-        ar.WriteString("==================\n");
-        strOutLine = format("%d item(s)\n", m_Order.size());
-        ar.WriteString(strOutLine);
+        g_ofstream << "==================" << std::endl;
+        g_ofstream << format("%d item(s)\n", m_Order.size()) << std::endl;
     }
 }
 

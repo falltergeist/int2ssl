@@ -14,7 +14,6 @@
 #include <vector>
 
 // int2ssl includes
-#include "Hacks/CArchive.h"
 #include "Hacks/CMap.h"
 
 // Third party includes
@@ -26,14 +25,14 @@ public:
     virtual ~CNamespace();
 
 public:
-    virtual void Serialize(CArchive& ar);
+    virtual void Serialize();
 
 public:
     int32_t GetSize() const;
     std::string GetStringByIndex(int32_t nIndex) ;
     uint32_t GetOffsetByIndex(int32_t nIndex) ;
 
-    void Dump(CArchive& ar);
+    void Dump();
 
 public:
     std::string operator [] (uint32_t ulOffset) const;

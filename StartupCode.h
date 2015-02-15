@@ -27,7 +27,7 @@ public:
 
     CStartupCode();
     virtual ~CStartupCode();
-    virtual void Serialize(CArchive& ar);
+    virtual void Serialize();
 
 private:
     COpcode m_Code[17];

@@ -9,6 +9,7 @@
 
 // C++ standard includes
 #include <iostream>
+#include <fstream>
 
 // int2ssl includes
 #include "FalloutScript.h"
@@ -18,58 +19,57 @@
 // Third party includes
 
 extern std::string g_strIndentFill;
+extern std::ofstream g_ifstream;
+extern std::ofstream g_ofstream;
 
-void CFalloutScript::StoreTree(CArchive& ar)
+void CFalloutScript::StoreTree()
 {
     std::string strOutLine;
 
-    ar.WriteString("============== Procedures ==================\n");
-    ar.WriteString("\n");
+    g_ofstream << "============== Procedures ==================" << std::endl;
+    g_ofstream << std::endl;
 
     for(uint32_t nIndexOfProc = 0; nIndexOfProc < m_ProcTable.GetSize(); nIndexOfProc++)
     {
-        strOutLine = format("%d: %s (0x%08x)\n", nIndexOfProc, m_Namespace[m_ProcTable[nIndexOfProc].m_ulNameOffset].c_str(), m_ProcTable[nIndexOfProc].m_ulBodyOffset);
-        ar.WriteString(strOutLine);
-        ar.WriteString("===============================\n");
+        g_ofstream << format("%d: %s (0x%08x)", nIndexOfProc, m_Namespace[m_ProcTable[nIndexOfProc].m_ulNameOffset].c_str(), m_ProcTable[nIndexOfProc].m_ulBodyOffset) << std::endl;
+        g_ofstream << "===============================" << std::endl;
 
         if (m_ProcTable[nIndexOfProc].m_ulType & P_CONDITIONAL)
         {
-            ar.WriteString("Condition\n");
-            ar.WriteString("===============================\n");
+            g_ofstream << "Condition" << std::endl;
+            g_ofstream << "===============================" << std::endl;
 
             for(uint32_t i = 0; i < m_Conditions[nIndexOfProc].size(); i++)
             {
-                strOutLine = format("0x%08X: ", m_Conditions[nIndexOfProc][i].m_ulOffset);
-                ar.WriteString(strOutLine);
-                m_Conditions[nIndexOfProc][i].StoreTree(ar, 0, 0);
+                g_ofstream << format("0x%08X: ", m_Conditions[nIndexOfProc][i].m_ulOffset) << std::endl;
+                m_Conditions[nIndexOfProc][i].StoreTree(0, 0);
             }
 
-            ar.WriteString("\n");
-            ar.WriteString("Body\n");
-            ar.WriteString("===============================\n");
+            g_ofstream << std::endl;
+            g_ofstream << "Body" << std::endl;
+            g_ofstream << "===============================" << std::endl;
         }
 
         for(uint32_t i = 0; i < m_ProcBodies[nIndexOfProc].size(); i++)
         {
-            strOutLine = format("0x%08X: ", m_ProcBodies[nIndexOfProc][i].m_ulOffset);
-            ar.WriteString(strOutLine);
-            m_ProcBodies[nIndexOfProc][i].StoreTree(ar, 0, 0);
+            g_ofstream << format("0x%08X: ", m_ProcBodies[nIndexOfProc][i].m_ulOffset) << std::endl;
+            m_ProcBodies[nIndexOfProc][i].StoreTree(0, 0);
         }
 
-        ar.WriteString("\n");
+        g_ofstream << std::endl;
     }
 
 }
 
-void CFalloutScript::StoreSource(CArchive& ar)
+void CFalloutScript::StoreSource()
 {
-    StoreDefinitions(ar);
-    ar.WriteString("\n");
-    ar.WriteString("\n");
-    StoreDeclarations(ar);
+    StoreDefinitions();
+    g_ofstream << std::endl;
+    g_ofstream << std::endl;
+    StoreDeclarations();
 }
 
-void CFalloutScript::StoreDefinitions(CArchive& ar)
+void CFalloutScript::StoreDefinitions()
 {
     std::string c_strBogusProcedureName("..............");
     std::string c_strArgumentTemplate("arg%u");
@@ -84,12 +84,12 @@ void CFalloutScript::StoreDefinitions(CArchive& ar)
 
     if (nNamesCount != nDefinitionsCount)
     {
-        ar.WriteString("/*******************************************************\n");
-        ar.WriteString("*      Some unreferenced imported varables found.      *\n");
-        ar.WriteString("*      Because of it it is impossible to specify       *\n");
-        ar.WriteString("*      the real names of global variables.             *\n");
-        ar.WriteString("*******************************************************/\n");
-        ar.WriteString("\n");
+        g_ofstream << "/*******************************************************" << std::endl
+                   << "*      Some unreferenced imported varables found.      *" << std::endl
+                   << "*      Because of it it is impossible to specify       *" << std::endl
+                   << "*      the real names of global variables.             *" << std::endl
+                   << "*******************************************************/" << std::endl
+                   << std::endl;
 
         for(uint32_t i = 0; i < m_GlobalVar.size(); i++)
         {
@@ -122,10 +122,10 @@ void CFalloutScript::StoreDefinitions(CArchive& ar)
                 strDefinition = format(strDefinition + " /* (%d) */", ulVarValue);
             }
 
-            ar.WriteString(strDefinition + "\n");
+            g_ofstream << strDefinition << std::endl;
         }
 
-        ar.WriteString("\n");
+        g_ofstream << std::endl;
     }
 
 
@@ -269,32 +269,32 @@ void CFalloutScript::StoreDefinitions(CArchive& ar)
         {
             currentOut = OUT_UNKNOWN_VARIABLE;
             strDefinition = "/* ?import? variable ";
-            strDefinition+= m_Namespace.GetStringByIndex(i) + "; */";
+            strDefinition += m_Namespace.GetStringByIndex(i) + "; */";
         }
 
         if ((currentOut != lastOut) && (lastOut != OUT_NOTHING))
         {
-            ar.WriteString("\n");
+            g_ofstream << std::endl;
         }
 
         lastOut = currentOut;
-        ar.WriteString(strDefinition + "\n");
+        g_ofstream << strDefinition << std::endl;
     }
 }
 
-void CFalloutScript::StoreDeclarations(CArchive& ar)
+void CFalloutScript::StoreDeclarations()
 {
     std::string c_strBogusProcedureName("..............");
     std::string c_strArgumentTemplate("arg%u");
     std::string c_strLocalVarTemplate("LVar%u");
 
-    printf("    Storing declarations\n");
+    g_ofstream << "    Storing declarations" << std::endl;
 
     std::string strOutLine;
 
     for(uint32_t i = 0; i < m_ProcTable.GetSize(); i++)
     {
-        printf("        Procedure: %d\r", i);
+        std::cout << format("        Procedure: %d", i) << std::endl;
 
         // Bogus procedure
         if ((i == 0) && (m_Namespace[m_ProcTable[i].m_ulNameOffset] == c_strBogusProcedureName))
@@ -305,9 +305,9 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
         // Empty procedure
         if (m_ProcTable.GetSizeOfProc(i) == 0)
         {
-            ar.WriteString("/*******************************************************\n");
-            ar.WriteString("*    Found Procedure without body.                     *\n");
-            ar.WriteString("*                                                      *\n");
+            g_ofstream << "/*******************************************************" << std::endl
+                       << "*    Found Procedure without body.                     *" << std::endl
+                       << "*                                                      *" << std::endl;
             strOutLine = "*    Name: ";
             strOutLine+= m_Namespace[m_ProcTable[i].m_ulNameOffset];
 
@@ -316,14 +316,13 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
                 strOutLine += " ";
             }
 
-            strOutLine += "*\n";
-            ar.WriteString(strOutLine);
-
-            ar.WriteString("*                                                      *\n");
+            strOutLine += "*";
+            g_ofstream << strOutLine << std::endl
+                       << "*                                                      *" << std::endl;
 
             if (!(m_ProcTable[i].m_ulType & P_NOTIMPLEMENTED))
             {
-                ar.WriteString("*    Other possible name(s):                           *\n");
+                g_ofstream << "*    Other possible name(s):                           *" << std::endl;
 
                 for(uint32_t j = i + 1; j < m_ProcTable.GetSize(); j++)
                 {
@@ -337,20 +336,20 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
                             strOutLine += " ";
                         }
 
-                        strOutLine += "*\n";
-                        ar.WriteString(strOutLine);
+                        strOutLine += "*";
+                        g_ofstream << strOutLine << std::endl;
                         strOutLine = "*       ";
                     }
                 }
             }
             else
             {
-                ar.WriteString("*           Not implemented                            *\n");
+                g_ofstream << "*           Not implemented                            *" << std::endl;
             }
 
-            ar.WriteString("*                                                      *\n");
-            ar.WriteString("*******************************************************/\n");
-            ar.WriteString("\n");
+            g_ofstream << "*                                                      *" << std::endl
+                       << "*******************************************************/" << std::endl
+                       << std::endl;
             continue;
         }
 
@@ -397,7 +396,7 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
             strOutLine = format(strOutLine + " when (%s)", GetSource(m_Conditions[i][0], false, procDescriptor.m_ulNumArgs).c_str());
         }
 
-        ar.WriteString(strOutLine + "\n");
+        g_ofstream << strOutLine << std::endl;
 
         bool bLocalVar = true;
         uint32_t ulLocalVarIndex = procDescriptor.m_ulNumArgs;
@@ -410,12 +409,12 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
             {
                 if ((nNodeIndex > 1) && (m_ProcBodies[i][nNodeIndex - 1].m_Type == CNode::TYPE_END_OF_BLOCK))
                 {
-                    ar.WriteString(GetIndentString(nIndentLevel) + "else begin\n");
+                    g_ofstream << GetIndentString(nIndentLevel) << "else begin" << std::endl;
                     nIndentLevel++;
                 }              
                 else
                 {
-                    ar.WriteString("begin\n");
+                    g_ofstream << "begin" << std::endl;
                     nIndentLevel++;
                 }
                 //prevNodeType = CNode::TYPE_BEGIN_OF_BLOCK;
@@ -423,7 +422,7 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
             else if (m_ProcBodies[i][nNodeIndex].m_Type == CNode::TYPE_END_OF_BLOCK)
             {
                 nIndentLevel--;
-                ar.WriteString(GetIndentString(nIndentLevel) + "end\n");
+                g_ofstream << GetIndentString(nIndentLevel) << "end" << std::endl;
                 //prevNodeType = CNode::TYPE_END_OF_BLOCK;
             }
             else
@@ -452,12 +451,12 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
                         str += c_strLocalVarTemplate + " := ";
 
                         strOutLine = format(str.c_str(), ulLocalVarIndex);
-                        ar.WriteString(GetIndentString(nIndentLevel) + strOutLine + GetSource(m_ProcBodies[i][nNodeIndex], false, procDescriptor.m_ulNumArgs) + ";\n");
+                        std::cout << GetIndentString(nIndentLevel) << strOutLine << GetSource(m_ProcBodies[i][nNodeIndex], false, procDescriptor.m_ulNumArgs) <<  ";" << std::endl;
                         ulLocalVarIndex++;
                         break;
                     }
                     case COpcode::O_IF:
-                        ar.WriteString(GetIndentString(nIndentLevel) + GetSource(m_ProcBodies[i][nNodeIndex], false, procDescriptor.m_ulNumArgs) + " then ");
+                        g_ofstream << GetIndentString(nIndentLevel) << GetSource(m_ProcBodies[i][nNodeIndex], false, procDescriptor.m_ulNumArgs) << " then ";
                         break;
 
                     case COpcode::O_WHILE:
@@ -473,16 +472,16 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
                                 str += GetSource(m_ProcBodies[i][nNodeIndex].m_Arguments[j], false, procDescriptor.m_ulNumArgs);
                             }
                             str += ") ";
-                            ar.WriteString(str);
+                            g_ofstream << str;
                         }
                         else
                         {
-                            ar.WriteString(GetIndentString(nIndentLevel) + GetSource(m_ProcBodies[i][nNodeIndex], false, procDescriptor.m_ulNumArgs) + " do ");
+                            g_ofstream << GetIndentString(nIndentLevel) << GetSource(m_ProcBodies[i][nNodeIndex], false, procDescriptor.m_ulNumArgs) << " do ";
                         }
                         break;
 
                     default:
-                        ar.WriteString(GetIndentString(nIndentLevel) + GetSource(m_ProcBodies[i][nNodeIndex], false, procDescriptor.m_ulNumArgs) + ";\n");
+                        g_ofstream << GetIndentString(nIndentLevel) << GetSource(m_ProcBodies[i][nNodeIndex], false, procDescriptor.m_ulNumArgs) << ";" << std::endl;
 
                         if ((m_ProcBodies[i][nNodeIndex].m_Type != CNode::TYPE_BEGIN_OF_BLOCK) &&
                             (m_ProcBodies[i][nNodeIndex].m_Type != CNode::TYPE_END_OF_BLOCK))
@@ -493,7 +492,7 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
             }
         }
 
-        ar.WriteString("\n");
+        g_ofstream << std::endl;
     }
 }
 

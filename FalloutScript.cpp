@@ -9,11 +9,15 @@
 
 // C++ standard includes
 #include <iostream>
+#include <fstream>
 
 // int2ssl includes
 #include "FalloutScript.h"
 
 // Third party includes
+
+extern std::ifstream g_ifstream;
+extern std::ofstream g_ofstream;
 
 CFalloutScript::CFalloutScript()
 {
@@ -23,29 +27,28 @@ CFalloutScript::~CFalloutScript()
 {
 }
 
-void CFalloutScript::Serialize(CArchive& ar)
+void CFalloutScript::Serialize()
 {
 
     std::cout << "  Read strtup code" << std::endl;
-    m_StartupCode.Serialize(ar);
+    m_StartupCode.Serialize();
 
     std::cout << "  Read procedures table" << std::endl;
-    m_ProcTable.Serialize(ar);
+    m_ProcTable.Serialize();
 
     std::cout << "  Read namespace" << std::endl;
-    m_Namespace.Serialize(ar);
+    m_Namespace.Serialize();
 
     std::cout << "  Read stringspace" << std::endl;
-    m_Stringspace.Serialize(ar);
+    m_Stringspace.Serialize();
 
     COpcode opcode;
 
     std::cout << "  Read tail of startup code" << std::endl;
-    opcode.Expect(ar, COpcode::O_SET_GLOBAL);
+    opcode.Expect(COpcode::O_SET_GLOBAL);
 
     // Sections with variable sizes
-    ar.Flush();
-    uint32_t ullCurrentOffset = ar.GetFile()->GetPosition();
+    uint32_t ullCurrentOffset = g_ifstream.tellg();
 
     // Load globals
     m_GlobalVar.clear();
@@ -57,7 +60,7 @@ void CFalloutScript::Serialize(CArchive& ar)
 
     while(ullCurrentOffset < m_ProcTable.GetOffsetOfProcSection())
     {
-        opcode.Serialize(ar);
+        opcode.Serialize();
         ullCurrentOffset += opcode.GetSize();
         HeaderTail.push_back(opcode);
     }
@@ -206,12 +209,12 @@ void CFalloutScript::Serialize(CArchive& ar)
         printf("    Procedure: %d\r", i);
         uint32_t ulOffset = m_ProcTable[i].m_ulBodyOffset;
         uint32_t ulSize = m_ProcTable.GetSizeOfProc(i);
-        ar.Flush();
-        ar.GetFile()->Seek(ulOffset, CFile::begin);
+
+        g_ifstream.seekg(ulOffset, std::ios_base::beg);
 
         while(ulOffset < m_ProcTable[i].m_ulBodyOffset + ulSize)
         {
-            node.m_Opcode.Serialize(ar);
+            node.m_Opcode.Serialize();
             node.m_ulOffset = ulOffset;
             m_ProcBodies[i].push_back(node);
             ulOffset += node.m_Opcode.GetSize();

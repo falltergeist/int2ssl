@@ -45,7 +45,7 @@ public:
     CNode& operator = (const CNode& node);
 
 public:
-    void StoreTree(CArchive& ar, int nIndent, int nIndex);
+    void StoreTree(int nIndent, int nIndex);
     uint32_t  GetTopOffset();
     bool IsExpression() const;
     bool IsInfix() const;

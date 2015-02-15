@@ -12,6 +12,7 @@
 
 // C++ standard includes
 #include <map>
+#include <stdint.h>
 
 // int2ssl includes
 

@@ -9,8 +9,10 @@
 
 // C++ standard includes
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <cstdlib>
+#include <algorithm>
 
 // int2ssl includes
 #include "ProcTable.h"
@@ -18,6 +20,9 @@
 #include "ObjectAttributes.h"
 
 // Third party includes
+
+extern std::ifstream g_ifstream;
+extern std::ofstream g_ofstream;
 
 CProcDescriptor::CProcDescriptor() :
     m_ulNameOffset(0),
@@ -59,37 +64,31 @@ CProcDescriptor& CProcDescriptor::operator = (const CProcDescriptor& Item)
     return (*this);
 }
 
-void CProcDescriptor::Serialize(CArchive& ar)
+void CProcDescriptor::Serialize()
 {
-    uint32_t uiTotalRead;
 
-    uiTotalRead = ReadMSBULong(ar, m_ulNameOffset);
-    uiTotalRead += ReadMSBULong(ar, m_ulType);
-    uiTotalRead += ReadMSBULong(ar, m_ulTime);
-    uiTotalRead += ReadMSBULong(ar, m_ulExpressionOffset);
-    uiTotalRead += ReadMSBULong(ar, m_ulBodyOffset);
-    uiTotalRead += ReadMSBULong(ar, m_ulNumArgs);
+    g_ifstream.read((char*)&m_ulNameOffset, sizeof(m_ulNameOffset));
+    std::reverse((char*)&m_ulNameOffset, (char*)&m_ulNameOffset + sizeof(m_ulNameOffset));
+    g_ifstream.read((char*)&m_ulType, sizeof(m_ulType));
+    std::reverse((char*)&m_ulType, (char*)&m_ulType + sizeof(m_ulType));
+    g_ifstream.read((char*)&m_ulTime, sizeof(m_ulTime));
+    std::reverse((char*)&m_ulTime, (char*)&m_ulTime + sizeof(m_ulTime));
+    g_ifstream.read((char*)&m_ulExpressionOffset, sizeof(m_ulExpressionOffset));
+    std::reverse((char*)&m_ulExpressionOffset, (char*)&m_ulExpressionOffset + sizeof(m_ulExpressionOffset));
+    g_ifstream.read((char*)&m_ulBodyOffset, sizeof(m_ulBodyOffset));
+    std::reverse((char*)&m_ulBodyOffset, (char*)&m_ulBodyOffset + sizeof(m_ulBodyOffset));
+    g_ifstream.read((char*)&m_ulNumArgs, sizeof(m_ulNumArgs));
+    std::reverse((char*)&m_ulNumArgs, (char*)&m_ulNumArgs + sizeof(m_ulNumArgs));
 
-//    printf("=================\n");
-//    printf("uiTotalRead          = %u\n", uiTotalRead);
-//    printf("m_ulNameOffset       = 0x%08X\n", m_ulNameOffset);
-//    printf("m_ulType             = 0x%08X\n", m_ulType);
-//    printf("m_ulTime             = 0x%08X\n", m_ulTime);
-//    printf("m_ulExpressionOffset = 0x%08X\n", m_ulExpressionOffset);
-//    printf("m_ulBodyOffset       = 0x%08X\n", m_ulBodyOffset);
-//    printf("m_ulNumArgs          = 0x%08X\n", m_ulNumArgs);
-
-
-    if (uiTotalRead != (sizeof(uint32_t) * 6))
+    if (!g_ifstream)
     {
-        printf("Error: Unable read procedure descriptor\n");
+        std::cout << "Error: Unable read procedure descriptor" << std::endl;
         throw std::exception();
     }
 }
 
-void CProcDescriptor::Dump(CArchive& ar)
+void CProcDescriptor::Dump()
 {
-    std::string strOutLine;
     std::string strType;
 
     if (m_ulType != 0x00000000)
@@ -126,22 +125,14 @@ void CProcDescriptor::Dump(CArchive& ar)
         strType = "No special types";
     }
 
-    strOutLine = format("Name offset:       0x%08X\n", m_ulNameOffset);
-    ar.WriteString(strOutLine);
-    strOutLine = format("Type:              0x%08X  // %s\n", m_ulType, strType.c_str());
-    ar.WriteString(strOutLine);
-    strOutLine = format("Time:              0x%08X  // %d\n", m_ulTime, m_ulTime);
-    ar.WriteString(strOutLine);
-    strOutLine = format("Expression offset: 0x%08X\n", m_ulExpressionOffset);
-    ar.WriteString(strOutLine);
-    strOutLine = format("Body offset:       0x%08X\n", m_ulBodyOffset);
-    ar.WriteString(strOutLine);
-    strOutLine = format("Number of args:    0x%08X  // %d\n", m_ulNumArgs, m_ulNumArgs);
-    ar.WriteString(strOutLine);
+    g_ofstream << format("Name offset:       0x%08X", m_ulNameOffset) << std::endl;
+    g_ofstream << format("Type:              0x%08X  // %s", m_ulType, strType.c_str()) << std::endl;
+    g_ofstream << format("Time:              0x%08X  // %d", m_ulTime, m_ulTime) << std::endl;
+    g_ofstream << format("Expression offset: 0x%08X", m_ulExpressionOffset) << std::endl;
+    g_ofstream << format("Body offset:       0x%08X", m_ulBodyOffset) << std::endl;
+    g_ofstream << format("Number of args:    0x%08X  // %d", m_ulNumArgs, m_ulNumArgs) << std::endl;
 }
 
-
-// CProcTable
 
 CProcTable::CProcTable()
 {
@@ -186,20 +177,22 @@ int compareProcBodyOffsets(const void* elem0, const void* elem1)
     }
 }
 
-void CProcTable::Serialize(CArchive& ar)
+void CProcTable::Serialize()
 {
     m_Table.clear();
     m_ProcSize.clear();
 
+    uint32_t oldPosition = g_ifstream.tellg();
+    g_ifstream.seekg(0, std::ios_base::end);
+
+    uint32_t ulSizeOfFile = g_ifstream.tellg();
+    g_ifstream.seekg(oldPosition, std::ios_base::beg);
+
     uint32_t ulSizeOfTable;
-    uint32_t ulRead;
+    g_ifstream.read((char*)&ulSizeOfTable, sizeof(ulSizeOfTable));
+    std::reverse((char*)&ulSizeOfTable, (char*)&ulSizeOfTable + sizeof(ulSizeOfTable));
 
-    ar.Flush();
-    uint32_t ulSizeOfFile = uint32_t(ar.GetFile()->GetLength());
-
-    ulRead = ReadMSBULong(ar, ulSizeOfTable);
-
-    if (ulRead != sizeof(ulSizeOfTable))
+    if (!g_ifstream)
     {
         printf("Error: Unable read size of procedures table\n");
         throw std::exception();
@@ -219,7 +212,7 @@ void CProcTable::Serialize(CArchive& ar)
     for(uint32_t i = 0; i < ulSizeOfTable; i++)
     {
 //      printf("======== %u =========\n", i);
-        m_Table[i].Serialize(ar);
+        m_Table[i].Serialize();
         m_ProcSize[i] = 0;       // Initialize size of procedure
 
         if (!(m_Table[i].m_ulType & P_IMPORT))
@@ -300,17 +293,13 @@ uint32_t CProcTable::GetOffsetOfProcSection()
 }
 
 
-void CProcTable::Dump(CArchive& ar)
+void CProcTable::Dump()
 {
-    std::string strOutLine;
-
     for(unsigned int i = 0; i < m_Table.size(); i++)
     {
-        strOutLine = format("======== Procedure %d ========\n", i);
-
-        ar.WriteString(strOutLine);
-        m_Table[i].Dump(ar);
-        ar.WriteString("\n");
+        g_ofstream << format("======== Procedure %d ========", i) << std::endl;
+        m_Table[i].Dump();
+        g_ofstream << std::endl;
     }
 }
 

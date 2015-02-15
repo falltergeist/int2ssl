@@ -10,6 +10,7 @@
 // C++ standard includes
 #include <iostream>
 #include <cstdlib>
+#include <fstream>
 
 // int2ssl includes
 #include "FalloutScript.h"
@@ -18,8 +19,6 @@
 
 // Third party includes
 
-using namespace std;
-
 // Globals
 bool g_bDump = false;
 int g_nFalloutVersion = 2;
@@ -27,6 +26,9 @@ std::string  g_strIndentFill("\t");
 bool g_bIgnoreWrongNumOfArgs = false;
 bool g_bInsOmittedArgsBackward = false;
 bool g_bStopOnError = false;
+std::ifstream g_ifstream;
+std::ofstream g_ofstream;
+
 
 std::string g_inputFileName;
 std::string g_outputFileName;
@@ -47,52 +49,48 @@ int main(int argc, char* argv[])
     if (argc < 2 || !ProcessCommandLine(argc, argv))
     {
         PrintUsage(argv[0]);
-        cin.get();
+        std::cin.get();
         return 1;
     }
 
-    CFile fileInput;
-    CFile fileOutput;
-
-    if (!fileInput.Open(g_inputFileName, CFile::modeRead | CFile::shareDenyWrite))
+    g_ifstream.open(g_inputFileName.c_str(), std::fstream::in | std::fstream::binary);
+    if (!g_ifstream.is_open())
     {
-        printf("Error: Unable open input file %s.\n", g_inputFileName.c_str());
+        std::cout << "Error: Unable open input file: " << g_inputFileName << std::endl;
         if (g_bStopOnError == true)
         {
-            printf("Press ENTER to continue.\n");
-            cin.get();
+            std::cout << "Press ENTER to continue..." << std::endl;
+            std::cin.get();
         }
         return 1;
     }
 
-    if (!fileOutput.Open(g_outputFileName, CFile::modeCreate | CFile::modeWrite | CFile::typeText | CFile::shareDenyWrite))
+    g_ofstream.open(g_outputFileName.c_str(), std::fstream::out | std::fstream::trunc);
+    if (!g_ofstream.is_open())
     {
-        std::cout << format("Error: Unable open output file %s", g_outputFileName) << std::endl;
+        std::cout << "Error: Unable open output file: " << g_outputFileName << std::endl;
         if (g_bStopOnError == true)
         {
-            std::cout << "Press ENTER to continue." << std::endl;
-            cin.get();
+            std::cout << "Press ENTER to continue..." << std::endl;
+            std::cin.get();
         }
         return 1;
     }
 
     try
     {
-        CArchive arInput(&fileInput, CArchive::load);
         CFalloutScript Script;
 
         std::cout << format("Loading file %s...", g_inputFileName) << std::endl;
-        Script.Serialize(arInput);
+        Script.Serialize();
 
         std::cout << format("File %s loaded successfuly", g_inputFileName) << std::endl
                   << std::endl;
 
-        CArchive arOutput(&fileOutput, CArchive::store);
-
         if (g_bDump)
         {
             std::cout << format("Dumping %s...", g_inputFileName) << std::endl;
-            Script.Dump(arOutput);
+            Script.Dump();
 
             std::cout << format("File %s dumped successfuly", g_inputFileName) << std::endl;
         }
@@ -107,7 +105,7 @@ int main(int argc, char* argv[])
             Script.ProcessCode();
 
             printf("  Storing sources\n");
-            Script.StoreSource(arOutput);
+            Script.StoreSource();
             std::cout << format("File %s decompiled successfuly\n", g_inputFileName) << std::endl;
         }
     }
@@ -118,7 +116,7 @@ int main(int argc, char* argv[])
         if (g_bStopOnError == true)
         {
             printf("Press ENTER to continue.\n");
-            cin.get();
+            std::cin.get();
         }
         return 1;
     }
@@ -216,7 +214,7 @@ bool ProcessCommandLine(int argc, char* argv[])
         if (g_bStopOnError == true)
         {
             printf("Press ENTER to continue.\n");
-            cin.get();
+            std::cin.get();
         }
         return false;
     }

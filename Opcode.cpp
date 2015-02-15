@@ -9,6 +9,8 @@
 
 // C++ standard includes
 #include <iostream>
+#include <fstream>
+#include <algorithm>
 
 // int2ssl includes
 #include "Opcode.h"
@@ -17,6 +19,7 @@
 // Third party includes
 
 extern int g_nFalloutVersion;
+extern std::ifstream g_ifstream;
 
 COpcode::COpcode() :
     m_wOperator(O_NOOP),
@@ -43,13 +46,18 @@ COpcode& COpcode::operator = (const COpcode& opcode)
     return (*this);
 }
 
-void COpcode::Serialize(CArchive& ar)
+void COpcode::Serialize()
 {
-    if (ReadMSBWord(ar, m_wOperator) != OPERATOR_SIZE)
+    g_ifstream.read((char*)&m_wOperator, sizeof(m_wOperator));
+    std::reverse((char*)&m_wOperator, (char*)&m_wOperator + sizeof(m_wOperator));
+
+    if (!g_ifstream)
     {
         printf("Error: Unable read opcode\n");
         throw std::exception();
     }
+
+
 
     if ((m_wOperator < O_OPERATOR) ||
         ((m_wOperator >= O_END_OP) &&
@@ -57,24 +65,26 @@ void COpcode::Serialize(CArchive& ar)
          (m_wOperator != O_FLOATOP)&&
          (m_wOperator != O_INTOP)))
     {
-        ar.Flush();
-        printf("Error: Invalid opcode at 0x%08x\n", ar.GetFile()->GetPosition() - 2);
+        printf("Error: Invalid opcode at 0x%08x\n", (uint32_t)g_ifstream.tellg() - 2);
         throw std::exception();
     }
 
     if ((m_wOperator == O_STRINGOP) || (m_wOperator == O_FLOATOP) || (m_wOperator == O_INTOP))
     {
-        if (ReadMSBULong(ar, m_ulArgument) != ARGUMENT_SIZE)
+        g_ifstream.read((char*)&m_ulArgument, sizeof(m_ulArgument));
+        std::reverse((char*)&m_ulArgument, (char*)&m_ulArgument + sizeof(m_ulArgument));
+
+        if (!g_ifstream)
         {
-            printf("Error: Unable read opcode argument\n");
+            std::cout << "Error: Unable read opcode argument" << std::endl;
             throw std::exception();
         }
     }
 }
 
-void COpcode::Expect(CArchive& ar, uint16_t wOperator, bool bArgumentFound, uint32_t ulArgument)
+void COpcode::Expect(uint16_t wOperator, bool bArgumentFound, uint32_t ulArgument)
 {
-    Serialize(ar);
+    Serialize();
 
     if (m_wOperator != wOperator)
     {
@@ -92,9 +102,9 @@ void COpcode::Expect(CArchive& ar, uint16_t wOperator, bool bArgumentFound, uint
     }
 }
 
-void COpcode::Expect(CArchive& ar, int nCount, uint16_t pwOperators[])
+void COpcode::Expect(int nCount, uint16_t pwOperators[])
 {
-    Serialize(ar);
+    Serialize();
     bool bFound = false;
 
     for(int i = 0; i < nCount; i++)

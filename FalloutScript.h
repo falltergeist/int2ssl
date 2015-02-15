@@ -28,15 +28,15 @@ public:
     virtual ~CFalloutScript();
 
 public:
-    virtual void Serialize(CArchive& ar);
+    virtual void Serialize();
 
-    void Dump(CArchive& ar);
+    void Dump();
 
     void InitDefinitions();
     void ProcessCode();
 
-    void StoreSource(CArchive& ar);
-    void StoreTree(CArchive& ar);
+    void StoreSource();
+    void StoreTree();
 
 private:
     enum Assoc {
@@ -71,8 +71,8 @@ private:
     void ReduceConditionalExpressions(CNodeArray& NodeArray);
     bool IsOmittetArgsAllowed(uint16_t wOpcode);
 
-    void StoreDefinitions(CArchive& ar);
-    void StoreDeclarations(CArchive& ar);
+    void StoreDefinitions();
+    void StoreDeclarations();
 
     std::string GetSource( CNode& node, bool bLabel, uint32_t ulNumArgs);
     std::string GetSource( CNode& node, bool bLabel, uint32_t ulNumArgs, uint32_t aulProcArg[], uint32_t ulProcArgCount);

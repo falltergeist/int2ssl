@@ -8,12 +8,17 @@
  */
 
 // C++ standard includes
+#include <iostream>
+#include <fstream>
 
 // int2ssl includes
 #include "Node.h"
 #include "Utility.h"
 
 // Third party includes
+
+extern std::ifstream g_ifstream;
+extern std::ofstream g_ofstream;
 
 CNode::CNode(Type type) :
     m_ulOffset(0),
@@ -46,27 +51,27 @@ CNode& CNode::operator = (const CNode& node)
     return (*this);
 }
 
-void CNode::StoreTree(CArchive& ar, int nIndent, int nIndex)
+void CNode::StoreTree(int nIndent, int nIndex)
 {
     // Indent
     if (nIndex != 0)
     {
-        ar.WriteString("            ");
+        g_ofstream << "            ";
 
         for(int i = 0; i < nIndent; i++)
         {
-            ar.WriteString("                  ");
+            g_ofstream << "                  ";
         }
     }
 
     switch(m_Type)
     {
         case TYPE_BEGIN_OF_BLOCK:
-            ar.WriteString("========= begin of block =========\n");
+            g_ofstream << "========= begin of block =========" << std::endl;
             return;
 
         case TYPE_END_OF_BLOCK:
-            ar.WriteString("========= end of block =========\n");
+            g_ofstream << "========= end of block =========" << std::endl;
             return;
 
         default:
@@ -82,34 +87,31 @@ void CNode::StoreTree(CArchive& ar, int nIndent, int nIndex)
     {
         case COpcode::O_STRINGOP:
         case COpcode::O_INTOP:
-            strOutLine = format("0x%04X 0x%08x ",
+            g_ofstream << format("0x%04X 0x%08x ",
                               wOperator,
-                              ulArgument);
-            ar.WriteString(strOutLine);
+                              ulArgument) << std::endl;
             break;
 
         case COpcode::O_FLOATOP:
-            strOutLine = format("0x%04X 0x%08X ",
+            g_ofstream << format("0x%04X 0x%08X ",
                                 wOperator,
-                                ulArgument);
-            ar.WriteString(strOutLine);
+                                ulArgument) << std::endl;
             break;
 
         default:
-            strOutLine = format("0x%04X .......... ",
-                                wOperator);
-            ar.WriteString(strOutLine);
+            g_ofstream << format("0x%04X .......... ", wOperator) << std::endl;
+            break;
     }
     if (!m_Arguments.empty())
     {
         for(uint32_t i = 0; i < m_Arguments.size(); i++)
         {
-            m_Arguments[i].StoreTree(ar, nIndent + 1, i);
+            m_Arguments[i].StoreTree(nIndent + 1, i);
         }
     }
     else
     {
-        ar.WriteString("\n");
+        g_ofstream << std::endl;
     }
 
 }

@@ -10,6 +10,7 @@
 // C++ standard includes
 #include <iostream>
 #include <algorithm>
+#include <stdio.h>
 
 // int2ssl includes
 #include "FalloutScript.h"

@@ -12,9 +12,9 @@
 
 // C++ standard includes
 #include <vector>
+#include <string>
 
 // int2ssl includes
-#include "Hacks/CArchive.h"
 #include "Hacks/CMap.h"
 
 // Third party includes
@@ -833,9 +833,9 @@ public:
     COpcode& operator = (const COpcode& opcode);
 
 public:
-    virtual void Serialize(CArchive& ar);
-    void Expect(CArchive& ar, uint16_t wOperator, bool bArgumentFound = false, uint32_t ulArgument = 0);
-    void Expect(CArchive& ar, int nCount, uint16_t pwOperators[]);
+    virtual void Serialize();
+    void Expect(uint16_t wOperator, bool bArgumentFound = false, uint32_t ulArgument = 0);
+    void Expect(int nCount, uint16_t pwOperators[]);
 
     bool HasArgument() const;
     int GetSize() const;

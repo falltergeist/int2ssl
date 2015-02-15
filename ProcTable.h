@@ -11,9 +11,9 @@
 #define PROC_TABLE_H
 
 // C++ standard includes
+#include <stdint.h>
 
 // int2ssl includes
-#include "Hacks/CArchive.h"
 
 // Third party includes
 
@@ -25,9 +25,9 @@ public:
     virtual ~CProcDescriptor();
 
 public:
-    virtual void Serialize(CArchive& ar);
+    virtual void Serialize();
 
-    void Dump(CArchive& ar);
+    void Dump();
 
 public:
     CProcDescriptor& operator = (const CProcDescriptor& Item);
@@ -48,13 +48,13 @@ public:
     virtual ~CProcTable();
 
 public:
-    virtual void Serialize(CArchive& ar);
+    virtual void Serialize();
 
     uint32_t GetSize();
     uint32_t GetSizeOfProc(uint32_t nIndex);
     uint32_t GetOffsetOfProcSection();
 
-    void Dump(CArchive& ar);
+    void Dump();
 
 public:
     CProcDescriptor& operator [] (uint32_t nIndex);

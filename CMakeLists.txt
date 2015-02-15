@@ -5,10 +5,6 @@ cmake_minimum_required(VERSION 2.8)
 project(int2ssl)
 
 set(SOURCES main.cpp
-Hacks/CArchive.h
-Hacks/CArchive.cpp
-Hacks/CFile.h
-Hacks/CFile.cpp
 Hacks/CMap.h
 Namespace.h
 Namespace.cpp

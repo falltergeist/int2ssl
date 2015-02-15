@@ -22,7 +22,7 @@ CStartupCode::~CStartupCode()
 {
 }
 
-void CStartupCode::Serialize(CArchive& ar)
+void CStartupCode::Serialize()
 {
     uint16_t wExpectOpcodes[17] = {
         COpcode::O_CRITICAL_START,
@@ -44,16 +44,15 @@ void CStartupCode::Serialize(CArchive& ar)
         COpcode::O_POP_FLAGS_RETURN_VAL_EXIT_EXTERN
     };
 
-    for(int32_t i = 0; i < 17; i++)
+    for(uint32_t i = 0; i < 17; i++)
     {
         if (i == 1)
         {
-            m_Code[i].Expect(ar, wExpectOpcodes[i], true, 18);
+            m_Code[i].Expect(wExpectOpcodes[i], true, 18);
         }
         else
         {
-            m_Code[i].Expect(ar, wExpectOpcodes[i]);
+            m_Code[i].Expect(wExpectOpcodes[i]);
         }
     }
-
 }
