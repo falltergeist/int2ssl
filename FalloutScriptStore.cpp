@@ -140,7 +140,7 @@ void CFalloutScript::StoreDefinitions(CArchive& ar)
 
         if (i == 0)
         {
-            if (m_Namespace[ulNameOffset] == c_strBogusProcedureName.c_str())
+            if (m_Namespace[ulNameOffset] == c_strBogusProcedureName)
             {
                 continue;
             }
@@ -284,7 +284,7 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
         printf("        Procedure: %d\r", i);
 
         // Bogus procedure
-        if ((i == 0) && (m_Namespace[m_ProcTable[i].m_ulNameOffset] == c_strBogusProcedureName.c_str()))
+        if ((i == 0) && (m_Namespace[m_ProcTable[i].m_ulNameOffset] == c_strBogusProcedureName))
         {
             continue;
         }
