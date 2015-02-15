@@ -37,10 +37,10 @@ private:
     };
 
 private:
-    void ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Destination, WORD wDelimeter, int nSizeOfCodeItem, LPCTSTR lpszErrorMessage, BOOL (CFalloutScript::*pCheckFunc)(WORD, INT_PTR));
-    BOOL CheckExportVarCode(WORD wOperator, INT_PTR nIndex);
-    BOOL CheckSetExportedVarValueCode(WORD wOperator, INT_PTR nIndex);
-    BOOL CheckExportProcCode(WORD wOperator, INT_PTR nIndex);
+    void ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Destination, WORD wDelimeter, int nSizeOfCodeItem, const char* lpszErrorMessage, bool (CFalloutScript::*pCheckFunc)(WORD, INT_PTR));
+    bool CheckExportVarCode(WORD wOperator, INT_PTR nIndex);
+    bool CheckSetExportedVarValueCode(WORD wOperator, INT_PTR nIndex);
+    bool CheckExportProcCode(WORD wOperator, INT_PTR nIndex);
 
     INT_PTR GetIndexOfProc(const char* lpszName);
     INT_PTR GetIndexOfProc(ULONG ulNameOffset);
@@ -51,8 +51,8 @@ private:
     void TryRenameImportedVariables();
 
     INT_PTR NextNodeIndex( CNodeArray& NodeArray, INT_PTR nCurrentIndex, INT_PTR nSteep);
-    BOOL CheckSequenceOfNodes(CNodeArray& NodeArray, INT_PTR nStartIndex, const WORD wSequence[], INT_PTR nSequenceLen);
-    BOOL RemoveSequenceOfNodes(CNodeArray& NodeArray,INT_PTR nStartIndex, INT_PTR nCount, const WORD wSequence[], INT_PTR nSequenceLen);
+    bool CheckSequenceOfNodes(CNodeArray& NodeArray, INT_PTR nStartIndex, const WORD wSequence[], INT_PTR nSequenceLen);
+    bool RemoveSequenceOfNodes(CNodeArray& NodeArray,INT_PTR nStartIndex, INT_PTR nCount, const WORD wSequence[], INT_PTR nSequenceLen);
 
     void InitialReduce();
     void BuildTree(CNodeArray& NodeArray);
@@ -60,13 +60,13 @@ private:
     void SetBordersOfBlocks(CNodeArray& NodeArray);
     ULONG BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, ULONG ulEndOffset);
     void ReduceConditionalExpressions(CNodeArray& NodeArray);
-    BOOL IsOmittetArgsAllowed(WORD wOpcode);
+    bool IsOmittetArgsAllowed(WORD wOpcode);
 
     void StoreDefinitions(CArchive& ar);
     void StoreDeclarations(CArchive& ar);
 
-    std::string GetSource( CNode& node, BOOL bLabel, ULONG ulNumArgs);
-    std::string GetSource( CNode& node, BOOL bLabel, ULONG ulNumArgs, ULONG aulProcArg[], ULONG ulProcArgCount);
+    std::string GetSource( CNode& node, bool bLabel, ULONG ulNumArgs);
+    std::string GetSource( CNode& node, bool bLabel, ULONG ulNumArgs, ULONG aulProcArg[], ULONG ulProcArgCount);
     bool ArgNeedParens(const CNode& node, const CNode& argument, CFalloutScript::Assoc assoc = CFalloutScript::NON_ASSOC);
     std::string GetIndentString(INT_PTR nLevel);
 

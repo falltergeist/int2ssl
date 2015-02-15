@@ -824,10 +824,10 @@ public:
 
 public:
     virtual void Serialize(CArchive& ar);
-    void Expect(CArchive& ar, WORD wOperator, BOOL bArgumentFound = FALSE, ULONG ulArgument = 0);
+    void Expect(CArchive& ar, WORD wOperator, bool bArgumentFound = false, ULONG ulArgument = 0);
     void Expect(CArchive& ar, int nCount, WORD pwOperators[]);
 
-    BOOL HasArgument() const;
+    bool HasArgument() const;
     int GetSize() const;
 
     WORD GetOperator() const;

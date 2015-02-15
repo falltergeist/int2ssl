@@ -7,8 +7,8 @@
 #include <algorithm>
 
 // Globals
-extern BOOL g_bIgnoreWrongNumOfArgs;
-extern BOOL g_bInsOmittedArgsBackward;
+extern bool g_bIgnoreWrongNumOfArgs;
+extern bool g_bInsOmittedArgsBackward;
 
 void CFalloutScript::InitDefinitions()
 {
@@ -235,12 +235,12 @@ INT_PTR CFalloutScript::NextNodeIndex( CNodeArray& NodeArray, INT_PTR nCurrentIn
     return nResult;
 }
 
-BOOL CFalloutScript::CheckSequenceOfNodes(CNodeArray& NodeArray, INT_PTR nStartIndex, const WORD wSequence[], INT_PTR nSequenceLen)
+bool CFalloutScript::CheckSequenceOfNodes(CNodeArray& NodeArray, INT_PTR nStartIndex, const WORD wSequence[], INT_PTR nSequenceLen)
 {
     return RemoveSequenceOfNodes(NodeArray, nStartIndex, 0, wSequence, nSequenceLen);
 }
 
-BOOL CFalloutScript::RemoveSequenceOfNodes(CNodeArray& NodeArray, INT_PTR nStartIndex, INT_PTR nCount, const WORD wSequence[], INT_PTR nSequenceLen)
+bool CFalloutScript::RemoveSequenceOfNodes(CNodeArray& NodeArray, INT_PTR nStartIndex, INT_PTR nCount, const WORD wSequence[], INT_PTR nSequenceLen)
 {
     INT_PTR nCurrentNodeIndex = nStartIndex - 1;
 
@@ -250,13 +250,13 @@ BOOL CFalloutScript::RemoveSequenceOfNodes(CNodeArray& NodeArray, INT_PTR nStart
 
         if (NodeArray[nCurrentNodeIndex].m_Opcode.GetOperator() != wSequence[nCurrentNodeIndex - nStartIndex])
         {
-            return FALSE;
+            return false;
         }
     }
 
     NodeArray.RemoveAt(nStartIndex, nCount);
 
-    return TRUE;
+    return true;
 }
 
 void CFalloutScript::InitialReduce()
@@ -866,15 +866,15 @@ void CFalloutScript::ReduceConditionalExpressions(CNodeArray& NodeArray)
     */
 }
 
-BOOL CFalloutScript::IsOmittetArgsAllowed(WORD wOpcode)
+bool CFalloutScript::IsOmittetArgsAllowed(WORD wOpcode)
 {
     if (((wOpcode >= COpcode::O_END_CORE) && (wOpcode < COpcode::O_END_OP)) ||
         (wOpcode == COpcode::O_POP_RETURN))
     {
-        return TRUE;
+        return true;
     }
     else
     {
-        return FALSE;
+        return false;
     }
 }

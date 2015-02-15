@@ -61,7 +61,7 @@ void COpcode::Serialize(CArchive& ar)
     }
 }
 
-void COpcode::Expect(CArchive& ar, WORD wOperator, BOOL bArgumentFound, ULONG ulArgument)
+void COpcode::Expect(CArchive& ar, WORD wOperator, bool bArgumentFound, ULONG ulArgument)
 {
     Serialize(ar);
 
@@ -84,13 +84,13 @@ void COpcode::Expect(CArchive& ar, WORD wOperator, BOOL bArgumentFound, ULONG ul
 void COpcode::Expect(CArchive& ar, int nCount, WORD pwOperators[])
 {
     Serialize(ar);
-    BOOL bFound = FALSE;
+    bool bFound = false;
 
     for(int i = 0; i < nCount; i++)
     {
         if (m_wOperator == pwOperators[i])
         {
-            bFound = TRUE;
+            bFound = true;
             break;
         }
     }
@@ -114,7 +114,7 @@ void COpcode::Expect(CArchive& ar, int nCount, WORD pwOperators[])
     }
 }
 
-BOOL COpcode::HasArgument() const
+bool COpcode::HasArgument() const
 {
     return ((m_wOperator == O_STRINGOP) || (m_wOperator == O_FLOATOP) || (m_wOperator == O_INTOP));
 }

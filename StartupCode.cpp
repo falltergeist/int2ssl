@@ -35,7 +35,7 @@ void CStartupCode::Serialize(CArchive& ar)
     {
         if (i == 1)
         {
-            m_Code[i].Expect(ar, wExpectOpcodes[i], TRUE, 18);
+            m_Code[i].Expect(ar, wExpectOpcodes[i], true, 18);
         }
         else
         {

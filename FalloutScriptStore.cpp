@@ -385,12 +385,12 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
         }
         else if (procDescriptor.m_ulType & P_CONDITIONAL)
         {
-            strOutLine = format(strOutLine + " when (%s)", GetSource(m_Conditions[i][0], FALSE, procDescriptor.m_ulNumArgs).c_str());
+            strOutLine = format(strOutLine + " when (%s)", GetSource(m_Conditions[i][0], false, procDescriptor.m_ulNumArgs).c_str());
         }
 
         ar.WriteString(strOutLine + "\n");
 
-        BOOL bLocalVar = TRUE;
+        bool bLocalVar = true;
         ULONG ulLocalVarIndex = procDescriptor.m_ulNumArgs;
         INT_PTR nIndentLevel = 0;
         CNode::Type prevNodeType = CNode::TYPE_NORMAL;
@@ -443,12 +443,12 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
                         str += c_strLocalVarTemplate + " := ";
 
                         strOutLine = format(str.c_str(), ulLocalVarIndex);
-                        ar.WriteString(GetIndentString(nIndentLevel) + strOutLine + GetSource(m_ProcBodies[i][nNodeIndex], FALSE, procDescriptor.m_ulNumArgs) + ";\n");
+                        ar.WriteString(GetIndentString(nIndentLevel) + strOutLine + GetSource(m_ProcBodies[i][nNodeIndex], false, procDescriptor.m_ulNumArgs) + ";\n");
                         ulLocalVarIndex++;
                         break;
                     }
                     case COpcode::O_IF:
-                        ar.WriteString(GetIndentString(nIndentLevel) + GetSource(m_ProcBodies[i][nNodeIndex], FALSE, procDescriptor.m_ulNumArgs) + " then ");
+                        ar.WriteString(GetIndentString(nIndentLevel) + GetSource(m_ProcBodies[i][nNodeIndex], false, procDescriptor.m_ulNumArgs) + " then ");
                         break;
 
                     case COpcode::O_WHILE:
@@ -461,24 +461,24 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
                                 {
                                     str += "; ";
                                 }
-                                str += GetSource(m_ProcBodies[i][nNodeIndex].m_Arguments[j], FALSE, procDescriptor.m_ulNumArgs);
+                                str += GetSource(m_ProcBodies[i][nNodeIndex].m_Arguments[j], false, procDescriptor.m_ulNumArgs);
                             }
                             str += ") ";
                             ar.WriteString(str);
                         }
                         else
                         {
-                            ar.WriteString(GetIndentString(nIndentLevel) + GetSource(m_ProcBodies[i][nNodeIndex], FALSE, procDescriptor.m_ulNumArgs) + " do ");
+                            ar.WriteString(GetIndentString(nIndentLevel) + GetSource(m_ProcBodies[i][nNodeIndex], false, procDescriptor.m_ulNumArgs) + " do ");
                         }
                         break;
 
                     default:
-                        ar.WriteString(GetIndentString(nIndentLevel) + GetSource(m_ProcBodies[i][nNodeIndex], FALSE, procDescriptor.m_ulNumArgs) + ";\n");
+                        ar.WriteString(GetIndentString(nIndentLevel) + GetSource(m_ProcBodies[i][nNodeIndex], false, procDescriptor.m_ulNumArgs) + ";\n");
 
                         if ((m_ProcBodies[i][nNodeIndex].m_Type != CNode::TYPE_BEGIN_OF_BLOCK) &&
                             (m_ProcBodies[i][nNodeIndex].m_Type != CNode::TYPE_END_OF_BLOCK))
                         {
-                            bLocalVar = FALSE;
+                            bLocalVar = false;
                         }
                 }
             }
@@ -488,7 +488,7 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
     }
 }
 
-std::string CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
+std::string CFalloutScript::GetSource(CNode& node, bool bLabel, ULONG ulNumArgs)
 {
     std::string c_strArgumentTemplate("arg%u");
     std::string c_strLocalVarTemplate("LVar%u");
@@ -565,11 +565,11 @@ std::string CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
 
         case COpcode::O_POP_RETURN:
             strResult = "return ";
-            strResult += GetSource(node.m_Arguments[0], FALSE, ulNumArgs);
+            strResult += GetSource(node.m_Arguments[0], false, ulNumArgs);
             break;
 
         case COpcode::O_LOOKUP_STRING_PROC:
-            strResult = GetSource(node.m_Arguments[0], FALSE, ulNumArgs);
+            strResult = GetSource(node.m_Arguments[0], false, ulNumArgs);
             break;
 
         case COpcode::O_FETCH_GLOBAL:
@@ -603,7 +603,7 @@ std::string CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
 
             strResult = m_GlobalVarsNames[node.m_Arguments[1].m_Opcode.GetArgument()];
             strResult += " := ";
-            strResult += GetSource(node.m_Arguments[0], FALSE, ulNumArgs);
+            strResult += GetSource(node.m_Arguments[0], false, ulNumArgs);
             break;
 
         case COpcode::O_FETCH_EXTERNAL:
@@ -617,7 +617,7 @@ std::string CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
                 }
             }
 
-            strResult = GetSource(node.m_Arguments[0], TRUE, ulNumArgs);
+            strResult = GetSource(node.m_Arguments[0], true, ulNumArgs);
             break;
 
         case COpcode::O_STORE_EXTERNAL:
@@ -631,9 +631,9 @@ std::string CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
                 }
             }
 
-            strResult = GetSource(node.m_Arguments[1], TRUE, ulNumArgs);
+            strResult = GetSource(node.m_Arguments[1], true, ulNumArgs);
             strResult += " := ";
-            strResult += GetSource(node.m_Arguments[0], FALSE, ulNumArgs);
+            strResult += GetSource(node.m_Arguments[0], false, ulNumArgs);
             break;
 
         case COpcode::O_FETCH:
@@ -676,13 +676,13 @@ std::string CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
                     strResult = format(c_strLocalVarTemplate.c_str(), ulVarNum);
                 }
                 strResult += " := ";
-                strResult += GetSource(node.m_Arguments[0], FALSE, ulNumArgs);
+                strResult += GetSource(node.m_Arguments[0], false, ulNumArgs);
             }
 
             break;
 
         case COpcode::O_POP:
-            strResult = GetSource(node.m_Arguments[0], FALSE, ulNumArgs);
+            strResult = GetSource(node.m_Arguments[0], false, ulNumArgs);
 
             if (node.m_Arguments[0].m_Opcode.GetOperator() == COpcode::O_CALL)
             {
@@ -698,7 +698,7 @@ std::string CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
             }
             else
             {
-                strResult = GetSource(node.m_Arguments[node.m_Arguments.GetUpperBound()], FALSE, ulNumArgs);
+                strResult = GetSource(node.m_Arguments[node.m_Arguments.GetUpperBound()], false, ulNumArgs);
             }
 
             strResult += "(";
@@ -707,12 +707,12 @@ std::string CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
             {
                 if (nArgIndex == 0)
                 {
-                    strResult += GetSource(node.m_Arguments[nArgIndex], FALSE, ulNumArgs);
+                    strResult += GetSource(node.m_Arguments[nArgIndex], false, ulNumArgs);
                 }
                 else 
                 {
                     strResult += ", ";
-                    strResult +=  GetSource(node.m_Arguments[nArgIndex], FALSE, ulNumArgs);
+                    strResult +=  GetSource(node.m_Arguments[nArgIndex], false, ulNumArgs);
                 }
             }
 
@@ -729,11 +729,11 @@ std::string CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
             }
             else
             {
-                strResult += GetSource(node.m_Arguments[1], FALSE, ulNumArgs);
+                strResult += GetSource(node.m_Arguments[1], false, ulNumArgs);
             }
 
             strResult += " in (";
-            strResult +=  GetSource(node.m_Arguments[0], FALSE, ulNumArgs) + ")";
+            strResult +=  GetSource(node.m_Arguments[0], false, ulNumArgs) + ")";
             break;
 
         case COpcode::O_CALL_CONDITION:
@@ -745,27 +745,27 @@ std::string CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
             }
             else
             {
-                strResult += GetSource(node.m_Arguments[1], FALSE, ulNumArgs);
+                strResult += GetSource(node.m_Arguments[1], false, ulNumArgs);
             }
 
             strResult += " when (";
-            strResult +=  GetSource(node.m_Arguments[0], FALSE, ulNumArgs) + ")";
+            strResult +=  GetSource(node.m_Arguments[0], false, ulNumArgs) + ")";
             break;
 
         case COpcode::O_ADDREGION:
             strResult = "addRegion ";
-            strResult += GetSource(node.m_Arguments[0], FALSE, ulNumArgs) + " { ";
+            strResult += GetSource(node.m_Arguments[0], false, ulNumArgs) + " { ";
 
             for(INT_PTR nArgIndex = 1; nArgIndex < node.m_Arguments.GetUpperBound(); nArgIndex++)
             {
                 if (nArgIndex == 1)
                 {
-                    strResult += GetSource(node.m_Arguments[nArgIndex], FALSE, ulNumArgs);
+                    strResult += GetSource(node.m_Arguments[nArgIndex], false, ulNumArgs);
                 }
                 else
                 {
                     strResult += ", ";
-                    strResult += GetSource(node.m_Arguments[nArgIndex], FALSE, ulNumArgs);
+                    strResult += GetSource(node.m_Arguments[nArgIndex], false, ulNumArgs);
                 }
             }
 
@@ -806,7 +806,7 @@ std::string CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
                 else
                 {
                     strResult = "sayOption(";
-                    strResult += GetSource(node.m_Arguments[0], FALSE, ulNumArgs) + ", " + GetSource(node.m_Arguments[1], FALSE, ulNumArgs) + ")";
+                    strResult += GetSource(node.m_Arguments[0], false, ulNumArgs) + ", " + GetSource(node.m_Arguments[1], false, ulNumArgs) + ")";
                 }
             }
 
@@ -924,11 +924,11 @@ std::string CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
                     if (ArgNeedParens(node, node.m_Arguments[0], CFalloutScript::LEFT_ASSOC))
                     {
                         strResult = "(";
-                        strResult += GetSource(node.m_Arguments[0], FALSE, ulNumArgs) + ")";
+                        strResult += GetSource(node.m_Arguments[0], false, ulNumArgs) + ")";
                     }
                     else
                     {
-                        strResult = GetSource(node.m_Arguments[0], FALSE, ulNumArgs);
+                        strResult = GetSource(node.m_Arguments[0], false, ulNumArgs);
                     }
 
                     strResult += " ";
@@ -938,11 +938,11 @@ std::string CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
                     if (ArgNeedParens(node, node.m_Arguments[1], CFalloutScript::RIGHT_ASSOC))
                     {
                         strResult += "(";
-                        strResult += GetSource(node.m_Arguments[1], FALSE, ulNumArgs) + ")";
+                        strResult += GetSource(node.m_Arguments[1], false, ulNumArgs) + ")";
                     }
                     else
                     {
-                        strResult += GetSource(node.m_Arguments[1], FALSE, ulNumArgs);
+                        strResult += GetSource(node.m_Arguments[1], false, ulNumArgs);
                     }
 
                     break;
@@ -963,12 +963,12 @@ std::string CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
                         {
                             if (i == 0)
                             {
-                                strResult += GetSource(node.m_Arguments[i], FALSE, ulNumArgs);
+                                strResult += GetSource(node.m_Arguments[i], false, ulNumArgs);
                             }
                             else
                             {
                                 strResult += ", ";
-                                strResult += GetSource(node.m_Arguments[i], FALSE, ulNumArgs);
+                                strResult += GetSource(node.m_Arguments[i], false, ulNumArgs);
                             }
                         }
 
@@ -982,22 +982,22 @@ std::string CFalloutScript::GetSource(CNode& node, BOOL bLabel, ULONG ulNumArgs)
     return strResult;
 }
 
-std::string CFalloutScript::GetSource( CNode& node, BOOL bLabel, ULONG ulNumArgs, ULONG aulProcArg[], ULONG ulProcArgCount)
+std::string CFalloutScript::GetSource( CNode& node, bool bLabel, ULONG ulNumArgs, ULONG aulProcArg[], ULONG ulProcArgCount)
 {
     COpcode::COpcodeAttributes attributes = node.m_Opcode.GetAttributes();
     std::string strResult = attributes.m_strName + "(";
     std::string strArgument;
-    BOOL bIsProcArg;
+    bool bIsProcArg;
 
     for(INT_PTR nArgIndex = 0; nArgIndex < node.m_Arguments.GetSize(); nArgIndex++)
     {
-        bIsProcArg = FALSE;
+        bIsProcArg = false;
 
         for(ULONG ulProcArgIndex = 0; ulProcArgIndex < ulProcArgCount; ulProcArgIndex++)
         {
             if (nArgIndex == aulProcArg[ulProcArgIndex] - 1)
             {
-                bIsProcArg = TRUE;
+                bIsProcArg = true;
                 break;
             }
         }
@@ -1020,12 +1020,12 @@ std::string CFalloutScript::GetSource( CNode& node, BOOL bLabel, ULONG ulNumArgs
             }
             else
             {
-                strArgument = GetSource(node.m_Arguments[nArgIndex], FALSE, ulNumArgs);
+                strArgument = GetSource(node.m_Arguments[nArgIndex], false, ulNumArgs);
             }
         }
         else
         {
-            strArgument = GetSource(node.m_Arguments[nArgIndex], FALSE, ulNumArgs);
+            strArgument = GetSource(node.m_Arguments[nArgIndex], false, ulNumArgs);
         }
 
         if (nArgIndex == 0)

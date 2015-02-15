@@ -1,7 +1,11 @@
+// C++ standard includes
+#include <iostream>
+
+// int2ssl includes
 #include "stdafx.h"
 #include "FalloutScript.h"
 
-#include <iostream>
+// Third party includes
 
 CFalloutScript::CFalloutScript()
 {
@@ -14,21 +18,21 @@ CFalloutScript::~CFalloutScript()
 void CFalloutScript::Serialize(CArchive& ar)
 {
 
-    printf("  Read strtup code\n");
+    std::cout << "  Read strtup code" << std::endl;
     m_StartupCode.Serialize(ar);
 
-    printf("  Read procedures table\n");
+    std::cout << "  Read procedures table" << std::endl;
     m_ProcTable.Serialize(ar);
 
-    printf("  Read namespace\n");
+    std::cout << "  Read namespace" << std::endl;
     m_Namespace.Serialize(ar);
 
-    printf("  Read stringspace\n");
+    std::cout << "  Read stringspace" << std::endl;
     m_Stringspace.Serialize(ar);
 
     COpcode opcode;
 
-    printf("  Read tail of startup code\n");
+    std::cout << "  Read tail of startup code" << std::endl;
     opcode.Expect(ar, COpcode::O_SET_GLOBAL);
 
     // Sections with variable sizes
@@ -51,7 +55,7 @@ void CFalloutScript::Serialize(CArchive& ar)
     }
 
     // Jump to 'start' procedure
-    printf("    Check \"Jump to \'start\' procedure\" / \"Jump to end of statup code\"\n");
+    std::cout << "    Check \"Jump to \'start\' procedure\" / \"Jump to end of statup code\"" << std::endl;
 
     if (!HeaderTail.IsEmpty())
     {
@@ -207,7 +211,7 @@ void CFalloutScript::Serialize(CArchive& ar)
     }
 }
 
-void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Destination, WORD wDelimeter, int nSizeOfCodeItem, LPCTSTR lpszErrorMessage, BOOL (CFalloutScript::*pCheckFunc)(WORD, INT_PTR))
+void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Destination, WORD wDelimeter, int nSizeOfCodeItem, const char* lpszErrorMessage, bool (CFalloutScript::*pCheckFunc)(WORD, INT_PTR))
 {
     INT_PTR i = 0;
 
@@ -255,12 +259,12 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
     }
 }
 
-BOOL CFalloutScript::CheckExportVarCode(WORD wOperator, INT_PTR nIndex)
+bool CFalloutScript::CheckExportVarCode(WORD wOperator, INT_PTR nIndex)
 {
     return (nIndex == 0) && (wOperator == COpcode::O_STRINGOP);
 }
 
-BOOL CFalloutScript::CheckSetExportedVarValueCode(WORD wOperator, INT_PTR nIndex)
+bool CFalloutScript::CheckSetExportedVarValueCode(WORD wOperator, INT_PTR nIndex)
 {
     switch(nIndex)
     {
@@ -272,11 +276,11 @@ BOOL CFalloutScript::CheckSetExportedVarValueCode(WORD wOperator, INT_PTR nIndex
             return (wOperator == COpcode::O_STRINGOP);
 
         default:
-            return FALSE;
+            return false;
     }
 }
 
-BOOL CFalloutScript::CheckExportProcCode(WORD wOperator, INT_PTR nIndex)
+bool CFalloutScript::CheckExportProcCode(WORD wOperator, INT_PTR nIndex)
 {
     return ((nIndex == 0) || (nIndex == 1)) && (wOperator == COpcode::O_INTOP);
 }

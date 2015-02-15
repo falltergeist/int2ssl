@@ -12,12 +12,12 @@
 using namespace std;
 
 // Globals
-BOOL g_bDump = FALSE;
+bool g_bDump = false;
 int g_nFalloutVersion = 2;
 std::string  g_strIndentFill("\t");
-BOOL g_bIgnoreWrongNumOfArgs = FALSE;
-BOOL g_bInsOmittedArgsBackward = FALSE;
-BOOL g_bStopOnError = FALSE;
+bool g_bIgnoreWrongNumOfArgs = false;
+bool g_bInsOmittedArgsBackward = false;
+bool g_bStopOnError = false;
 
 std::string g_inputFileName;
 std::string g_outputFileName;
@@ -25,7 +25,7 @@ std::string g_outputFileName;
 
 // Functions
 void PrintUsage(std::string filename);
-BOOL ProcessCommandLine(int argc, char* argv[]);
+bool ProcessCommandLine(int argc, char* argv[]);
 
 int main(int argc, char* argv[])
 { 
@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
     if (!fileInput.Open(g_inputFileName, CFile::modeRead | CFile::shareDenyWrite))
     {
         printf("Error: Unable open input file %s.\n", g_inputFileName.c_str());
-        if (g_bStopOnError == TRUE)
+        if (g_bStopOnError == true)
         {
             printf("Press ENTER to continue.\n");
             cin.get();
@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
     if (!fileOutput.Open(g_outputFileName, CFile::modeCreate | CFile::modeWrite | CFile::typeText | CFile::shareDenyWrite))
     {
         std::cout << format("Error: Unable open output file %s", g_outputFileName) << std::endl;
-        if (g_bStopOnError == TRUE)
+        if (g_bStopOnError == true)
         {
             std::cout << "Press ENTER to continue." << std::endl;
             cin.get();
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
     catch (const UserException& e)
     {
         // Error message already displayed
-        if (g_bStopOnError == TRUE)
+        if (g_bStopOnError == true)
         {
             printf("Press ENTER to continue.\n");
             cin.get();
@@ -148,7 +148,7 @@ void PrintUsage(std::string filename)
               << "  --: end of options" << std::endl;
 }
 
-BOOL ProcessCommandLine(int argc, char* argv[])
+bool ProcessCommandLine(int argc, char* argv[])
 {
     int c;
     int nIndentWidth;
@@ -158,7 +158,7 @@ BOOL ProcessCommandLine(int argc, char* argv[])
         switch (c)
         {
             case 'd':
-                g_bDump = TRUE;
+                g_bDump = true;
                 printf("dump file is on.\n");
                 break;
 
@@ -168,17 +168,17 @@ BOOL ProcessCommandLine(int argc, char* argv[])
                 break;
 
             case 'a':
-                g_bIgnoreWrongNumOfArgs = TRUE;
+                g_bIgnoreWrongNumOfArgs = true;
                 printf("ignore wrong number of arguments is on.\n");
                 break;
 
             case 'b':
-                g_bInsOmittedArgsBackward = TRUE;
+                g_bInsOmittedArgsBackward = true;
                 printf("insert omitted arguments backward is on.\n");
                 break;
 
             case 'e':
-                g_bStopOnError = TRUE;
+                g_bStopOnError = true;
                 printf("stop decompiling on error is on.\n");
                 break;
 
@@ -204,12 +204,12 @@ BOOL ProcessCommandLine(int argc, char* argv[])
     if (optind == argc)
     {
         printf("Error: Input file name omitted\n");
-        if (g_bStopOnError == TRUE)
+        if (g_bStopOnError == true)
         {
             printf("Press ENTER to continue.\n");
             cin.get();
         }
-        return FALSE;
+        return false;
     }
 
     g_inputFileName = argv[optind];
@@ -239,5 +239,5 @@ BOOL ProcessCommandLine(int argc, char* argv[])
             g_outputFileName += ".ssl";
         }
     }
-    return TRUE;
+    return true;
 }

@@ -29,7 +29,7 @@ public:
     std::string operator [] (ULONG ulOffset) const;
 
 private:    
-    typedef CMap<DWORD, DWORD, std::string, LPCTSTR> CMapDWordToString;
+    typedef CMap<DWORD, DWORD, std::string, const char*> CMapDWordToString;
 
     CMapDWordToString m_Map;
     CDWordArray m_Order;
