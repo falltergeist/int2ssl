@@ -19,8 +19,8 @@
 // Third party includes
 
 class CNode;
-typedef CArray<CNode, CNode&> CNodeArray;
-typedef CArray<CNodeArray, CNodeArray&> CArrayOfNodeArray;
+typedef std::vector<CNode> CNodeArray;
+typedef std::vector<CNodeArray> CArrayOfNodeArray;
 
 class CNode
 {

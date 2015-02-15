@@ -18,7 +18,6 @@ ObjectAttributes.h
 Opcode.h
 ProcTable.h
 StartupCode.h
-stdafx.h
 Utility.h
 XGetopt.h
 FalloutScript.cpp
@@ -32,7 +31,6 @@ OpcodeAttributes.cpp
 Opcode.cpp
 ProcTable.cpp
 StartupCode.cpp
-stdafx.cpp
 Utility.cpp
 XGetopt.cpp
 )

@@ -61,10 +61,10 @@ public:
 
 private:
     // CProcTableArray
-    typedef CArray<CProcDescriptor, CProcDescriptor&> CProcTableArray;
+    typedef std::vector<CProcDescriptor> CProcTableArray;
 
     CProcTableArray m_Table;
-    CDWordArray m_ProcSize;
+    std::vector<uint32_t> m_ProcSize;
     uint32_t m_ulOffsetOfProcSection;
 };
 

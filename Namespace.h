@@ -11,6 +11,7 @@
 #define NAMESPACE_H
 
 // C++ standard includes
+#include <vector>
 
 // int2ssl includes
 #include "Hacks/CArchive.h"
@@ -41,7 +42,7 @@ private:
     typedef CMap<uint32_t, uint32_t, std::string, const char*> CMapDWordToString;
 
     CMapDWordToString m_Map;
-    CDWordArray m_Order;
+    std::vector<uint32_t> m_Order;
 };
 
 #endif //NAMESPACE_H

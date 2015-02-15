@@ -10,7 +10,6 @@
 // C++ standard includes
 
 // int2ssl includes
-#include "stdafx.h"
 #include "Node.h"
 #include "Utility.h"
 
@@ -28,7 +27,7 @@ CNode::CNode(const CNode& node) :
     m_Opcode(node.m_Opcode),
     m_Type(node.m_Type)
 {
-    m_Arguments.Copy(node.m_Arguments);
+    m_Arguments = node.m_Arguments;
 }
 
 CNode::~CNode()
@@ -42,7 +41,7 @@ CNode& CNode::operator = (const CNode& node)
         m_ulOffset = node.m_ulOffset;
         m_Opcode = node.m_Opcode;
         m_Type = node.m_Type;
-        m_Arguments.Copy(node.m_Arguments);
+        m_Arguments = node.m_Arguments;
     }
     return (*this);
 }
@@ -98,9 +97,9 @@ void CNode::StoreTree(CArchive& ar, int nIndent, int nIndex)
                                 wOperator);
             ar.WriteString(strOutLine);
     }
-    if (!m_Arguments.IsEmpty())
+    if (!m_Arguments.empty())
     {
-        for(int i = 0; i < m_Arguments.GetSize(); i++)
+        for(int i = 0; i < m_Arguments.size(); i++)
         {
             m_Arguments[i].StoreTree(ar, nIndent + 1, i);
         }
@@ -114,7 +113,7 @@ void CNode::StoreTree(CArchive& ar, int nIndent, int nIndex)
 
 uint32_t CNode::GetTopOffset()
 {
-    if (m_Arguments.GetSize() > 0)
+    if (m_Arguments.size() > 0)
     {
         return m_Arguments[0].GetTopOffset();
     }

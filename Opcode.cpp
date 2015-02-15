@@ -11,7 +11,6 @@
 #include <iostream>
 
 // int2ssl includes
-#include "stdafx.h"
 #include "Opcode.h"
 #include "Utility.h"
 

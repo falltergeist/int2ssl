@@ -11,6 +11,7 @@
 #define OPCODE_H
 
 // C++ standard includes
+#include <vector>
 
 // int2ssl includes
 #include "Hacks/CArchive.h"
@@ -850,6 +851,6 @@ private:
     uint32_t m_ulArgument;
 };
 
-typedef CArray<COpcode, COpcode&> COpcodeArray;
+typedef std::vector<COpcode> COpcodeArray;
 
 #endif // OPCODE_H

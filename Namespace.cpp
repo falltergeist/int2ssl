@@ -10,7 +10,6 @@
 // C++ standard includes
 
 // int2ssl includes
-#include "stdafx.h"
 #include "Namespace.h"
 #include "Utility.h"
 
@@ -28,7 +27,7 @@ CNamespace::~CNamespace()
 void CNamespace::Serialize(CArchive& ar)
 {
     m_Map.RemoveAll();
-    m_Order.RemoveAll();
+    m_Order.clear();;
 
     uint32_t ulLength;
 
@@ -91,7 +90,7 @@ void CNamespace::Serialize(CArchive& ar)
         }
 
         m_Map.SetAt(ulTotalRead + 6, strNewString);
-        m_Order.Add(ulTotalRead + 6);
+        m_Order.push_back(ulTotalRead + 6);
 
         ulTotalRead += (2 + wLengthOfString);
     }
@@ -137,20 +136,20 @@ void CNamespace::Dump(CArchive& ar)
 {
     std::string strOutLine;
 
-    if (m_Order.IsEmpty())
+    if (m_Order.empty())
     {
         ar.WriteString("Empty\n");
     }
     else
     {
-        for(unsigned int i = 0; i < m_Order.GetSize(); i++)
+        for(unsigned int i = 0; i < m_Order.size(); i++)
         {
             strOutLine = format("0x%08X: \"%s\"\n", m_Order[i], GetStringByIndex(i).c_str());
             ar.WriteString(strOutLine);
         }
 
         ar.WriteString("==================\n");
-        strOutLine = format("%d item(s)\n", m_Order.GetSize());
+        strOutLine = format("%d item(s)\n", m_Order.size());
         ar.WriteString(strOutLine);
     }
 }

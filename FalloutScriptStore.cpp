@@ -11,7 +11,6 @@
 #include <iostream>
 
 // int2ssl includes
-#include "stdafx.h"
 #include "FalloutScript.h"
 #include "ObjectAttributes.h"
 #include "Utility.h"
@@ -38,7 +37,7 @@ void CFalloutScript::StoreTree(CArchive& ar)
             ar.WriteString("Condition\n");
             ar.WriteString("===============================\n");
 
-            for(int32_t i = 0; i < m_Conditions[nIndexOfProc].GetSize(); i++)
+            for(int32_t i = 0; i < m_Conditions[nIndexOfProc].size(); i++)
             {
                 strOutLine = format("0x%08X: ", m_Conditions[nIndexOfProc][i].m_ulOffset);
                 ar.WriteString(strOutLine);
@@ -50,7 +49,7 @@ void CFalloutScript::StoreTree(CArchive& ar)
             ar.WriteString("===============================\n");
         }
 
-        for(int32_t i = 0; i < m_ProcBodies[nIndexOfProc].GetSize(); i++)
+        for(int32_t i = 0; i < m_ProcBodies[nIndexOfProc].size(); i++)
         {
             strOutLine = format("0x%08X: ", m_ProcBodies[nIndexOfProc][i].m_ulOffset);
             ar.WriteString(strOutLine);
@@ -92,7 +91,7 @@ void CFalloutScript::StoreDefinitions(CArchive& ar)
         ar.WriteString("*******************************************************/\n");
         ar.WriteString("\n");
 
-        for(int32_t i = 0; i < m_GlobalVar.GetSize(); i++)
+        for(int32_t i = 0; i < m_GlobalVar.size(); i++)
         {
             ulVarValue = m_GlobalVar[i].GetArgument();
             strDefinition += "variable ";
@@ -406,7 +405,7 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
         int32_t nIndentLevel = 0;
         CNode::Type prevNodeType = CNode::TYPE_NORMAL;
 
-        for(int32_t nNodeIndex = 0; nNodeIndex < m_ProcBodies[i].GetSize(); nNodeIndex++)
+        for(int32_t nNodeIndex = 0; nNodeIndex < m_ProcBodies[i].size(); nNodeIndex++)
         {
             if (m_ProcBodies[i][nNodeIndex].m_Type == CNode::TYPE_BEGIN_OF_BLOCK)
             {
@@ -466,7 +465,7 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
                         if (m_ProcBodies[i][nNodeIndex].m_Type == CNode::TYPE_FOR_LOOP)
                         {
                             std::string str = GetIndentString(nIndentLevel) + "for (";
-                            for (int32_t j = 0; j < m_ProcBodies[i][nNodeIndex].m_Arguments.GetSize(); j++)
+                            for (int32_t j = 0; j < m_ProcBodies[i][nNodeIndex].m_Arguments.size(); j++)
                             {
                                 if (j > 0)
                                 {
@@ -701,18 +700,18 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
             break;
 
         case COpcode::O_CALL:
-            if (node.m_Arguments[node.m_Arguments.GetUpperBound()].m_Opcode.GetOperator() == COpcode::O_INTOP)
+            if (node.m_Arguments[node.m_Arguments.size() - 1].m_Opcode.GetOperator() == COpcode::O_INTOP)
             {
-                strResult = m_Namespace[m_ProcTable[node.m_Arguments[node.m_Arguments.GetUpperBound()].m_Opcode.GetArgument()].m_ulNameOffset];
+                strResult = m_Namespace[m_ProcTable[node.m_Arguments[node.m_Arguments.size() - 1].m_Opcode.GetArgument()].m_ulNameOffset];
             }
             else
             {
-                strResult = GetSource(node.m_Arguments[node.m_Arguments.GetUpperBound()], false, ulNumArgs);
+                strResult = GetSource(node.m_Arguments[node.m_Arguments.size() - 1], false, ulNumArgs);
             }
 
             strResult += "(";
 
-            for(int32_t nArgIndex = 0; nArgIndex < node.m_Arguments.GetUpperBound() - 1; nArgIndex++)
+            for(int32_t nArgIndex = 0; nArgIndex < node.m_Arguments.size() - 1 - 1; nArgIndex++)
             {
                 if (nArgIndex == 0)
                 {
@@ -765,7 +764,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
             strResult = "addRegion ";
             strResult += GetSource(node.m_Arguments[0], false, ulNumArgs) + " { ";
 
-            for(int32_t nArgIndex = 1; nArgIndex < node.m_Arguments.GetUpperBound(); nArgIndex++)
+            for(int32_t nArgIndex = 1; nArgIndex < node.m_Arguments.size() - 1; nArgIndex++)
             {
                 if (nArgIndex == 1)
                 {
@@ -913,14 +912,14 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
             }
             if (node.m_Type == CNode::TYPE_CONDITIONAL_EXPRESSION)
             {
-                if (node.m_Arguments.GetSize() != 3)
+                if (node.m_Arguments.size() != 3)
                 {
                     printf("Error: Invalid number of arguments in conditional expression\n");
                     throw std::exception();
                 }
                 std::string sPostfix[] = { " if ", " else ", ""};
                 strResult = "";
-                for(int32_t i = 0; i < node.m_Arguments.GetSize(); i++)
+                for(int32_t i = 0; i < node.m_Arguments.size(); i++)
                 {
                     bool bParens = ArgNeedParens(node, node.m_Arguments[i], CFalloutScript::RIGHT_ASSOC);
                     strResult += (bParens ? "(" : "") + GetSource(node.m_Arguments[i], bLabel, ulNumArgs) + (bParens ? ")" : "") + sPostfix[i];
@@ -959,7 +958,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
                 case COpcode::COpcodeAttributes::CATEGORY_PREFIX:
                     strResult = attributes.m_strName;
 
-                    if (node.m_Arguments.GetSize() != 0)
+                    if (node.m_Arguments.size() != 0)
                     {
                         if (wOperator == COpcode::O_IF || wOperator == COpcode::O_WHILE)
                         {
@@ -968,7 +967,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
 
                         strResult += "(";
 
-                        for(int32_t i = 0; i < node.m_Arguments.GetSize(); i++)
+                        for(int32_t i = 0; i < node.m_Arguments.size(); i++)
                         {
                             if (i == 0)
                             {
@@ -998,7 +997,7 @@ std::string CFalloutScript::GetSource( CNode& node, bool bLabel, uint32_t ulNumA
     std::string strArgument;
     bool bIsProcArg;
 
-    for(int32_t nArgIndex = 0; nArgIndex < node.m_Arguments.GetSize(); nArgIndex++)
+    for(int32_t nArgIndex = 0; nArgIndex < node.m_Arguments.size(); nArgIndex++)
     {
         bIsProcArg = false;
 

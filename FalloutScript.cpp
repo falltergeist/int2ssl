@@ -11,7 +11,6 @@
 #include <iostream>
 
 // int2ssl includes
-#include "stdafx.h"
 #include "FalloutScript.h"
 
 // Third party includes
@@ -49,10 +48,10 @@ void CFalloutScript::Serialize(CArchive& ar)
     uint32_t ullCurrentOffset = ar.GetFile()->GetPosition();
 
     // Load globals
-    m_GlobalVar.RemoveAll();
-    m_ExportedVar.RemoveAll();
-    m_ExportedVarValue.RemoveAll();
-    m_ExportedProc.RemoveAll();
+    m_GlobalVar.clear();
+    m_ExportedVar.clear();
+    m_ExportedVarValue.clear();
+    m_ExportedProc.clear();
 
     COpcodeArray HeaderTail;
 
@@ -60,24 +59,24 @@ void CFalloutScript::Serialize(CArchive& ar)
     {
         opcode.Serialize(ar);
         ullCurrentOffset += opcode.GetSize();
-        HeaderTail.Add(opcode);
+        HeaderTail.push_back(opcode);
     }
 
     // Jump to 'start' procedure
     std::cout << "    Check \"Jump to \'start\' procedure\" / \"Jump to end of statup code\"" << std::endl;
 
-    if (!HeaderTail.IsEmpty())
+    if (!HeaderTail.empty())
     {
         int32_t nIndexOfStart = GetIndexOfProc("start");
         uint32_t ulStartProcAddress = (nIndexOfStart != -1) ? m_ProcTable[nIndexOfStart].m_ulBodyOffset : 18;
 
-        opcode = HeaderTail[HeaderTail.GetUpperBound()];
+        opcode = HeaderTail.back();
 
         if (opcode.GetOperator() == COpcode::O_JMP)
         {
-            HeaderTail.RemoveAt(HeaderTail.GetUpperBound());
+            HeaderTail.pop_back();
 
-            if (HeaderTail.IsEmpty())
+            if (HeaderTail.empty())
             {
                 printf("\n");
                 printf("Warning: Omitted address of jump\n");
@@ -85,11 +84,11 @@ void CFalloutScript::Serialize(CArchive& ar)
             }
             else
             {
-                opcode = HeaderTail[HeaderTail.GetUpperBound()];
+                opcode = HeaderTail.back();
 
                 if (opcode.GetOperator() == COpcode::O_INTOP)
                 {
-                    HeaderTail.RemoveAt(HeaderTail.GetUpperBound());
+                    HeaderTail.pop_back();
 
                     if (opcode.GetArgument() != ulStartProcAddress)
                     {
@@ -119,21 +118,21 @@ void CFalloutScript::Serialize(CArchive& ar)
 
     std::string strNumOfArgsWarning = "Warning: Omitted  \"# of argument to \'start\' procedure\"\n";
 
-    if (!HeaderTail.IsEmpty())
+    if (!HeaderTail.empty())
     {
-        opcode = HeaderTail[HeaderTail.GetUpperBound()];
+        opcode = HeaderTail.back();
 
         if (opcode.GetOperator() == COpcode::O_CRITICAL_DONE)
         {
-            HeaderTail.RemoveAt(HeaderTail.GetUpperBound());
+            HeaderTail.pop_back();
 
-            if (!HeaderTail.IsEmpty())
+            if (!HeaderTail.empty())
             {
-                opcode = HeaderTail[HeaderTail.GetUpperBound()];
+                opcode = HeaderTail.back();
 
                 if (opcode.HasArgument())
                 {
-                    HeaderTail.RemoveAt(HeaderTail.GetUpperBound());
+                    HeaderTail.pop_back();
                 }
                 else
                 {
@@ -178,7 +177,7 @@ void CFalloutScript::Serialize(CArchive& ar)
     // Global variables
     printf("    Extract \"Global variables\" section\n");
 
-    for(int32_t i = 0; i < HeaderTail.GetSize(); i++)
+    for(int32_t i = 0; i < HeaderTail.size(); i++)
     {
         uint16_t wGlobalVarOperator = HeaderTail[i].GetOperator();
 
@@ -190,15 +189,15 @@ void CFalloutScript::Serialize(CArchive& ar)
             throw std::exception();
         }
 
-        m_GlobalVar.Add(HeaderTail[i]);
+        m_GlobalVar.push_back(HeaderTail[i]);
     }
 
     // Procedures bodyes
     printf("  Read procedure\'s bodies\n");
-    m_ProcBodies.RemoveAll();   // Destroy old data
-    m_Conditions.RemoveAll();
-    m_ProcBodies.SetSize(m_ProcTable.GetSize());
-    m_Conditions.SetSize(m_ProcTable.GetSize());
+    m_ProcBodies.clear();   // Destroy old data
+    m_Conditions.clear();
+    m_ProcBodies.resize(m_ProcTable.GetSize());
+    m_Conditions.resize(m_ProcTable.GetSize());
 
     CNode node;
 
@@ -214,7 +213,7 @@ void CFalloutScript::Serialize(CArchive& ar)
         {
             node.m_Opcode.Serialize(ar);
             node.m_ulOffset = ulOffset;
-            m_ProcBodies[i].Add(node);
+            m_ProcBodies[i].push_back(node);
             ulOffset += node.m_Opcode.GetSize();
         }
     }
@@ -224,7 +223,7 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
 {
     int32_t i = 0;
 
-    for(; i < Source.GetSize(); i++)
+    for(; i < Source.size(); i++)
     {
         if (Source[i].GetOperator() == wDelimeter)
         {
@@ -232,7 +231,7 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
         }
     }
 
-    if (i < Source.GetSize())
+    if (i < Source.size())
     {
         if (i < nSizeOfCodeItem - 1)
         {
@@ -253,14 +252,13 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
 
             for(int32_t j = 0; j < nSizeOfCodeItem - 1; j++)
             {
-                Destination.Add(Source[i - nSizeOfCodeItem + 1]);
-                Source.RemoveAt(i - nSizeOfCodeItem + 1);
+                Destination.push_back(Source[i - nSizeOfCodeItem + 1]);
+                Source.erase(Source.begin() + i - nSizeOfCodeItem + 1);
             }
 
-            Source.RemoveAt(i - nSizeOfCodeItem + 1);   // Delimeter
+            Source.erase(Source.begin() + i - nSizeOfCodeItem + 1); // Delimeter
 
-
-            if (i > Source.GetUpperBound())
+            if (i > Source.size() - 1)
             {
                 break;
             }

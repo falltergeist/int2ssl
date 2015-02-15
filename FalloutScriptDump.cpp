@@ -10,7 +10,6 @@
 // C++ standard includes
 
 // int2ssl includes
-#include "stdafx.h"
 #include "FalloutScript.h"
 #include "Utility.h"
 
@@ -41,13 +40,13 @@ void CFalloutScript::Dump(CArchive& ar)
 
     ar.WriteString("============== Global variables values ==================\n");
 
-    if (m_GlobalVar.IsEmpty())
+    if (m_GlobalVar.empty())
     {
         ar.WriteString("Not found\n");
     }
     else
     {
-        for(unsigned int i = 0; i < m_GlobalVar.GetSize(); i++)
+        for(unsigned int i = 0; i < m_GlobalVar.size(); i++)
         {
             wOperator = m_GlobalVar[i].GetOperator();
             ulArgument = m_GlobalVar[i].GetArgument();
@@ -81,13 +80,13 @@ void CFalloutScript::Dump(CArchive& ar)
 
     ar.WriteString("============== Exported variables ==================\n");
 
-    if (m_ExportedVarValue.IsEmpty())
+    if (m_ExportedVarValue.empty())
     {
         ar.WriteString("Not found\n");
     }
     else
     {
-        for(int32_t i = 0; i < m_ExportedVarValue.GetSize(); i += 2)
+        for(int32_t i = 0; i < m_ExportedVarValue.size(); i += 2)
         {
             wOperator = m_ExportedVarValue[i].GetOperator();
             ulArgument = m_ExportedVarValue[i].GetArgument();
@@ -133,7 +132,7 @@ void CFalloutScript::Dump(CArchive& ar)
         ar.WriteString(strOutLine);
         ar.WriteString("===============================\n");
 
-        for(int32_t i = 0; i < m_ProcBodies[nIndexOfProc].GetSize(); i++)
+        for(int32_t i = 0; i < m_ProcBodies[nIndexOfProc].size(); i++)
         {
             wOperator = m_ProcBodies[nIndexOfProc][i].m_Opcode.GetOperator();
             ulArgument = m_ProcBodies[nIndexOfProc][i].m_Opcode.GetArgument();

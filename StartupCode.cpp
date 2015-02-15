@@ -10,7 +10,6 @@
 // C++ standard includes
 
 // int2ssl includes
-#include "stdafx.h"
 #include "StartupCode.h"
 
 // Third party includes

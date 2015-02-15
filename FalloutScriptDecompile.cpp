@@ -12,7 +12,6 @@
 #include <algorithm>
 
 // int2ssl includes
-#include "stdafx.h"
 #include "FalloutScript.h"
 #include "ObjectAttributes.h"
 #include "Utility.h"
@@ -48,7 +47,7 @@ void CFalloutScript::InitDefinitions()
         }
     }
 
-    m_GlobalVarsNames.resize(m_GlobalVar.GetSize());
+    m_GlobalVarsNames.resize(m_GlobalVar.size());
 
     for(int32_t i = 0; i < m_GlobalVarsNames.size(); i++)
     {
@@ -78,7 +77,7 @@ void CFalloutScript::ProcessCode()
             ExtractAndReduceCondition(m_ProcBodies[i], m_Conditions[i], 0);
         }
 
-        for(int32_t j = 0; j < m_ProcBodies[i].GetSize(); j++)
+        for(int32_t j = 0; j < m_ProcBodies[i].size(); j++)
         {
             if (m_ProcBodies[i][j].m_Opcode.GetOperator() == COpcode::O_CALL_CONDITION)
             {
@@ -166,7 +165,7 @@ int32_t CFalloutScript::GetIndexOfExportedVariable(uint32_t ulNameOffset)
 {
     int32_t nResult = -1;
 
-    for(int32_t i = 0; i < m_ExportedVarValue.GetSize(); i += 2)
+    for(int32_t i = 0; i < m_ExportedVarValue.size(); i += 2)
     {
         if (m_ExportedVarValue[i + 1].GetArgument() == ulNameOffset)
         {
@@ -192,7 +191,7 @@ void CFalloutScript::TryRenameGlobalVariables()
 {
     int32_t nNamesCount = m_Namespace.GetSize();
     int32_t nDefinitionsCount = m_Definitions.GetSize();
-    int32_t nGlobalVarCount = m_GlobalVar.GetSize();
+    int32_t nGlobalVarCount = m_GlobalVar.size();
 
     CDefObject defObject;
     int32_t nGlobalVarIndex = 0;
@@ -220,7 +219,7 @@ void CFalloutScript::TryRenameImportedVariables()
     CDefObject defObject;
     uint32_t ulNameOffset;
 
-    if (m_GlobalVar.GetSize() == 0)
+    if (m_GlobalVar.size() == 0)
     {
         for(int32_t i = 0; i < m_Namespace.GetSize(); i++)
         {
@@ -238,7 +237,7 @@ int32_t CFalloutScript::NextNodeIndex( CNodeArray& NodeArray, int32_t nCurrentIn
 {
     int32_t nResult = nCurrentIndex + nStep;
 
-    if ((nResult < 0) || (nResult > NodeArray.GetUpperBound()))
+    if ((nResult < 0) || (nResult >= NodeArray.size()))
     {
         printf("Error: Index of node out of range\n");
         throw std::exception();
@@ -266,7 +265,7 @@ bool CFalloutScript::RemoveSequenceOfNodes(CNodeArray& NodeArray, int32_t nStart
         }
     }
 
-    NodeArray.RemoveAt(nStartIndex, nCount);
+    NodeArray.erase(NodeArray.begin() + nStartIndex, NodeArray.begin() + nStartIndex + nCount);
 
     return true;
 }
@@ -336,15 +335,15 @@ void CFalloutScript::InitialReduce()
     uint16_t* pwCode;
     int32_t nCount;
 
-    for(int32_t i = 0 ; i < m_ProcBodies.GetSize(); i++)
+    for(int32_t i = 0 ; i < m_ProcBodies.size(); i++)
     {
         // Tail
-        if (!m_ProcBodies[i].IsEmpty())
+        if (!m_ProcBodies[i].empty())
         {
             pwCode = (m_ProcTable[i].m_ulType & P_CRITICAL) ? awTailOfCriticalProc : awTailOfProc;
             nCount = (m_ProcTable[i].m_ulType & P_CRITICAL) ? 4 : 3;
 
-            if (!RemoveSequenceOfNodes(m_ProcBodies[i], m_ProcBodies[i].GetSize() - nCount, nCount, pwCode, nCount))
+            if (!RemoveSequenceOfNodes(m_ProcBodies[i], m_ProcBodies[i].size() - nCount, nCount, pwCode, nCount))
             {
                 printf("Error: Invalid tail of procedure\'s body\n");
                 throw std::exception();
@@ -352,7 +351,7 @@ void CFalloutScript::InitialReduce()
         }
 
         // Body
-        for(int32_t j = 0; j < m_ProcBodies[i].GetSize(); j++)
+        for(int32_t j = 0; j < m_ProcBodies[i].size(); j++)
         {
             switch(m_ProcBodies[i][j].m_Opcode.GetOperator())
             {
@@ -377,10 +376,10 @@ void CFalloutScript::InitialReduce()
                             }
                             while (skipOffset > m_ProcBodies[i][k].m_ulOffset);
 
-                            m_ProcBodies[i].InsertAt(k, m_ProcBodies[i][j]);
+                            m_ProcBodies[i].insert(m_ProcBodies[i].begin() + k, m_ProcBodies[i][j]);
                             m_ProcBodies[i][k].m_Opcode.SetOperator(actualOperator); // place AND/OR here, so BuildTree() will treat it as a regular binary operator
                             m_ProcBodies[i][k].m_ulOffset = m_ProcBodies[i][k-1].m_ulOffset + COpcode::OPERATOR_SIZE; // adjust offset
-                            m_ProcBodies[i].RemoveAt(j, (actualOperator == COpcode::O_AND) ? 5 : 6); // reduce
+                            m_ProcBodies[i].erase(m_ProcBodies[i].begin() + j, m_ProcBodies[i].begin() + j + (actualOperator == COpcode::O_AND ? 5 : 6)); // reduce
                         }
                         else
                         {
@@ -422,7 +421,7 @@ uint32_t CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, uint32_t nStartI
 
     COpcode::COpcodeAttributes opcodeAttributes;
     int32_t j;
-    for (j = nStartIndex; (j < NodeArray.GetSize() && NodeArray[j].m_ulOffset < ulEndOffset); j++)
+    for (j = nStartIndex; (j < NodeArray.size() && NodeArray[j].m_ulOffset < ulEndOffset); j++)
     {
         wOperator = NodeArray[j].m_Opcode.GetOperator();
         ulArgument = NodeArray[j].m_Opcode.GetArgument();
@@ -519,19 +518,19 @@ uint32_t CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, uint32_t nStartI
         {
             if (k < nOmittedArgStartIndex)
             {
-                NodeArray[j].m_Arguments.InsertAt(0, NodeArray[j-1]);
-                NodeArray.RemoveAt(j - 1);
+                NodeArray[j].m_Arguments.insert(NodeArray[j].m_Arguments.begin() + 0, NodeArray[j-1]);
+                NodeArray.erase(NodeArray.begin() + j - 1);
                 j--;
             }
             else
             {
                 if (g_bInsOmittedArgsBackward)
                 {
-                    NodeArray[j].m_Arguments.Add(CNode(CNode::TYPE_OMITTED_ARGUMENT));
+                    NodeArray[j].m_Arguments.push_back(CNode(CNode::TYPE_OMITTED_ARGUMENT));
                 }
                 else
                 {
-                    NodeArray[j].m_Arguments.InsertAt(0, CNode(CNode::TYPE_OMITTED_ARGUMENT));
+                    NodeArray[j].m_Arguments.insert(NodeArray[j].m_Arguments.begin() + 0, CNode(CNode::TYPE_OMITTED_ARGUMENT));
                 }
             }
         }
@@ -551,10 +550,10 @@ uint32_t CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, uint32_t nStartI
                     if (NodeArray[ulElseIndex - 2].IsExpression() && NodeArray[ulSkipIndex - 1].IsExpression())
                     { // conditional expression
                         NodeArray[j].m_Type = CNode::TYPE_CONDITIONAL_EXPRESSION;
-                        NodeArray[j].m_Arguments.RemoveAt(0); // address not needed anymore
-                        NodeArray[j].m_Arguments.InsertAt(0, NodeArray[ulElseIndex - 2]); // true expression
-                        NodeArray[j].m_Arguments.InsertAt(2, NodeArray[ulSkipIndex - 1]); // false expression
-                        NodeArray.RemoveAt(j + 1, ulSkipIndex - j - 1);
+                        NodeArray[j].m_Arguments.erase(NodeArray[j].m_Arguments.begin() + 0); // address not needed anymore
+                        NodeArray[j].m_Arguments.insert(NodeArray[j].m_Arguments.begin() + 0, NodeArray[ulElseIndex - 2]); // true expression
+                        NodeArray[j].m_Arguments.insert(NodeArray[j].m_Arguments.begin() + 2, NodeArray[ulSkipIndex - 1]); // false expression
+                        NodeArray.erase(NodeArray.begin() + j + 1, NodeArray.begin() + j + 1 + ulSkipIndex - j - 1);
                         continue;
                     }
                 }
@@ -568,9 +567,9 @@ uint32_t CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, uint32_t nStartI
 
 void CFalloutScript::BuildTree(CNodeArray& NodeArray)
 {
-    if (NodeArray.GetSize() > 0)
+    if (NodeArray.size() > 0)
     {
-        BuildTreeBranch(NodeArray, 0, NodeArray[NodeArray.GetSize() - 1].m_ulOffset + COpcode::OPERATOR_SIZE);
+        BuildTreeBranch(NodeArray, 0, NodeArray[NodeArray.size() - 1].m_ulOffset + COpcode::OPERATOR_SIZE);
     }
 }
 
@@ -604,7 +603,7 @@ void CFalloutScript::ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& D
     }
     while(node.m_ulOffset < ulJumpOffset);
 
-    Destination.SetSize(nNodeIndex - nStartIndex);
+    Destination.resize(nNodeIndex - nStartIndex);
 
     for(int32_t j = 0; j < nNodeIndex - nStartIndex; j++)
     {
@@ -630,14 +629,14 @@ void CFalloutScript::ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& D
     }
 
     // Cleanup
-    if (!RemoveSequenceOfNodes(Destination, Destination.GetSize() - 2, 2, awCleanupOfCondition, 2))
+    if (!RemoveSequenceOfNodes(Destination, Destination.size() - 2, 2, awCleanupOfCondition, 2))
     {
         printf("Error: Invalid cleanup of condition\n");
         throw std::exception();
     }
 
     // Check condition
-    if (Destination.GetSize() != 1)
+    if (Destination.size() != 1)
     {
         printf("Error: Invalid condition. Only one expression allowed\n");
         throw std::exception();
@@ -652,12 +651,12 @@ void CFalloutScript::ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& D
     }
 
     // Remove from source
-    Source.RemoveAt(nStartIndex, nNodeIndex - nStartIndex);
+    Source.erase(Source.begin() + nStartIndex, Source.begin() + nStartIndex + nNodeIndex - nStartIndex);
 }
 
 void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
 {
-    if (NodeArray.IsEmpty())
+    if (NodeArray.empty())
     {
         return;
     }
@@ -673,7 +672,7 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
     }
 
     // End of procedure
-    int32_t nLastNodeIndex = NodeArray.GetUpperBound();
+    int32_t nLastNodeIndex = NodeArray.size() ? NodeArray.size() - 1 : 0;
 
     if ((NodeArray[nLastNodeIndex].m_Opcode.GetOperator() == COpcode::O_POP_RETURN) &&
         (NodeArray[nLastNodeIndex].m_Opcode.GetArgument() == 0) &&
@@ -686,14 +685,14 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
     else
     {
         ulOffset = NodeArray[nLastNodeIndex].m_ulOffset;
-        NodeArray.InsertAt(nLastNodeIndex + 1, CNode(c_NodeEndOfBlock));
+        NodeArray.insert(NodeArray.begin() + nLastNodeIndex + 1, CNode(c_NodeEndOfBlock));
         NodeArray[nLastNodeIndex].m_ulOffset = ulOffset;
     }
     
     // Body
     CNode node;
 
-    for(int32_t i = 0; i < NodeArray.GetSize(); i++)
+    for(int32_t i = 0; i < NodeArray.size(); i++)
     {
         switch(NodeArray[i].m_Opcode.GetOperator())
         {
@@ -708,17 +707,16 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                     throw std::exception();
                 }
 
-                NodeArray.InsertAt(i + 1, CNode(c_NodeBeginOfBlock));
+                NodeArray.insert(NodeArray.begin() + i + 1, CNode(c_NodeBeginOfBlock));
                 NodeArray[i + 1].m_ulOffset = NodeArray[i].m_ulOffset;
                 ulOffset = node.m_Opcode.GetArgument();
 
                 int32_t nNodeIndex = i + 1;
-                CArray <int32_t, int32_t&> jumps;
-                    
+                std::vector<int32_t> jumps;
                 do
                 {
                     node = NodeArray[nNodeIndex = NextNodeIndex(NodeArray, nNodeIndex, 1)];
-                    if (node.m_Opcode.GetOperator() == COpcode::O_JMP && node.m_Type == CNode::TYPE_NORMAL && node.m_Arguments.GetSize() > 0)
+                    if (node.m_Opcode.GetOperator() == COpcode::O_JMP && node.m_Type == CNode::TYPE_NORMAL && node.m_Arguments.size() > 0)
                     {
                         uint32_t ofs = node.m_Arguments[0].m_Opcode.GetArgument();
                         if (ofs == ulOffset)
@@ -731,17 +729,17 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                         }
                         else
                         {
-                            jumps.Add(nNodeIndex);
+                            jumps.push_back(nNodeIndex);
                         }
                     }
                 }
                 while(node.m_ulOffset < ulOffset);
 
                 bool isForLoop = false;
-                if (NodeArray[nNodeIndex - 2].m_Arguments.GetSize() > 0 && i > 0)
+                if (NodeArray[nNodeIndex - 2].m_Arguments.size() > 0 && i > 0)
                 { // *might* be a "for" loop
                     loopOffset = NodeArray[nNodeIndex - 2].GetTopOffset();
-                    for (int32_t j=0; j<jumps.GetSize(); j++)
+                    for (int32_t j=0; j<jumps.size(); j++)
                     {
                         if (NodeArray[jumps[j]].m_Arguments[0].m_Opcode.GetArgument() == loopOffset)
                         { // jump points to the last statement in loop
@@ -751,7 +749,7 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                     }
                 }
 
-                NodeArray.InsertAt(nNodeIndex, CNode(c_NodeEndOfBlock));
+                NodeArray.insert(NodeArray.begin() + nNodeIndex, CNode(c_NodeEndOfBlock));
                 NodeArray[nNodeIndex].m_ulOffset = NodeArray[nNodeIndex + 1].m_ulOffset;
 
                 node = NodeArray[nNodeIndex - 1];
@@ -772,14 +770,14 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                 {
                     NodeArray[i].m_Type = CNode::TYPE_FOR_LOOP;
                     NodeArray[i].m_Arguments[0] = NodeArray[i - 1]; // "for" initializer
-                    NodeArray[i].m_Arguments.Add(NodeArray[nNodeIndex - 2]); // "for" increment
-                    NodeArray.RemoveAt(i - 1); // eat statement before "while"
-                    NodeArray.RemoveAt(nNodeIndex - 3, 2); // eat last statement in loop along with jmp
+                    NodeArray[i].m_Arguments.push_back(NodeArray[nNodeIndex - 2]); // "for" increment
+                    NodeArray.erase(NodeArray.begin() + i - 1); // eat statement before "while"
+                    NodeArray.erase(NodeArray.begin() + nNodeIndex - 3, NodeArray.begin() + nNodeIndex - 3 + 2); // eat last statement in loop along with jmp
                 }
                 else
                 {
-                    NodeArray.RemoveAt(nNodeIndex - 1);
-                    NodeArray[i].m_Arguments.RemoveAt(0);
+                    NodeArray.erase(NodeArray.begin() + nNodeIndex - 1);
+                    NodeArray[i].m_Arguments.erase(NodeArray[i].m_Arguments.begin() + 0);
                 }
             }
             break;
@@ -799,7 +797,7 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                     throw std::exception();
                 }
 
-                NodeArray.InsertAt(i + 1, CNode(c_NodeBeginOfBlock));
+                NodeArray.insert(NodeArray.begin() + i + 1, CNode(c_NodeBeginOfBlock));
                 NodeArray[i + 1].m_ulOffset = NodeArray[i + 2].m_ulOffset;
                 ulOffset = node.m_Opcode.GetArgument(); // offset for jump
                     
@@ -811,7 +809,7 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                 }
                 while(node.m_ulOffset < ulOffset);
 
-                NodeArray.InsertAt(nNodeIndex, CNode(c_NodeEndOfBlock));
+                NodeArray.insert(NodeArray.begin() + nNodeIndex, CNode(c_NodeEndOfBlock));
                 NodeArray[nNodeIndex].m_ulOffset = NodeArray[nNodeIndex + 1].m_ulOffset;
 
                 node = NodeArray[nNodeIndex - 1];
@@ -828,12 +826,12 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                     //printf("(else) goto %x > %x", ulOffset, node.m_ulOffset);
                     if (ulOffset > node.m_ulOffset)
                     {
-                        NodeArray.RemoveAt(nNodeIndex - 1); // remove jump
-                        NodeArray.InsertAt(nNodeIndex, CNode(c_NodeBeginOfBlock));
+                        NodeArray.erase(NodeArray.begin() + nNodeIndex - 1); // remove jump
+                        NodeArray.insert(NodeArray.begin() + nNodeIndex, CNode(c_NodeBeginOfBlock));
                         NodeArray[nNodeIndex].m_ulOffset = NodeArray[nNodeIndex + 1].m_ulOffset;
 
                         CNode Bnode = NodeArray[nNodeIndex - 1];
-                        CNode Cnode = NodeArray[nNodeIndex + 1];
+                        //CNode Cnode = NodeArray[nNodeIndex + 1];
                         if ((Bnode.m_Type == CNode::TYPE_END_OF_BLOCK)/* &&
                                 (Cnode.m_Opcode.GetOperator() != COpcode::O_IF)*/)
                         {
@@ -842,13 +840,13 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                                 node = NodeArray[nNodeIndex = NextNodeIndex(NodeArray, nNodeIndex, 1)];
                             }
                             while(node.m_ulOffset < ulOffset);
-                            NodeArray.InsertAt(nNodeIndex, CNode(c_NodeEndOfBlock));
+                            NodeArray.insert(NodeArray.begin() + nNodeIndex, CNode(c_NodeEndOfBlock));
                             NodeArray[nNodeIndex].m_ulOffset = NodeArray[nNodeIndex + 1].m_ulOffset;
                         }
                     }
                 }
             }
-            NodeArray[i].m_Arguments.RemoveAt(0);
+            NodeArray[i].m_Arguments.erase(NodeArray[i].m_Arguments.begin() + 0);
             i++;
 
             break;

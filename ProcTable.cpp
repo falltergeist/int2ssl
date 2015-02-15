@@ -9,9 +9,9 @@
 
 // C++ standard includes
 #include <iostream>
+#include <vector>
 
 // int2ssl includes
-#include "stdafx.h"
 #include "ProcTable.h"
 #include "Utility.h"
 #include "ObjectAttributes.h"
@@ -187,8 +187,8 @@ int compareProcBodyOffsets(const void* elem0, const void* elem1)
 
 void CProcTable::Serialize(CArchive& ar)
 {
-    m_Table.RemoveAll();
-    m_ProcSize.RemoveAll();
+    m_Table.clear();
+    m_ProcSize.clear();
 
     uint32_t ulSizeOfTable;
     uint32_t ulRead;
@@ -204,8 +204,8 @@ void CProcTable::Serialize(CArchive& ar)
         throw std::exception();
     }
 
-    m_Table.SetSize(ulSizeOfTable);
-    m_ProcSize.SetSize(ulSizeOfTable);
+    m_Table.resize(ulSizeOfTable);
+    m_ProcSize.resize(ulSizeOfTable);
 
     uint32_t ulIndexOfProcOffset = 0;
     ProcBodyOffset* pOffsets = new ProcBodyOffset[ulSizeOfTable + 1];
@@ -279,12 +279,12 @@ void CProcTable::Serialize(CArchive& ar)
 
 int32_t CProcTable::GetSize()
 {
-    return m_Table.GetSize();
+    return m_Table.size();
 }
 
 uint32_t CProcTable::GetSizeOfProc(int32_t nIndex)
 {
-    if ((nIndex < 0) || (nIndex > m_ProcSize.GetUpperBound()))
+    if ((nIndex < 0) || (nIndex >= m_ProcSize.size()))
     {
         printf("Warning: Invalid index of procedure (%d). Exception will be thrown\n", nIndex);
         throw std::exception();
@@ -303,7 +303,7 @@ void CProcTable::Dump(CArchive& ar)
 {
     std::string strOutLine;
 
-    for(unsigned int i = 0; i < m_Table.GetSize(); i++)
+    for(unsigned int i = 0; i < m_Table.size(); i++)
     {
         strOutLine = format("======== Procedure %d ========\n", i);
 
@@ -316,7 +316,7 @@ void CProcTable::Dump(CArchive& ar)
 
 CProcDescriptor& CProcTable::operator [] (int32_t nIndex)
 {
-    if ((nIndex < 0) || (nIndex > m_ProcSize.GetUpperBound()))
+    if ((nIndex < 0) || (nIndex >= m_ProcSize.size()))
     {
         printf("Warning: Invalid index of procedure (%d). Exception will be thrown\n", nIndex);
         throw std::exception();
