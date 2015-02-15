@@ -235,7 +235,7 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
     {
         if (i < nSizeOfCodeItem - 1)
         {
-            printf(lpszErrorMessage);
+            std::cout << lpszErrorMessage << std::endl;
             throw std::exception();
         }
 
@@ -245,7 +245,7 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
             {
                 if (!((this->*pCheckFunc)(Source[i - nSizeOfCodeItem + 1 + j].GetOperator(), j)))
                 {
-                    printf(lpszErrorMessage);
+                    std::cout << lpszErrorMessage << std::endl;
                     throw std::exception();
                 }
             }

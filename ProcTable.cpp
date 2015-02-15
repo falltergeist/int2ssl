@@ -283,9 +283,9 @@ uint32_t CProcTable::GetSize()
     return m_Table.size();
 }
 
-uint32_t CProcTable::GetSizeOfProc(int32_t nIndex)
+uint32_t CProcTable::GetSizeOfProc(uint32_t nIndex)
 {
-    if ((nIndex < 0) || (nIndex >= m_ProcSize.size()))
+    if (nIndex >= m_ProcSize.size())
     {
         printf("Warning: Invalid index of procedure (%d). Exception will be thrown\n", nIndex);
         throw std::exception();
@@ -315,9 +315,9 @@ void CProcTable::Dump(CArchive& ar)
 }
 
 
-CProcDescriptor& CProcTable::operator [] (int32_t nIndex)
+CProcDescriptor& CProcTable::operator [] (uint32_t nIndex)
 {
-    if ((nIndex < 0) || (nIndex >= m_ProcSize.size()))
+    if (nIndex >= m_ProcSize.size())
     {
         printf("Warning: Invalid index of procedure (%d). Exception will be thrown\n", nIndex);
         throw std::exception();

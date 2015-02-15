@@ -58,11 +58,10 @@ COpcode::COpcodeAttributes& COpcode::COpcodeAttributes::operator = (const COpcod
     return (*this);
 }
 
-// COpcode::CF1OpcodeAttributesMap
 COpcode::CF1OpcodeAttributesMap::CF1OpcodeAttributesMap()
 {
     COpcode::COpcodeAttributes::Type expression = COpcode::COpcodeAttributes::TYPE_EXPRESSION;
-    COpcode::COpcodeAttributes::Category infix = COpcode::COpcodeAttributes::CATEGORY_INFIX;
+    //COpcode::COpcodeAttributes::Category infix = COpcode::COpcodeAttributes::CATEGORY_INFIX;
 
     InitHashTable(32);
     
@@ -77,7 +76,6 @@ COpcode::CF1OpcodeAttributesMap::CF1OpcodeAttributesMap()
 
 uint32_t procArgs_register_hook_proc[1] = {2};
 
-// COpcode::CF2OpcodeAttributesMap
 COpcode::CF2OpcodeAttributesMap::CF2OpcodeAttributesMap()
 {
     COpcode::COpcodeAttributes::Type expression = COpcode::COpcodeAttributes::TYPE_EXPRESSION;

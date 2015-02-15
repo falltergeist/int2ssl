@@ -68,6 +68,9 @@ void CNode::StoreTree(CArchive& ar, int nIndent, int nIndex)
         case TYPE_END_OF_BLOCK:
             ar.WriteString("========= end of block =========\n");
             return;
+
+        default:
+            break;
     }
 
     // Node
@@ -99,7 +102,7 @@ void CNode::StoreTree(CArchive& ar, int nIndent, int nIndex)
     }
     if (!m_Arguments.empty())
     {
-        for(int i = 0; i < m_Arguments.size(); i++)
+        for(uint32_t i = 0; i < m_Arguments.size(); i++)
         {
             m_Arguments[i].StoreTree(ar, nIndent + 1, i);
         }

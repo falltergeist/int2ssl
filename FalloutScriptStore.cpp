@@ -160,10 +160,9 @@ void CFalloutScript::StoreDefinitions(CArchive& ar)
             }
             else
             {
-                std::string msg = "Warning: Bogus procedure with name ";
-                            msg += c_strBogusProcedureName;
-                            msg += " not found at expected location\n";
-                printf(msg.c_str());
+                std::cout << "Warning: Bogus procedure with name "
+                          << c_strBogusProcedureName
+                          << " not found at expected location" << std::endl;
             }
         }
 
@@ -403,13 +402,13 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
         bool bLocalVar = true;
         uint32_t ulLocalVarIndex = procDescriptor.m_ulNumArgs;
         int32_t nIndentLevel = 0;
-        CNode::Type prevNodeType = CNode::TYPE_NORMAL;
+        //CNode::Type prevNodeType = CNode::TYPE_NORMAL;
 
-        for(int32_t nNodeIndex = 0; nNodeIndex < m_ProcBodies[i].size(); nNodeIndex++)
+        for(uint32_t nNodeIndex = 0; nNodeIndex < m_ProcBodies[i].size(); nNodeIndex++)
         {
             if (m_ProcBodies[i][nNodeIndex].m_Type == CNode::TYPE_BEGIN_OF_BLOCK)
             {
-                if ((nNodeIndex - 1 > 0) && (m_ProcBodies[i][nNodeIndex - 1].m_Type == CNode::TYPE_END_OF_BLOCK))
+                if ((nNodeIndex > 1) && (m_ProcBodies[i][nNodeIndex - 1].m_Type == CNode::TYPE_END_OF_BLOCK))
                 {
                     ar.WriteString(GetIndentString(nIndentLevel) + "else begin\n");
                     nIndentLevel++;
@@ -419,17 +418,17 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
                     ar.WriteString("begin\n");
                     nIndentLevel++;
                 }
-                prevNodeType = CNode::TYPE_BEGIN_OF_BLOCK;
+                //prevNodeType = CNode::TYPE_BEGIN_OF_BLOCK;
             }
             else if (m_ProcBodies[i][nNodeIndex].m_Type == CNode::TYPE_END_OF_BLOCK)
             {
                 nIndentLevel--;
                 ar.WriteString(GetIndentString(nIndentLevel) + "end\n");
-                prevNodeType = CNode::TYPE_END_OF_BLOCK;
+                //prevNodeType = CNode::TYPE_END_OF_BLOCK;
             }
             else
             {
-                prevNodeType = CNode::TYPE_NORMAL;
+                //prevNodeType = CNode::TYPE_NORMAL;
                 uint16_t wOperator = m_ProcBodies[i][nNodeIndex].m_Opcode.GetOperator();
 
                 if ((m_ProcBodies[i][nNodeIndex].m_Opcode.GetAttributes().m_Type == COpcode::COpcodeAttributes::TYPE_EXPRESSION) &&
@@ -465,7 +464,7 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
                         if (m_ProcBodies[i][nNodeIndex].m_Type == CNode::TYPE_FOR_LOOP)
                         {
                             std::string str = GetIndentString(nIndentLevel) + "for (";
-                            for (int32_t j = 0; j < m_ProcBodies[i][nNodeIndex].m_Arguments.size(); j++)
+                            for (uint32_t j = 0; j < m_ProcBodies[i][nNodeIndex].m_Arguments.size(); j++)
                             {
                                 if (j > 0)
                                 {
@@ -764,7 +763,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
             strResult = "addRegion ";
             strResult += GetSource(node.m_Arguments[0], false, ulNumArgs) + " { ";
 
-            for(int32_t nArgIndex = 1; nArgIndex < node.m_Arguments.size() - 1; nArgIndex++)
+            for(uint32_t nArgIndex = 1; nArgIndex < node.m_Arguments.size() - 1; nArgIndex++)
             {
                 if (nArgIndex == 1)
                 {
@@ -919,7 +918,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
                 }
                 std::string sPostfix[] = { " if ", " else ", ""};
                 strResult = "";
-                for(int32_t i = 0; i < node.m_Arguments.size(); i++)
+                for(uint32_t i = 0; i < node.m_Arguments.size(); i++)
                 {
                     bool bParens = ArgNeedParens(node, node.m_Arguments[i], CFalloutScript::RIGHT_ASSOC);
                     strResult += (bParens ? "(" : "") + GetSource(node.m_Arguments[i], bLabel, ulNumArgs) + (bParens ? ")" : "") + sPostfix[i];
@@ -967,7 +966,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
 
                         strResult += "(";
 
-                        for(int32_t i = 0; i < node.m_Arguments.size(); i++)
+                        for(uint32_t i = 0; i < node.m_Arguments.size(); i++)
                         {
                             if (i == 0)
                             {
@@ -997,7 +996,7 @@ std::string CFalloutScript::GetSource( CNode& node, bool bLabel, uint32_t ulNumA
     std::string strArgument;
     bool bIsProcArg;
 
-    for(int32_t nArgIndex = 0; nArgIndex < node.m_Arguments.size(); nArgIndex++)
+    for(uint32_t nArgIndex = 0; nArgIndex < node.m_Arguments.size(); nArgIndex++)
     {
         bIsProcArg = false;
 

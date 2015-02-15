@@ -84,7 +84,7 @@ void CNamespace::Serialize(CArchive& ar)
         std::string strNonGraph("\\\a\b\f\n\r\t\"");
         std::string strEscape("\\abfnrt\"");
 
-        for(int i = 0; i < strNonGraph.length(); i++)
+        for(uint32_t i = 0; i < strNonGraph.length(); i++)
         {
             strNewString = replace(strNewString, "" + strNonGraph[i], "\\" + strEscape[i]);
         }

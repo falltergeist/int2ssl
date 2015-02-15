@@ -10,32 +10,30 @@ Hacks/CArchive.cpp
 Hacks/CFile.h
 Hacks/CFile.cpp
 Hacks/CMap.h
-FalloutScript.h
 Namespace.h
+Namespace.cpp
 Node.h
+Node.cpp
 ObjectAttributes.h
 Opcode.h
 ProcTable.h
-StartupCode.h
+ProcTable.cpp
 Utility.h
-XGetopt.h
+Utility.cpp
+FalloutScript.h
 FalloutScript.cpp
 FalloutScriptDecompile.cpp
 FalloutScriptDefObject.cpp
 FalloutScriptDump.cpp
 FalloutScriptStore.cpp
-Namespace.cpp
-Node.cpp
 OpcodeAttributes.cpp
 Opcode.cpp
-ProcTable.cpp
+StartupCode.h
 StartupCode.cpp
-Utility.cpp
+XGetopt.h
 XGetopt.cpp
 )
 
-#add_definitions (-std=c++11 -Wall)
+add_definitions (-Wall)
 
 add_executable(int2ssl ${SOURCES})
-#target_link_libraries(int2ssl)
-

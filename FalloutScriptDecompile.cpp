@@ -416,7 +416,7 @@ void CFalloutScript::InitialReduce()
 uint32_t CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, uint32_t nStartIndex, uint32_t ulEndOffset)
 {
     uint16_t wOperator;
-    uint32_t ulArgument;
+    //uint32_t ulArgument;
     uint32_t nNumOfArgs;
 
     COpcode::COpcodeAttributes opcodeAttributes;
@@ -424,7 +424,7 @@ uint32_t CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, uint32_t nStartI
     for (j = nStartIndex; (j < NodeArray.size() && NodeArray[j].m_ulOffset < ulEndOffset); j++)
     {
         wOperator = NodeArray[j].m_Opcode.GetOperator();
-        ulArgument = NodeArray[j].m_Opcode.GetArgument();
+        //ulArgument = NodeArray[j].m_Opcode.GetArgument();
 
         opcodeAttributes = NodeArray[j].m_Opcode.GetAttributes();
         nNumOfArgs = int32_t(opcodeAttributes.m_ulNumArgs);
