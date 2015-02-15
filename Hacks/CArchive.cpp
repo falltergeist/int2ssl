@@ -23,7 +23,6 @@ void CArchive::WriteString(const char * value)
 
 ULONG CArchive::Read(char *buffer, ULONG size)
 {
-    ULONG count;
-    count = _file->_istream.readsome(buffer, size);
-    return count;
+    _file->_istream.read(buffer, size);
+    return size;
 }
