@@ -7,13 +7,11 @@ project(int2ssl)
 set(SOURCES main.cpp
 Hacks/Types.h
 Hacks/CArray.h
-Hacks/CArray.cpp
 Hacks/CArchive.h
 Hacks/CArchive.cpp
 Hacks/CFile.h
 Hacks/CFile.cpp
 Hacks/CMap.h
-Hacks/CMap.cpp
 FalloutScript.h
 Namespace.h
 Node.h
