@@ -14,7 +14,6 @@
 #include <cstdint>
 
 // int2ssl includes
-#include "Hacks/Types.h"
 #include "Hacks/CArray.h"
 
 // Third party includes

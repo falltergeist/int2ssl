@@ -14,7 +14,6 @@
 #include <fstream>
 
 // int2ssl includes
-#include "../Hacks/Types.h"
 #include "../Hacks/CFile.h"
 
 // Third party includes
