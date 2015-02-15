@@ -66,7 +66,7 @@ void CProcDescriptor::Serialize(CArchive& ar)
 //    printf("m_ulNumArgs          = 0x%08X\n", m_ulNumArgs);
 
 
-    if (uiTotalRead != (sizeof(ULONG) * 6))
+    if (uiTotalRead != (sizeof(uint32_t) * 6))
     {
         printf("Error: Unable read procedure descriptor\n");
         AfxThrowUserException();
@@ -138,8 +138,8 @@ CProcTable::~CProcTable()
 }
 
 struct ProcBodyOffset {
-    ULONG m_ulProcIndex;
-    ULONG m_ulBodyOffset;
+    uint32_t m_ulProcIndex;
+    uint32_t m_ulBodyOffset;
 };
 
 int compareProcBodyOffsets(const void* elem0, const void* elem1)
@@ -177,11 +177,11 @@ void CProcTable::Serialize(CArchive& ar)
     m_Table.RemoveAll();
     m_ProcSize.RemoveAll();
 
-    ULONG ulSizeOfTable;
-    ULONG ulRead;
+    uint32_t ulSizeOfTable;
+    uint32_t ulRead;
 
     ar.Flush();
-    ULONG ulSizeOfFile = ULONG(ar.GetFile()->GetLength());
+    uint32_t ulSizeOfFile = uint32_t(ar.GetFile()->GetLength());
 
     ulRead = ReadMSBULong(ar, ulSizeOfTable);
 
@@ -194,7 +194,7 @@ void CProcTable::Serialize(CArchive& ar)
     m_Table.SetSize(ulSizeOfTable);
     m_ProcSize.SetSize(ulSizeOfTable);
 
-    ULONG ulIndexOfProcOffset = 0;
+    uint32_t ulIndexOfProcOffset = 0;
     ProcBodyOffset* pOffsets = new ProcBodyOffset[ulSizeOfTable + 1];
 
     if (pOffsets == NULL)
@@ -203,7 +203,7 @@ void CProcTable::Serialize(CArchive& ar)
         throw 1;
     }
 
-    for(ULONG i = 0; i < ulSizeOfTable; i++)
+    for(uint32_t i = 0; i < ulSizeOfTable; i++)
     {
 //      printf("======== %u =========\n", i);
         m_Table[i].Serialize(ar);
@@ -230,7 +230,7 @@ void CProcTable::Serialize(CArchive& ar)
     qsort(pOffsets, ulIndexOfProcOffset, sizeof(ProcBodyOffset), compareProcBodyOffsets);
 
     // Sizes of procedures
-    for(ULONG i = 0; i < ulIndexOfProcOffset; i++)
+    for(uint32_t i = 0; i < ulIndexOfProcOffset; i++)
     {
         if (pOffsets[i + 1].m_ulBodyOffset >=  pOffsets[i].m_ulBodyOffset)
         {
@@ -245,7 +245,7 @@ void CProcTable::Serialize(CArchive& ar)
 
     delete [] pOffsets;
 
-    for(ULONG i = 0; i < ulSizeOfTable; i++)
+    for(uint32_t i = 0; i < ulSizeOfTable; i++)
     {
         if (m_Table[i].m_ulBodyOffset != 0)
         {
@@ -270,7 +270,7 @@ INT_PTR CProcTable::GetSize()
     return m_Table.GetSize();
 }
 
-ULONG CProcTable::GetSizeOfProc(INT_PTR nIndex)
+uint32_t CProcTable::GetSizeOfProc(INT_PTR nIndex)
 {
     if ((nIndex < 0) || (nIndex > m_ProcSize.GetUpperBound()))
     {
@@ -281,7 +281,7 @@ ULONG CProcTable::GetSizeOfProc(INT_PTR nIndex)
     return m_ProcSize[nIndex];
 }
 
-ULONG CProcTable::GetOffsetOfProcSection()
+uint32_t CProcTable::GetOffsetOfProcSection()
 {
     return m_ulOffsetOfProcSection;
 }

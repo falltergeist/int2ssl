@@ -3,11 +3,11 @@
 
 COpcode::COpcodeAttributes::COpcodeAttributes(std::string mnemonic,
                                               std::string name,
-                                              ULONG ulNumArgs,
+                                              uint32_t ulNumArgs,
                                               Type type,
                                               Category category,
-                                              ULONG *procArgs,
-                                              ULONG numProcArgs) :
+                                              uint32_t *procArgs,
+                                              uint32_t numProcArgs) :
     m_strMnemonic(mnemonic),
     m_strName(name),
     m_ulNumArgs(ulNumArgs),
@@ -62,7 +62,7 @@ COpcode::CF1OpcodeAttributesMap::CF1OpcodeAttributesMap()
     SetAt(O_TOWN_MAP, COpcodeAttributes("O_TOWN_MAP", "town_map", 0));
 }
 
-ULONG procArgs_register_hook_proc[1] = {2};
+uint32_t procArgs_register_hook_proc[1] = {2};
 
 // COpcode::CF2OpcodeAttributesMap
 COpcode::CF2OpcodeAttributesMap::CF2OpcodeAttributesMap()

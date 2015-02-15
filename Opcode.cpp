@@ -61,7 +61,7 @@ void COpcode::Serialize(CArchive& ar)
     }
 }
 
-void COpcode::Expect(CArchive& ar, uint16_t wOperator, bool bArgumentFound, ULONG ulArgument)
+void COpcode::Expect(CArchive& ar, uint16_t wOperator, bool bArgumentFound, uint32_t ulArgument)
 {
     Serialize(ar);
 
@@ -141,7 +141,7 @@ void COpcode::SetOperator(uint16_t op)
     m_wOperator = op;
 }
 
-ULONG COpcode::GetArgument() const
+uint32_t COpcode::GetArgument() const
 {
     return m_ulArgument;
 }

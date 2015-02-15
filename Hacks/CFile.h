@@ -29,9 +29,9 @@ class CFile
         CFile();
 
         bool Open(std::string name, unsigned int mode);
-        ULONG GetPosition();
-        void Seek(ULONG position, unsigned int mode);
-        ULONG GetLength();
+        uint32_t GetPosition();
+        void Seek(uint32_t position, unsigned int mode);
+        uint32_t GetLength();
 
 };
 

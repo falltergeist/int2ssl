@@ -26,7 +26,7 @@ void CNamespace::Serialize(CArchive& ar)
     m_Map.RemoveAll();
     m_Order.RemoveAll();
 
-    ULONG ulLength;
+    uint32_t ulLength;
 
     if (ReadMSBULong(ar, ulLength) != 4)
     {
@@ -36,7 +36,7 @@ void CNamespace::Serialize(CArchive& ar)
 
     if (ulLength == 0xFFFFFFFF) return;
 
-    ULONG ulTotalRead = 0;
+    uint32_t ulTotalRead = 0;
     uint16_t wLengthOfString;
     char*  lpszNewString;
 
@@ -92,7 +92,7 @@ void CNamespace::Serialize(CArchive& ar)
         ulTotalRead += (2 + wLengthOfString);
     }
 
-    ULONG ulTerminator;
+    uint32_t ulTerminator;
 
     if (ReadMSBULong(ar, ulTerminator) != 4)
     {
@@ -124,7 +124,7 @@ std::string CNamespace::GetStringByIndex(INT_PTR nIndex)
     return (this->operator [] (m_Order[nIndex]));
 }
 
-ULONG CNamespace::GetOffsetByIndex(INT_PTR nIndex)
+uint32_t CNamespace::GetOffsetByIndex(INT_PTR nIndex)
 {
     return m_Order[nIndex];
 }
@@ -151,7 +151,7 @@ void CNamespace::Dump(CArchive& ar)
     }
 }
 
-std::string CNamespace::operator [] (ULONG ulOffset) const
+std::string CNamespace::operator [] (uint32_t ulOffset) const
 {
     std::string strResult;
 

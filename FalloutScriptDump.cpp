@@ -23,7 +23,7 @@ void CFalloutScript::Dump(CArchive& ar)
 
     std::string strOutLine;
     uint16_t wOperator;
-    ULONG ulArgument = 0;
+    uint32_t ulArgument = 0;
 
     ar.WriteString("============== Global variables values ==================\n");
 
@@ -77,7 +77,7 @@ void CFalloutScript::Dump(CArchive& ar)
         {
             wOperator = m_ExportedVarValue[i].GetOperator();
             ulArgument = m_ExportedVarValue[i].GetArgument();
-            ULONG ulNameArgument = m_ExportedVarValue[i + 1].GetArgument();
+            uint32_t ulNameArgument = m_ExportedVarValue[i + 1].GetArgument();
 
             switch(wOperator)
             {

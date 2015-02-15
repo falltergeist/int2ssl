@@ -27,7 +27,7 @@ public:
     void WriteString(const char * value);
     void WriteString(std::string value);
 
-    ULONG Read(char * buffer, ULONG size);
+    uint32_t Read(char * buffer, uint32_t size);
 
     std::ofstream* ofstream();
 

@@ -37,12 +37,12 @@ public:
 
 public:
     void StoreTree(CArchive& ar, int nIndent, int nIndex);
-    ULONG  GetTopOffset();
+    uint32_t  GetTopOffset();
     bool IsExpression() const;
     bool IsInfix() const;
 
 public:
-    ULONG   m_ulOffset;
+    uint32_t   m_ulOffset;
     COpcode m_Opcode;
 
     Type m_Type;

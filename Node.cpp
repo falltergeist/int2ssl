@@ -60,7 +60,7 @@ void CNode::StoreTree(CArchive& ar, int nIndent, int nIndex)
     // Node
     std::string strOutLine;
     uint16_t wOperator = m_Opcode.GetOperator();
-    ULONG ulArgument = m_Opcode.GetArgument();
+    uint32_t ulArgument = m_Opcode.GetArgument();
 
     switch(wOperator)
     {
@@ -98,7 +98,7 @@ void CNode::StoreTree(CArchive& ar, int nIndent, int nIndex)
 
 }
 
-ULONG CNode::GetTopOffset()
+uint32_t CNode::GetTopOffset()
 {
     if (m_Arguments.GetSize() > 0)
     {

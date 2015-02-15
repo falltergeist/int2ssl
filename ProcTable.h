@@ -24,12 +24,12 @@ public:
     CProcDescriptor& operator = (const CProcDescriptor& Item);
 
 public:
-    ULONG m_ulNameOffset;           // Index into namespace for procedure name
-    ULONG m_ulType;                 // Type of function (P_TIMED, P_CONDITIONAL, none)
-    ULONG m_ulTime;                 // Time this proc should go off, if timed
-    ULONG m_ulExpressionOffset;     // Pointer to conditional code, if conditional
-    ULONG m_ulBodyOffset;           // Pointer to procedure
-    ULONG m_ulNumArgs;              // Number of args to procedure
+    uint32_t m_ulNameOffset;           // Index into namespace for procedure name
+    uint32_t m_ulType;                 // Type of function (P_TIMED, P_CONDITIONAL, none)
+    uint32_t m_ulTime;                 // Time this proc should go off, if timed
+    uint32_t m_ulExpressionOffset;     // Pointer to conditional code, if conditional
+    uint32_t m_ulBodyOffset;           // Pointer to procedure
+    uint32_t m_ulNumArgs;              // Number of args to procedure
 };
 
 class CProcTable
@@ -42,8 +42,8 @@ public:
     virtual void Serialize(CArchive& ar);
 
     INT_PTR GetSize();
-    ULONG GetSizeOfProc(INT_PTR nIndex);
-    ULONG GetOffsetOfProcSection();
+    uint32_t GetSizeOfProc(INT_PTR nIndex);
+    uint32_t GetOffsetOfProcSection();
 
     void Dump(CArchive& ar);
 
@@ -56,7 +56,7 @@ private:
 
     CProcTableArray m_Table;
     CDWordArray m_ProcSize;
-    ULONG m_ulOffsetOfProcSection;
+    uint32_t m_ulOffsetOfProcSection;
 };
 
 #endif //PROC_TABLE_H

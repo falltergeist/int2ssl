@@ -23,7 +23,7 @@ bool CFile::Open(std::string name, unsigned int mode)
     }
 }
 
-ULONG CFile::GetPosition()
+uint32_t CFile::GetPosition()
 {
     switch (_mode)
     {
@@ -35,7 +35,7 @@ ULONG CFile::GetPosition()
     return _istream.tellg();
 }
 
-void CFile::Seek(ULONG position, unsigned int mode)
+void CFile::Seek(uint32_t position, unsigned int mode)
 {
     switch (_mode)
     {
@@ -48,14 +48,14 @@ void CFile::Seek(ULONG position, unsigned int mode)
     }
 }
 
-ULONG CFile::GetLength()
+uint32_t CFile::GetLength()
 {
-    ULONG size = 0;
+    uint32_t size = 0;
     switch (_mode)
     {
         case modeWrite:
         {
-            ULONG oldPosition = _ostream.tellp();
+            uint32_t oldPosition = _ostream.tellp();
             _ostream.seekp(0, std::ios_base::end);
             size = _ostream.tellp();
             _ostream.seekp(oldPosition, std::ios_base::beg);
@@ -63,7 +63,7 @@ ULONG CFile::GetLength()
         }
         default:
         {
-            ULONG oldPosition = _istream.tellg();
+            uint32_t oldPosition = _istream.tellg();
             _istream.seekg(0, std::ios_base::end);
             size = _istream.tellg();
             _istream.seekg(oldPosition, std::ios_base::beg);

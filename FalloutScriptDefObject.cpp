@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FalloutScript.h"
 
-CFalloutScript::CDefObject::CDefObject(ObjectType type, ULONG ulAttributes, ULONG ulObjectData)
+CFalloutScript::CDefObject::CDefObject(ObjectType type, uint32_t ulAttributes, uint32_t ulObjectData)
 {
     m_ulAttributes = ulAttributes;
 

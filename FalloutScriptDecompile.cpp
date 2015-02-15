@@ -12,7 +12,7 @@ extern bool g_bInsOmittedArgsBackward;
 
 void CFalloutScript::InitDefinitions()
 {
-    ULONG ulNameOffset;
+    uint32_t ulNameOffset;
     INT_PTR nObjectIndex;
     std::string c_strGlobalVarTemplate("GVar%u");
 
@@ -25,12 +25,12 @@ void CFalloutScript::InitDefinitions()
         
         if ((nObjectIndex = GetIndexOfProc(ulNameOffset)) != -1)
         {
-            m_Definitions.SetAt(ulNameOffset, CDefObject(CDefObject::OBJECT_PROCEDURE, 0, ULONG(nObjectIndex)));
+            m_Definitions.SetAt(ulNameOffset, CDefObject(CDefObject::OBJECT_PROCEDURE, 0, uint32_t(nObjectIndex)));
         }
         else if ((nObjectIndex = GetIndexOfExportedVariable(ulNameOffset)) != -1)
         {
             uint16_t wOpcode = m_ExportedVarValue[nObjectIndex].GetOperator();
-            ULONG ulValue = m_ExportedVarValue[nObjectIndex].GetArgument();
+            uint32_t ulValue = m_ExportedVarValue[nObjectIndex].GetArgument();
 
             m_Definitions.SetAt(ulNameOffset, CDefObject(CDefObject::OBJECT_VARIABLE, V_EXPORT | wOpcode, ulValue));
         }
@@ -79,7 +79,7 @@ void CFalloutScript::ProcessCode()
                     AfxThrowUserException();
                 }
 
-                ULONG ulCondStartAddress = node.m_Opcode.GetArgument();
+                uint32_t ulCondStartAddress = node.m_Opcode.GetArgument();
 
                 do
                 {
@@ -134,7 +134,7 @@ INT_PTR CFalloutScript::GetIndexOfProc(const char* lpszName)
     return nResult;
 }
 
-INT_PTR CFalloutScript::GetIndexOfProc(ULONG ulNameOffset)
+INT_PTR CFalloutScript::GetIndexOfProc(uint32_t ulNameOffset)
 {
     INT_PTR nResult = -1;
 
@@ -150,7 +150,7 @@ INT_PTR CFalloutScript::GetIndexOfProc(ULONG ulNameOffset)
     return nResult;
 }
 
-INT_PTR CFalloutScript::GetIndexOfExportedVariable(ULONG ulNameOffset)
+INT_PTR CFalloutScript::GetIndexOfExportedVariable(uint32_t ulNameOffset)
 {
     INT_PTR nResult = -1;
 
@@ -166,7 +166,7 @@ INT_PTR CFalloutScript::GetIndexOfExportedVariable(ULONG ulNameOffset)
     return nResult;
 }
 
-void CFalloutScript::SetExternalVariable(ULONG ulNameOffset)
+void CFalloutScript::SetExternalVariable(uint32_t ulNameOffset)
 {
     CDefObject defObject;
 
@@ -206,7 +206,7 @@ void CFalloutScript::TryRenameGlobalVariables()
 void CFalloutScript::TryRenameImportedVariables()
 {
     CDefObject defObject;
-    ULONG ulNameOffset;
+    uint32_t ulNameOffset;
 
     if (m_GlobalVar.GetSize() == 0)
     {
@@ -402,10 +402,10 @@ void CFalloutScript::InitialReduce()
 }
 
 // build tree for all nodes from nStartIndex to file offset ulEndOffset (not including)
-ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, ULONG ulEndOffset)
+uint32_t CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, uint32_t nStartIndex, uint32_t ulEndOffset)
 {
     uint16_t wOperator;
-    ULONG ulArgument;
+    uint32_t ulArgument;
     INT_PTR nNumOfArgs;
 
     COpcode::COpcodeAttributes opcodeAttributes;
@@ -425,7 +425,7 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
             {
                 INT_PTR nExtVarNameNodeIndex = NextNodeIndex(NodeArray, j, -1);
                 uint16_t wOpeartor = NodeArray[nExtVarNameNodeIndex].m_Opcode.GetOperator();
-                ULONG ulArgument = NodeArray[nExtVarNameNodeIndex].m_Opcode.GetArgument();
+                uint32_t ulArgument = NodeArray[nExtVarNameNodeIndex].m_Opcode.GetArgument();
 
                 if ((wOpeartor != COpcode::O_STRINGOP) && (wOpeartor != COpcode::O_INTOP))
                 {
@@ -441,7 +441,7 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
             {
                 INT_PTR nProcNumOfArgsNodeIndex = NextNodeIndex(NodeArray, j, -2);
                 uint16_t wProcNumOfArgsOperator = NodeArray[nProcNumOfArgsNodeIndex].m_Opcode.GetOperator();
-                ULONG ulProcNumOfArgs = NodeArray[nProcNumOfArgsNodeIndex].m_Opcode.GetArgument();
+                uint32_t ulProcNumOfArgs = NodeArray[nProcNumOfArgsNodeIndex].m_Opcode.GetArgument();
 
                 if (wProcNumOfArgsOperator != COpcode::O_INTOP)
                 {
@@ -457,7 +457,7 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
             {
                 INT_PTR nAddRegionNumOfArgsNodeIndex = NextNodeIndex(NodeArray, j, -1);
                 uint16_t wAddRegionNumOfArgsOperator = NodeArray[nAddRegionNumOfArgsNodeIndex].m_Opcode.GetOperator();
-                ULONG ulAddRegionNumOfArgs = NodeArray[nAddRegionNumOfArgsNodeIndex].m_Opcode.GetArgument();
+                uint32_t ulAddRegionNumOfArgs = NodeArray[nAddRegionNumOfArgsNodeIndex].m_Opcode.GetArgument();
 
                 if (wAddRegionNumOfArgsOperator != COpcode::O_INTOP)
                 {
@@ -527,12 +527,12 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
         if (wOperator == COpcode::O_IF)
         {
             // process possible conditional expression - this may be either normal IF statement or (x IF y ELSE z) expression
-            ULONG ulElseOffset = NodeArray[j].m_Arguments[0].m_Opcode.GetArgument();
-            ULONG ulElseIndex, ulSkipIndex = -1;
+            uint32_t ulElseOffset = NodeArray[j].m_Arguments[0].m_Opcode.GetArgument();
+            uint32_t ulElseIndex, ulSkipIndex = -1;
             ulElseIndex = BuildTreeBranch(NodeArray, j + 1, ulElseOffset); // true branch
             if (NodeArray[ulElseIndex - 1].m_Opcode.GetOperator() == COpcode::O_JMP)
             {
-                ULONG ulSkipOffset = NodeArray[ulElseIndex - 1].m_Opcode.GetArgument();
+                uint32_t ulSkipOffset = NodeArray[ulElseIndex - 1].m_Opcode.GetArgument();
                 if (ulSkipOffset > NodeArray[j].m_ulOffset)
                 {
                     ulSkipIndex = BuildTreeBranch(NodeArray, ulElseIndex, ulSkipOffset); // false branch
@@ -584,7 +584,7 @@ void CFalloutScript::ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& D
         AfxThrowUserException();
     }
 
-    ULONG ulJumpOffset = node.m_Arguments[0].m_Opcode.GetArgument();
+    uint32_t ulJumpOffset = node.m_Arguments[0].m_Opcode.GetArgument();
 
     do
     {
@@ -650,7 +650,7 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
         return;
     }
 
-    ULONG ulOffset;
+    uint32_t ulOffset;
 
     // Start of procedure
     if (NodeArray[0].m_Opcode.GetOperator() == COpcode::O_PUSH_BASE)
@@ -688,7 +688,7 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
             case COpcode::O_WHILE:
             {
                 CNode node = NodeArray[i].m_Arguments[0];
-                ULONG loopOffset = NodeArray[i].m_Arguments[1].GetTopOffset();
+                uint32_t loopOffset = NodeArray[i].m_Arguments[1].GetTopOffset();
 
                 if (node.m_Opcode.GetOperator() != COpcode::O_INTOP)
                 {
@@ -708,7 +708,7 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                     node = NodeArray[nNodeIndex = NextNodeIndex(NodeArray, nNodeIndex, 1)];
                     if (node.m_Opcode.GetOperator() == COpcode::O_JMP && node.m_Type == CNode::TYPE_NORMAL && node.m_Arguments.GetSize() > 0)
                     {
-                        ULONG ofs = node.m_Arguments[0].m_Opcode.GetArgument();
+                        uint32_t ofs = node.m_Arguments[0].m_Opcode.GetArgument();
                         if (ofs == ulOffset)
                         {
                             NodeArray[nNodeIndex].m_Type = CNode::TYPE_BREAK;
@@ -811,7 +811,7 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                         printf("Error: Invalid opcode for jump-address\n");
                         AfxThrowUserException();
                     }
-                    //ULONG jumpPastElseOffset = 
+                    //uint32_t jumpPastElseOffset =
                     ulOffset = node.m_Arguments[0].m_Opcode.GetArgument();
                     //printf("(else) goto %x > %x", ulOffset, node.m_ulOffset);
                     if (ulOffset > node.m_ulOffset)

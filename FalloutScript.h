@@ -43,10 +43,10 @@ private:
     bool CheckExportProcCode(uint16_t wOperator, INT_PTR nIndex);
 
     INT_PTR GetIndexOfProc(const char* lpszName);
-    INT_PTR GetIndexOfProc(ULONG ulNameOffset);
-    INT_PTR GetIndexOfExportedVariable(ULONG ulNameOffset);
+    INT_PTR GetIndexOfProc(uint32_t ulNameOffset);
+    INT_PTR GetIndexOfExportedVariable(uint32_t ulNameOffset);
 
-    void SetExternalVariable(ULONG ulNameOffset);
+    void SetExternalVariable(uint32_t ulNameOffset);
     void TryRenameGlobalVariables();
     void TryRenameImportedVariables();
 
@@ -58,15 +58,15 @@ private:
     void BuildTree(CNodeArray& NodeArray);
     void ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& Destination, INT_PTR nStartIndex);
     void SetBordersOfBlocks(CNodeArray& NodeArray);
-    ULONG BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, ULONG ulEndOffset);
+    uint32_t BuildTreeBranch(CNodeArray& NodeArray, uint32_t nStartIndex, uint32_t ulEndOffset);
     void ReduceConditionalExpressions(CNodeArray& NodeArray);
     bool IsOmittetArgsAllowed(uint16_t wOpcode);
 
     void StoreDefinitions(CArchive& ar);
     void StoreDeclarations(CArchive& ar);
 
-    std::string GetSource( CNode& node, bool bLabel, ULONG ulNumArgs);
-    std::string GetSource( CNode& node, bool bLabel, ULONG ulNumArgs, ULONG aulProcArg[], ULONG ulProcArgCount);
+    std::string GetSource( CNode& node, bool bLabel, uint32_t ulNumArgs);
+    std::string GetSource( CNode& node, bool bLabel, uint32_t ulNumArgs, uint32_t aulProcArg[], uint32_t ulProcArgCount);
     bool ArgNeedParens(const CNode& node, const CNode& argument, CFalloutScript::Assoc assoc = CFalloutScript::NON_ASSOC);
     std::string GetIndentString(INT_PTR nLevel);
 
@@ -84,21 +84,21 @@ private:
         };
 
     public:
-        CDefObject(ObjectType type = OBJECT_VARIABLE, ULONG ulAttributes = 0, ULONG ulObjectData = 0);
+        CDefObject(ObjectType type = OBJECT_VARIABLE, uint32_t ulAttributes = 0, uint32_t ulObjectData = 0);
 
     public:
         ObjectType m_ObjectType;
-        ULONG m_ulAttributes;
+        uint32_t m_ulAttributes;
 
         union {
-            ULONG m_ulVarValue;
-            ULONG m_ulProcIndex;
+            uint32_t m_ulVarValue;
+            uint32_t m_ulProcIndex;
         };
     };
 
 private:
-    // CMapULongToDefObject
-    typedef CMap<ULONG, ULONG, CDefObject, CDefObject&> CMapULongToDefObject;
+    // CMapuint32_tToDefObject
+    typedef CMap<uint32_t, uint32_t, CDefObject, CDefObject&> CMapuint32_tToDefObject;
 
     CStartupCode m_StartupCode;
     CProcTable   m_ProcTable;
@@ -113,7 +113,7 @@ private:
     CArrayOfNodeArray m_ProcBodies;
     CArrayOfNodeArray m_Conditions;
 
-    CMapULongToDefObject m_Definitions;
+    CMapuint32_tToDefObject m_Definitions;
     std::vector<std::string> m_GlobalVarsNames;
 };
 

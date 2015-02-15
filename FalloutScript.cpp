@@ -37,7 +37,7 @@ void CFalloutScript::Serialize(CArchive& ar)
 
     // Sections with variable sizes
     ar.Flush();
-    ULONG ullCurrentOffset = ar.GetFile()->GetPosition();
+    uint32_t ullCurrentOffset = ar.GetFile()->GetPosition();
 
     // Load globals
     m_GlobalVar.RemoveAll();
@@ -60,7 +60,7 @@ void CFalloutScript::Serialize(CArchive& ar)
     if (!HeaderTail.IsEmpty())
     {
         INT_PTR nIndexOfStart = GetIndexOfProc("start");
-        ULONG ulStartProcAddress = (nIndexOfStart != -1) ? m_ProcTable[nIndexOfStart].m_ulBodyOffset : 18;
+        uint32_t ulStartProcAddress = (nIndexOfStart != -1) ? m_ProcTable[nIndexOfStart].m_ulBodyOffset : 18;
 
         opcode = HeaderTail[HeaderTail.GetUpperBound()];
 
@@ -196,8 +196,8 @@ void CFalloutScript::Serialize(CArchive& ar)
     for(INT_PTR i = 0; i < m_ProcTable.GetSize(); i++)
     {
         printf("    Procedure: %d\r", i);
-        ULONG ulOffset = m_ProcTable[i].m_ulBodyOffset;
-        ULONG ulSize = m_ProcTable.GetSizeOfProc(i);
+        uint32_t ulOffset = m_ProcTable[i].m_ulBodyOffset;
+        uint32_t ulSize = m_ProcTable.GetSizeOfProc(i);
         ar.Flush();
         ar.GetFile()->Seek(ulOffset, CFile::begin);
 

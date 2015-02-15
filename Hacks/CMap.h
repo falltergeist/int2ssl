@@ -19,7 +19,7 @@ class CMap
         {
         }
 
-        ULONG GetSize() const
+        uint32_t GetSize() const
         {
             return _map.size();
         }
@@ -29,7 +29,7 @@ class CMap
             _map.clear();
         }
 
-        void SetAt(ULONG offset, C value)
+        void SetAt(uint32_t offset, C value)
         {
             if (_map.find(offset) != _map.end())
             {
@@ -39,7 +39,7 @@ class CMap
             _map.insert(std::pair<A, C>(offset, value));
         }
 
-        bool Lookup(ULONG offset, C& value) const
+        bool Lookup(uint32_t offset, C& value) const
         {
             auto it = _map.find(offset);
             if (it != _map.end())
@@ -50,7 +50,7 @@ class CMap
             return false;
         }
 
-        void InitHashTable(ULONG n)
+        void InitHashTable(uint32_t n)
         {
 
         }

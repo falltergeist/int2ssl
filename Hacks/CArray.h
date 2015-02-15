@@ -18,12 +18,12 @@ public:
     {
     }
 
-    A& operator[](ULONG offset)
+    A& operator[](uint32_t offset)
     {
         return _vector[offset];
     }
 
-    const A& operator[](ULONG offset) const
+    const A& operator[](uint32_t offset) const
     {
         return _vector[offset];
     }
@@ -49,22 +49,22 @@ public:
         return _vector.size() - 1;
     }
 
-    void RemoveAt(ULONG n, ULONG count = 1)
+    void RemoveAt(uint32_t n, uint32_t count = 1)
     {
         _vector.erase(_vector.begin() + n, _vector.begin() + n + count);
     }
 
-    ULONG GetSize()
+    uint32_t GetSize()
     {
         return _vector.size();
     }
 
-    void SetSize(ULONG n)
+    void SetSize(uint32_t n)
     {
         _vector.resize(n);
     }
 
-    void InsertAt(ULONG position, A value)
+    void InsertAt(uint32_t position, A value)
     {
         _vector.insert(_vector.begin() + position, value);
     }

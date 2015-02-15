@@ -21,12 +21,12 @@ public:
 public:
     INT_PTR GetSize() const;
     std::string GetStringByIndex(INT_PTR nIndex) ;
-    ULONG GetOffsetByIndex(INT_PTR nIndex) ;
+    uint32_t GetOffsetByIndex(INT_PTR nIndex) ;
 
     void Dump(CArchive& ar);
 
 public:
-    std::string operator [] (ULONG ulOffset) const;
+    std::string operator [] (uint32_t ulOffset) const;
 
 private:    
     typedef CMap<uint32_t, uint32_t, std::string, const char*> CMapDWordToString;

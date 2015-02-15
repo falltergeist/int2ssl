@@ -781,11 +781,11 @@ public:
     public:
         COpcodeAttributes(std::string mnemonic = "",
                           std::string name = "",
-                          ULONG ulNumArgs = 0,
+                          uint32_t ulNumArgs = 0,
                           Type type = TYPE_STATEMENT,
                           Category category = CATEGORY_PREFIX,
-                          ULONG* procArgs = NULL,
-                          ULONG numProcArgs = 0);
+                          uint32_t* procArgs = NULL,
+                          uint32_t numProcArgs = 0);
         COpcodeAttributes(const COpcodeAttributes& attributes);
         COpcodeAttributes& operator = (const COpcodeAttributes& attributes);
         void InitAttributes();
@@ -793,11 +793,11 @@ public:
     public:
         std::string m_strMnemonic;
         std::string m_strName;
-        ULONG m_ulNumArgs;
+        uint32_t m_ulNumArgs;
         Type m_Type;
         Category m_Category;
-        ULONG *m_procArgs;
-        ULONG m_numProcArgs;
+        uint32_t *m_procArgs;
+        uint32_t m_numProcArgs;
     };
 
     // CF2OpcodeAttributesMap
@@ -824,7 +824,7 @@ public:
 
 public:
     virtual void Serialize(CArchive& ar);
-    void Expect(CArchive& ar, uint16_t wOperator, bool bArgumentFound = false, ULONG ulArgument = 0);
+    void Expect(CArchive& ar, uint16_t wOperator, bool bArgumentFound = false, uint32_t ulArgument = 0);
     void Expect(CArchive& ar, int nCount, uint16_t pwOperators[]);
 
     bool HasArgument() const;
@@ -832,13 +832,13 @@ public:
 
     uint16_t GetOperator() const;
     void SetOperator(uint16_t op);
-    ULONG GetArgument() const;
+    uint32_t GetArgument() const;
 
     const COpcodeAttributes GetAttributes() const;
 
 private:
     uint16_t  m_wOperator;
-    ULONG m_ulArgument;
+    uint32_t m_ulArgument;
 };
 
 typedef CArray<COpcode, COpcode&> COpcodeArray;

@@ -26,7 +26,7 @@ void CArchive::WriteString(std::string value)
     _file->_ostream << value;
 }
 
-ULONG CArchive::Read(char *buffer, ULONG size)
+uint32_t CArchive::Read(char *buffer, uint32_t size)
 {
     _file->_istream.read(buffer, size);
     return size;

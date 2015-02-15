@@ -11,6 +11,5 @@
 
 typedef unsigned char BYTE;
 typedef int INT_PTR;
-typedef unsigned int ULONG;
 
 #endif // TYPES_H
