@@ -278,12 +278,12 @@ void CProcTable::Serialize(CArchive& ar)
 //    printf("m_ulOffsetOfProcSection: 0x%08X\n", m_ulOffsetOfProcSection);
 }
 
-INT_PTR CProcTable::GetSize()
+int32_t CProcTable::GetSize()
 {
     return m_Table.GetSize();
 }
 
-uint32_t CProcTable::GetSizeOfProc(INT_PTR nIndex)
+uint32_t CProcTable::GetSizeOfProc(int32_t nIndex)
 {
     if ((nIndex < 0) || (nIndex > m_ProcSize.GetUpperBound()))
     {
@@ -315,7 +315,7 @@ void CProcTable::Dump(CArchive& ar)
 }
 
 
-CProcDescriptor& CProcTable::operator [] (INT_PTR nIndex)
+CProcDescriptor& CProcTable::operator [] (int32_t nIndex)
 {
     if ((nIndex < 0) || (nIndex > m_ProcSize.GetUpperBound()))
     {

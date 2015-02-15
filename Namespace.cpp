@@ -111,24 +111,24 @@ void CNamespace::Serialize(CArchive& ar)
     }
 
 //          //For debugging only
-//          for(INT_PTR i = 0; i < GetSize(); i++) {
+//          for(int32_t i = 0; i < GetSize(); i++) {
 //              printf("Offset: 0x%08X (%9d), string: %s\n", m_Order[i], m_Order[i], GetStringByIndex(i));
 //          }
 //
 //          printf("\n");
 }
 
-INT_PTR CNamespace::GetSize() const
+int32_t CNamespace::GetSize() const
 {
     return m_Map.GetSize();
 }
 
-std::string CNamespace::GetStringByIndex(INT_PTR nIndex)
+std::string CNamespace::GetStringByIndex(int32_t nIndex)
 {
     return (this->operator [] (m_Order[nIndex]));
 }
 
-uint32_t CNamespace::GetOffsetByIndex(INT_PTR nIndex)
+uint32_t CNamespace::GetOffsetByIndex(int32_t nIndex)
 {
     return m_Order[nIndex];
 }

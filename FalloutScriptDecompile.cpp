@@ -25,13 +25,13 @@ extern bool g_bInsOmittedArgsBackward;
 void CFalloutScript::InitDefinitions()
 {
     uint32_t ulNameOffset;
-    INT_PTR nObjectIndex;
+    int32_t nObjectIndex;
     std::string c_strGlobalVarTemplate("GVar%u");
 
 
     m_Definitions.RemoveAll();
 
-    for(INT_PTR i = 0; i < m_Namespace.GetSize(); i++)
+    for(int32_t i = 0; i < m_Namespace.GetSize(); i++)
     {
         ulNameOffset = m_Namespace.GetOffsetByIndex(i);
         
@@ -50,7 +50,7 @@ void CFalloutScript::InitDefinitions()
 
     m_GlobalVarsNames.resize(m_GlobalVar.GetSize());
 
-    for(INT_PTR i = 0; i < m_GlobalVarsNames.size(); i++)
+    for(int32_t i = 0; i < m_GlobalVarsNames.size(); i++)
     {
         m_GlobalVarsNames[i] = format(c_strGlobalVarTemplate, i);
     }
@@ -63,7 +63,7 @@ void CFalloutScript::ProcessCode()
 
     printf("    Building execution tree\n");
     
-    for(INT_PTR i = 0; i < m_ProcTable.GetSize(); i++)
+    for(int32_t i = 0; i < m_ProcTable.GetSize(); i++)
     {
         printf("        Procedure: %d\n", i);
         BuildTree(m_ProcBodies[i]);
@@ -71,14 +71,14 @@ void CFalloutScript::ProcessCode()
 
     printf("    Extracting and reducing conditions\n");
     
-    for(INT_PTR i = 0; i < m_ProcTable.GetSize(); i++)
+    for(int32_t i = 0; i < m_ProcTable.GetSize(); i++)
     {
         if (m_ProcTable[i].m_ulType & P_CONDITIONAL)
         {
             ExtractAndReduceCondition(m_ProcBodies[i], m_Conditions[i], 0);
         }
 
-        for(INT_PTR j = 0; j < m_ProcBodies[i].GetSize(); j++)
+        for(int32_t j = 0; j < m_ProcBodies[i].GetSize(); j++)
         {
             if (m_ProcBodies[i][j].m_Opcode.GetOperator() == COpcode::O_CALL_CONDITION)
             {
@@ -110,7 +110,7 @@ void CFalloutScript::ProcessCode()
 
     printf("    Setting borders of blocks\n");
 
-    for(INT_PTR i = 0; i < m_ProcTable.GetSize(); i++)
+    for(int32_t i = 0; i < m_ProcTable.GetSize(); i++)
     {
         printf("        Procedure: %d\r", i);
         SetBordersOfBlocks(m_ProcBodies[i]);
@@ -123,15 +123,15 @@ void CFalloutScript::ProcessCode()
     TryRenameImportedVariables();
 }
 
-INT_PTR CFalloutScript::GetIndexOfProc(const char* lpszName)
+int32_t CFalloutScript::GetIndexOfProc(const char* lpszName)
 {
-    INT_PTR nResult = -1;
+    int32_t nResult = -1;
     std::string strName(lpszName);
     std::string strTestName;
 
     std::transform(strName.begin(), strName.end(), strName.begin(), ::tolower);
 
-    for(INT_PTR i = 0; i < m_ProcTable.GetSize(); i++)
+    for(int32_t i = 0; i < m_ProcTable.GetSize(); i++)
     {
         strTestName = m_Namespace[m_ProcTable[i].m_ulNameOffset];
         std::transform(strTestName.begin(), strTestName.end(), strTestName.begin(), ::tolower);
@@ -146,11 +146,11 @@ INT_PTR CFalloutScript::GetIndexOfProc(const char* lpszName)
     return nResult;
 }
 
-INT_PTR CFalloutScript::GetIndexOfProc(uint32_t ulNameOffset)
+int32_t CFalloutScript::GetIndexOfProc(uint32_t ulNameOffset)
 {
-    INT_PTR nResult = -1;
+    int32_t nResult = -1;
 
-    for(INT_PTR i = 0; i < m_ProcTable.GetSize(); i++)
+    for(int32_t i = 0; i < m_ProcTable.GetSize(); i++)
     {
         if (m_ProcTable[i].m_ulNameOffset == ulNameOffset)
         {
@@ -162,11 +162,11 @@ INT_PTR CFalloutScript::GetIndexOfProc(uint32_t ulNameOffset)
     return nResult;
 }
 
-INT_PTR CFalloutScript::GetIndexOfExportedVariable(uint32_t ulNameOffset)
+int32_t CFalloutScript::GetIndexOfExportedVariable(uint32_t ulNameOffset)
 {
-    INT_PTR nResult = -1;
+    int32_t nResult = -1;
 
-    for(INT_PTR i = 0; i < m_ExportedVarValue.GetSize(); i += 2)
+    for(int32_t i = 0; i < m_ExportedVarValue.GetSize(); i += 2)
     {
         if (m_ExportedVarValue[i + 1].GetArgument() == ulNameOffset)
         {
@@ -190,16 +190,16 @@ void CFalloutScript::SetExternalVariable(uint32_t ulNameOffset)
 
 void CFalloutScript::TryRenameGlobalVariables()
 {
-    INT_PTR nNamesCount = m_Namespace.GetSize();
-    INT_PTR nDefinitionsCount = m_Definitions.GetSize();
-    INT_PTR nGlobalVarCount = m_GlobalVar.GetSize();
+    int32_t nNamesCount = m_Namespace.GetSize();
+    int32_t nDefinitionsCount = m_Definitions.GetSize();
+    int32_t nGlobalVarCount = m_GlobalVar.GetSize();
 
     CDefObject defObject;
-    INT_PTR nGlobalVarIndex = 0;
+    int32_t nGlobalVarIndex = 0;
 
     if (nNamesCount - nDefinitionsCount == nGlobalVarCount)
     {
-        for(INT_PTR i = 0; i < m_Namespace.GetSize(); i++)
+        for(int32_t i = 0; i < m_Namespace.GetSize(); i++)
         {
             if (!m_Definitions.Lookup(m_Namespace.GetOffsetByIndex(i), defObject))
             {
@@ -222,7 +222,7 @@ void CFalloutScript::TryRenameImportedVariables()
 
     if (m_GlobalVar.GetSize() == 0)
     {
-        for(INT_PTR i = 0; i < m_Namespace.GetSize(); i++)
+        for(int32_t i = 0; i < m_Namespace.GetSize(); i++)
         {
             ulNameOffset = m_Namespace.GetOffsetByIndex(i);
 
@@ -234,9 +234,9 @@ void CFalloutScript::TryRenameImportedVariables()
     }
 }
 
-INT_PTR CFalloutScript::NextNodeIndex( CNodeArray& NodeArray, INT_PTR nCurrentIndex, INT_PTR nStep)
+int32_t CFalloutScript::NextNodeIndex( CNodeArray& NodeArray, int32_t nCurrentIndex, int32_t nStep)
 {
-    INT_PTR nResult = nCurrentIndex + nStep;
+    int32_t nResult = nCurrentIndex + nStep;
 
     if ((nResult < 0) || (nResult > NodeArray.GetUpperBound()))
     {
@@ -247,16 +247,16 @@ INT_PTR CFalloutScript::NextNodeIndex( CNodeArray& NodeArray, INT_PTR nCurrentIn
     return nResult;
 }
 
-bool CFalloutScript::CheckSequenceOfNodes(CNodeArray& NodeArray, INT_PTR nStartIndex, const uint16_t wSequence[], INT_PTR nSequenceLen)
+bool CFalloutScript::CheckSequenceOfNodes(CNodeArray& NodeArray, int32_t nStartIndex, const uint16_t wSequence[], int32_t nSequenceLen)
 {
     return RemoveSequenceOfNodes(NodeArray, nStartIndex, 0, wSequence, nSequenceLen);
 }
 
-bool CFalloutScript::RemoveSequenceOfNodes(CNodeArray& NodeArray, INT_PTR nStartIndex, INT_PTR nCount, const uint16_t wSequence[], INT_PTR nSequenceLen)
+bool CFalloutScript::RemoveSequenceOfNodes(CNodeArray& NodeArray, int32_t nStartIndex, int32_t nCount, const uint16_t wSequence[], int32_t nSequenceLen)
 {
-    INT_PTR nCurrentNodeIndex = nStartIndex - 1;
+    int32_t nCurrentNodeIndex = nStartIndex - 1;
 
-    for(INT_PTR i = 0; i < nSequenceLen; i++)
+    for(int32_t i = 0; i < nSequenceLen; i++)
     {
         nCurrentNodeIndex = NextNodeIndex(NodeArray, nCurrentNodeIndex, 1);
 
@@ -334,9 +334,9 @@ void CFalloutScript::InitialReduce()
     };
 
     uint16_t* pwCode;
-    INT_PTR nCount;
+    int32_t nCount;
 
-    for(INT_PTR i = 0 ; i < m_ProcBodies.GetSize(); i++)
+    for(int32_t i = 0 ; i < m_ProcBodies.GetSize(); i++)
     {
         // Tail
         if (!m_ProcBodies[i].IsEmpty())
@@ -352,7 +352,7 @@ void CFalloutScript::InitialReduce()
         }
 
         // Body
-        for(INT_PTR j = 0; j < m_ProcBodies[i].GetSize(); j++)
+        for(int32_t j = 0; j < m_ProcBodies[i].GetSize(); j++)
         {
             switch(m_ProcBodies[i][j].m_Opcode.GetOperator())
             {
@@ -418,24 +418,24 @@ uint32_t CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, uint32_t nStartI
 {
     uint16_t wOperator;
     uint32_t ulArgument;
-    INT_PTR nNumOfArgs;
+    int32_t nNumOfArgs;
 
     COpcode::COpcodeAttributes opcodeAttributes;
-    INT_PTR j;
+    int32_t j;
     for (j = nStartIndex; (j < NodeArray.GetSize() && NodeArray[j].m_ulOffset < ulEndOffset); j++)
     {
         wOperator = NodeArray[j].m_Opcode.GetOperator();
         ulArgument = NodeArray[j].m_Opcode.GetArgument();
 
         opcodeAttributes = NodeArray[j].m_Opcode.GetAttributes();
-        nNumOfArgs = INT_PTR(opcodeAttributes.m_ulNumArgs);
+        nNumOfArgs = int32_t(opcodeAttributes.m_ulNumArgs);
 
         switch(wOperator)
         {
             case COpcode::O_FETCH_EXTERNAL:
             case COpcode::O_STORE_EXTERNAL:
             {
-                INT_PTR nExtVarNameNodeIndex = NextNodeIndex(NodeArray, j, -1);
+                int32_t nExtVarNameNodeIndex = NextNodeIndex(NodeArray, j, -1);
                 uint16_t wOpeartor = NodeArray[nExtVarNameNodeIndex].m_Opcode.GetOperator();
                 uint32_t ulArgument = NodeArray[nExtVarNameNodeIndex].m_Opcode.GetArgument();
 
@@ -451,7 +451,7 @@ uint32_t CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, uint32_t nStartI
 
             case COpcode::O_CALL:
             {
-                INT_PTR nProcNumOfArgsNodeIndex = NextNodeIndex(NodeArray, j, -2);
+                int32_t nProcNumOfArgsNodeIndex = NextNodeIndex(NodeArray, j, -2);
                 uint16_t wProcNumOfArgsOperator = NodeArray[nProcNumOfArgsNodeIndex].m_Opcode.GetOperator();
                 uint32_t ulProcNumOfArgs = NodeArray[nProcNumOfArgsNodeIndex].m_Opcode.GetArgument();
 
@@ -461,13 +461,13 @@ uint32_t CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, uint32_t nStartI
                     AfxThrowUserException();
                 }
 
-                nNumOfArgs = INT_PTR(ulProcNumOfArgs) + 2;
+                nNumOfArgs = int32_t(ulProcNumOfArgs) + 2;
                 break;
             }
 
             case COpcode::O_ADDREGION:
             {
-                INT_PTR nAddRegionNumOfArgsNodeIndex = NextNodeIndex(NodeArray, j, -1);
+                int32_t nAddRegionNumOfArgsNodeIndex = NextNodeIndex(NodeArray, j, -1);
                 uint16_t wAddRegionNumOfArgsOperator = NodeArray[nAddRegionNumOfArgsNodeIndex].m_Opcode.GetOperator();
                 uint32_t ulAddRegionNumOfArgs = NodeArray[nAddRegionNumOfArgsNodeIndex].m_Opcode.GetArgument();
 
@@ -477,17 +477,17 @@ uint32_t CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, uint32_t nStartI
                     AfxThrowUserException();
                 }
 
-                nNumOfArgs = INT_PTR(ulAddRegionNumOfArgs) + 1;
+                nNumOfArgs = int32_t(ulAddRegionNumOfArgs) + 1;
                 break;
             }
         }
 
         // Check nodes
-        INT_PTR nOmittedArgStartIndex = nNumOfArgs;
+        int32_t nOmittedArgStartIndex = nNumOfArgs;
         COpcode::COpcodeAttributes checkOpcodeAttributes;
-        INT_PTR nNodeIndex = j;
+        int32_t nNodeIndex = j;
 
-        for(INT_PTR k = 0; k < nNumOfArgs; k++)
+        for(int32_t k = 0; k < nNumOfArgs; k++)
         {
             nNodeIndex = NextNodeIndex(NodeArray, nNodeIndex, -1);
             if (!NodeArray[nNodeIndex].IsExpression())
@@ -515,7 +515,7 @@ uint32_t CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, uint32_t nStartI
         }
 
         // Move arguments
-        for(INT_PTR k = 0; k < nNumOfArgs; k++)
+        for(int32_t k = 0; k < nNumOfArgs; k++)
         {
             if (k < nOmittedArgStartIndex)
             {
@@ -574,11 +574,11 @@ void CFalloutScript::BuildTree(CNodeArray& NodeArray)
     }
 }
 
-void CFalloutScript::ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& Destination, INT_PTR nStartIndex)
+void CFalloutScript::ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& Destination, int32_t nStartIndex)
 {
     // Extract
     CNode node;
-    INT_PTR nNodeIndex;;
+    int32_t nNodeIndex;;
 
     node = Source[nNodeIndex = NextNodeIndex(Source, nStartIndex - 1, 1)];
 
@@ -606,7 +606,7 @@ void CFalloutScript::ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& D
 
     Destination.SetSize(nNodeIndex - nStartIndex);
 
-    for(INT_PTR j = 0; j < nNodeIndex - nStartIndex; j++)
+    for(int32_t j = 0; j < nNodeIndex - nStartIndex; j++)
     {
         Destination[j] = Source[nStartIndex + j];
     }
@@ -673,7 +673,7 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
     }
 
     // End of procedure
-    INT_PTR nLastNodeIndex = NodeArray.GetUpperBound();
+    int32_t nLastNodeIndex = NodeArray.GetUpperBound();
 
     if ((NodeArray[nLastNodeIndex].m_Opcode.GetOperator() == COpcode::O_POP_RETURN) &&
         (NodeArray[nLastNodeIndex].m_Opcode.GetArgument() == 0) &&
@@ -693,7 +693,7 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
     // Body
     CNode node;
 
-    for(INT_PTR i = 0; i < NodeArray.GetSize(); i++)
+    for(int32_t i = 0; i < NodeArray.GetSize(); i++)
     {
         switch(NodeArray[i].m_Opcode.GetOperator())
         {
@@ -712,8 +712,8 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                 NodeArray[i + 1].m_ulOffset = NodeArray[i].m_ulOffset;
                 ulOffset = node.m_Opcode.GetArgument();
 
-                INT_PTR nNodeIndex = i + 1;
-                CArray <INT_PTR, INT_PTR&> jumps;
+                int32_t nNodeIndex = i + 1;
+                CArray <int32_t, int32_t&> jumps;
                     
                 do
                 {
@@ -741,7 +741,7 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                 if (NodeArray[nNodeIndex - 2].m_Arguments.GetSize() > 0 && i > 0)
                 { // *might* be a "for" loop
                     loopOffset = NodeArray[nNodeIndex - 2].GetTopOffset();
-                    for (INT_PTR j=0; j<jumps.GetSize(); j++)
+                    for (int32_t j=0; j<jumps.GetSize(); j++)
                     {
                         if (NodeArray[jumps[j]].m_Arguments[0].m_Opcode.GetArgument() == loopOffset)
                         { // jump points to the last statement in loop
@@ -803,7 +803,7 @@ void CFalloutScript::SetBordersOfBlocks(CNodeArray& NodeArray)
                 NodeArray[i + 1].m_ulOffset = NodeArray[i + 2].m_ulOffset;
                 ulOffset = node.m_Opcode.GetArgument(); // offset for jump
                     
-                INT_PTR nNodeIndex = i + 1;
+                int32_t nNodeIndex = i + 1;
 
                 do
                 {
@@ -865,7 +865,7 @@ void CFalloutScript::ReduceConditionalExpressions(CNodeArray& NodeArray)
     }
     CNode node;
 
-    for (INT_PTR i = 0; i < NodeArray.GetSize(); i++)
+    for (int32_t i = 0; i < NodeArray.GetSize(); i++)
     {
         if (NodeArray[i].m_Opcode.GetOperator() == COpcode::O_IF)
         {

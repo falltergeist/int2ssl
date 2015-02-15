@@ -28,9 +28,9 @@ public:
     virtual void Serialize(CArchive& ar);
 
 public:
-    INT_PTR GetSize() const;
-    std::string GetStringByIndex(INT_PTR nIndex) ;
-    uint32_t GetOffsetByIndex(INT_PTR nIndex) ;
+    int32_t GetSize() const;
+    std::string GetStringByIndex(int32_t nIndex) ;
+    uint32_t GetOffsetByIndex(int32_t nIndex) ;
 
     void Dump(CArchive& ar);
 

@@ -46,26 +46,26 @@ private:
     };
 
 private:
-    void ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Destination, uint16_t wDelimeter, int nSizeOfCodeItem, const char* lpszErrorMessage, bool (CFalloutScript::*pCheckFunc)(uint16_t, INT_PTR));
-    bool CheckExportVarCode(uint16_t wOperator, INT_PTR nIndex);
-    bool CheckSetExportedVarValueCode(uint16_t wOperator, INT_PTR nIndex);
-    bool CheckExportProcCode(uint16_t wOperator, INT_PTR nIndex);
+    void ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Destination, uint16_t wDelimeter, int nSizeOfCodeItem, const char* lpszErrorMessage, bool (CFalloutScript::*pCheckFunc)(uint16_t, int32_t));
+    bool CheckExportVarCode(uint16_t wOperator, int32_t nIndex);
+    bool CheckSetExportedVarValueCode(uint16_t wOperator, int32_t nIndex);
+    bool CheckExportProcCode(uint16_t wOperator, int32_t nIndex);
 
-    INT_PTR GetIndexOfProc(const char* lpszName);
-    INT_PTR GetIndexOfProc(uint32_t ulNameOffset);
-    INT_PTR GetIndexOfExportedVariable(uint32_t ulNameOffset);
+    int32_t GetIndexOfProc(const char* lpszName);
+    int32_t GetIndexOfProc(uint32_t ulNameOffset);
+    int32_t GetIndexOfExportedVariable(uint32_t ulNameOffset);
 
     void SetExternalVariable(uint32_t ulNameOffset);
     void TryRenameGlobalVariables();
     void TryRenameImportedVariables();
 
-    INT_PTR NextNodeIndex( CNodeArray& NodeArray, INT_PTR nCurrentIndex, INT_PTR nSteep);
-    bool CheckSequenceOfNodes(CNodeArray& NodeArray, INT_PTR nStartIndex, const uint16_t wSequence[], INT_PTR nSequenceLen);
-    bool RemoveSequenceOfNodes(CNodeArray& NodeArray,INT_PTR nStartIndex, INT_PTR nCount, const uint16_t wSequence[], INT_PTR nSequenceLen);
+    int32_t NextNodeIndex( CNodeArray& NodeArray, int32_t nCurrentIndex, int32_t nSteep);
+    bool CheckSequenceOfNodes(CNodeArray& NodeArray, int32_t nStartIndex, const uint16_t wSequence[], int32_t nSequenceLen);
+    bool RemoveSequenceOfNodes(CNodeArray& NodeArray,int32_t nStartIndex, int32_t nCount, const uint16_t wSequence[], int32_t nSequenceLen);
 
     void InitialReduce();
     void BuildTree(CNodeArray& NodeArray);
-    void ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& Destination, INT_PTR nStartIndex);
+    void ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& Destination, int32_t nStartIndex);
     void SetBordersOfBlocks(CNodeArray& NodeArray);
     uint32_t BuildTreeBranch(CNodeArray& NodeArray, uint32_t nStartIndex, uint32_t ulEndOffset);
     void ReduceConditionalExpressions(CNodeArray& NodeArray);
@@ -77,7 +77,7 @@ private:
     std::string GetSource( CNode& node, bool bLabel, uint32_t ulNumArgs);
     std::string GetSource( CNode& node, bool bLabel, uint32_t ulNumArgs, uint32_t aulProcArg[], uint32_t ulProcArgCount);
     bool ArgNeedParens(const CNode& node, const CNode& argument, CFalloutScript::Assoc assoc = CFalloutScript::NON_ASSOC);
-    std::string GetIndentString(INT_PTR nLevel);
+    std::string GetIndentString(int32_t nLevel);
 
     int GetPriority(uint16_t wOperator);
     Assoc GetAssociation(uint16_t wOperator);

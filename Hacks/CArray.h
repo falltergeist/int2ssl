@@ -52,7 +52,7 @@ public:
         return _vector.empty();
     }
 
-    INT_PTR GetUpperBound()
+    int32_t GetUpperBound()
     {
         if (_vector.size() == 0) return 0;
         return _vector.size() - 1;

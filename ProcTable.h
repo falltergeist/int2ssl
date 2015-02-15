@@ -50,14 +50,14 @@ public:
 public:
     virtual void Serialize(CArchive& ar);
 
-    INT_PTR GetSize();
-    uint32_t GetSizeOfProc(INT_PTR nIndex);
+    int32_t GetSize();
+    uint32_t GetSizeOfProc(int32_t nIndex);
     uint32_t GetOffsetOfProcSection();
 
     void Dump(CArchive& ar);
 
 public:
-    CProcDescriptor& operator [] (INT_PTR nIndex);
+    CProcDescriptor& operator [] (int32_t nIndex);
 
 private:
     // CProcTableArray

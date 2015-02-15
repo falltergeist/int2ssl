@@ -19,6 +19,5 @@
 // Third party includes
 
 typedef unsigned char BYTE;
-typedef int INT_PTR;
 
 #endif // TYPES_H

@@ -45,7 +45,7 @@ void CStartupCode::Serialize(CArchive& ar)
         COpcode::O_POP_FLAGS_RETURN_VAL_EXIT_EXTERN
     };
 
-    for(INT_PTR i = 0; i < 17; i++)
+    for(int32_t i = 0; i < 17; i++)
     {
         if (i == 1)
         {

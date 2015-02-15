@@ -68,7 +68,7 @@ void CFalloutScript::Serialize(CArchive& ar)
 
     if (!HeaderTail.IsEmpty())
     {
-        INT_PTR nIndexOfStart = GetIndexOfProc("start");
+        int32_t nIndexOfStart = GetIndexOfProc("start");
         uint32_t ulStartProcAddress = (nIndexOfStart != -1) ? m_ProcTable[nIndexOfStart].m_ulBodyOffset : 18;
 
         opcode = HeaderTail[HeaderTail.GetUpperBound()];
@@ -178,7 +178,7 @@ void CFalloutScript::Serialize(CArchive& ar)
     // Global variables
     printf("    Extract \"Global variables\" section\n");
 
-    for(INT_PTR i = 0; i < HeaderTail.GetSize(); i++)
+    for(int32_t i = 0; i < HeaderTail.GetSize(); i++)
     {
         uint16_t wGlobalVarOperator = HeaderTail[i].GetOperator();
 
@@ -202,7 +202,7 @@ void CFalloutScript::Serialize(CArchive& ar)
 
     CNode node;
 
-    for(INT_PTR i = 0; i < m_ProcTable.GetSize(); i++)
+    for(int32_t i = 0; i < m_ProcTable.GetSize(); i++)
     {
         printf("    Procedure: %d\r", i);
         uint32_t ulOffset = m_ProcTable[i].m_ulBodyOffset;
@@ -220,9 +220,9 @@ void CFalloutScript::Serialize(CArchive& ar)
     }
 }
 
-void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Destination, uint16_t wDelimeter, int nSizeOfCodeItem, const char* lpszErrorMessage, bool (CFalloutScript::*pCheckFunc)(uint16_t, INT_PTR))
+void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Destination, uint16_t wDelimeter, int nSizeOfCodeItem, const char* lpszErrorMessage, bool (CFalloutScript::*pCheckFunc)(uint16_t, int32_t))
 {
-    INT_PTR i = 0;
+    int32_t i = 0;
 
     for(; i < Source.GetSize(); i++)
     {
@@ -242,7 +242,7 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
 
         while(Source[i].GetOperator() == wDelimeter)
         {
-            for(INT_PTR j = 0; j < nSizeOfCodeItem - 1; j++)
+            for(int32_t j = 0; j < nSizeOfCodeItem - 1; j++)
             {
                 if (!((this->*pCheckFunc)(Source[i - nSizeOfCodeItem + 1 + j].GetOperator(), j)))
                 {
@@ -251,7 +251,7 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
                 }
             }
 
-            for(INT_PTR j = 0; j < nSizeOfCodeItem - 1; j++)
+            for(int32_t j = 0; j < nSizeOfCodeItem - 1; j++)
             {
                 Destination.Add(Source[i - nSizeOfCodeItem + 1]);
                 Source.RemoveAt(i - nSizeOfCodeItem + 1);
@@ -268,12 +268,12 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
     }
 }
 
-bool CFalloutScript::CheckExportVarCode(uint16_t wOperator, INT_PTR nIndex)
+bool CFalloutScript::CheckExportVarCode(uint16_t wOperator, int32_t nIndex)
 {
     return (nIndex == 0) && (wOperator == COpcode::O_STRINGOP);
 }
 
-bool CFalloutScript::CheckSetExportedVarValueCode(uint16_t wOperator, INT_PTR nIndex)
+bool CFalloutScript::CheckSetExportedVarValueCode(uint16_t wOperator, int32_t nIndex)
 {
     switch(nIndex)
     {
@@ -289,7 +289,7 @@ bool CFalloutScript::CheckSetExportedVarValueCode(uint16_t wOperator, INT_PTR nI
     }
 }
 
-bool CFalloutScript::CheckExportProcCode(uint16_t wOperator, INT_PTR nIndex)
+bool CFalloutScript::CheckExportProcCode(uint16_t wOperator, int32_t nIndex)
 {
     return ((nIndex == 0) || (nIndex == 1)) && (wOperator == COpcode::O_INTOP);
 }
