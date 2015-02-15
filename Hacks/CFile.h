@@ -12,6 +12,7 @@
 
 // C++ standard includes
 #include <fstream>
+#include <stdint.h>
 
 // int2ssl includes
 
@@ -20,7 +21,7 @@
 class CFile
 {
     protected:
-        unsigned int _mode = 1;
+        unsigned int _mode;
 
 
     public:

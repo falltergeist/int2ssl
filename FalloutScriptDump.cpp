@@ -86,7 +86,7 @@ void CFalloutScript::Dump(CArchive& ar)
     }
     else
     {
-        for(int32_t i = 0; i < m_ExportedVarValue.size(); i += 2)
+        for(uint32_t i = 0; i < m_ExportedVarValue.size(); i += 2)
         {
             wOperator = m_ExportedVarValue[i].GetOperator();
             ulArgument = m_ExportedVarValue[i].GetArgument();
@@ -124,7 +124,7 @@ void CFalloutScript::Dump(CArchive& ar)
     ar.WriteString("============== Procedures ==================\n");
     ar.WriteString("\n");
 
-    for(int32_t nIndexOfProc = 0; nIndexOfProc < m_ProcTable.GetSize(); nIndexOfProc++)
+    for(uint32_t nIndexOfProc = 0; nIndexOfProc < m_ProcTable.GetSize(); nIndexOfProc++)
     {
         strOutLine = format("%d: %s (0x%08x)\n", nIndexOfProc,
                                                m_Namespace[m_ProcTable[nIndexOfProc].m_ulNameOffset].c_str(),
@@ -132,7 +132,7 @@ void CFalloutScript::Dump(CArchive& ar)
         ar.WriteString(strOutLine);
         ar.WriteString("===============================\n");
 
-        for(int32_t i = 0; i < m_ProcBodies[nIndexOfProc].size(); i++)
+        for(uint32_t i = 0; i < m_ProcBodies[nIndexOfProc].size(); i++)
         {
             wOperator = m_ProcBodies[nIndexOfProc][i].m_Opcode.GetOperator();
             ulArgument = m_ProcBodies[nIndexOfProc][i].m_Opcode.GetArgument();

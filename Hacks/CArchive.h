@@ -21,7 +21,7 @@
 class CArchive
 {
 protected:
-    CFile* _file = 0;
+    CFile* _file;
 
 public:
     static const unsigned int load = 1;

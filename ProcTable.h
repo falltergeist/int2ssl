@@ -50,7 +50,7 @@ public:
 public:
     virtual void Serialize(CArchive& ar);
 
-    int32_t GetSize();
+    uint32_t GetSize();
     uint32_t GetSizeOfProc(int32_t nIndex);
     uint32_t GetOffsetOfProcSection();
 

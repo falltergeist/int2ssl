@@ -177,7 +177,7 @@ void CFalloutScript::Serialize(CArchive& ar)
     // Global variables
     printf("    Extract \"Global variables\" section\n");
 
-    for(int32_t i = 0; i < HeaderTail.size(); i++)
+    for(uint32_t i = 0; i < HeaderTail.size(); i++)
     {
         uint16_t wGlobalVarOperator = HeaderTail[i].GetOperator();
 
@@ -201,7 +201,7 @@ void CFalloutScript::Serialize(CArchive& ar)
 
     CNode node;
 
-    for(int32_t i = 0; i < m_ProcTable.GetSize(); i++)
+    for(uint32_t i = 0; i < m_ProcTable.GetSize(); i++)
     {
         printf("    Procedure: %d\r", i);
         uint32_t ulOffset = m_ProcTable[i].m_ulBodyOffset;
@@ -219,9 +219,9 @@ void CFalloutScript::Serialize(CArchive& ar)
     }
 }
 
-void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Destination, uint16_t wDelimeter, int nSizeOfCodeItem, const char* lpszErrorMessage, bool (CFalloutScript::*pCheckFunc)(uint16_t, int32_t))
+void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Destination, uint16_t wDelimeter, uint32_t nSizeOfCodeItem, const char* lpszErrorMessage, bool (CFalloutScript::*pCheckFunc)(uint16_t, int32_t))
 {
-    int32_t i = 0;
+    uint32_t i = 0;
 
     for(; i < Source.size(); i++)
     {
@@ -241,7 +241,7 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
 
         while(Source[i].GetOperator() == wDelimeter)
         {
-            for(int32_t j = 0; j < nSizeOfCodeItem - 1; j++)
+            for(uint32_t j = 0; j < nSizeOfCodeItem - 1; j++)
             {
                 if (!((this->*pCheckFunc)(Source[i - nSizeOfCodeItem + 1 + j].GetOperator(), j)))
                 {
@@ -250,7 +250,7 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
                 }
             }
 
-            for(int32_t j = 0; j < nSizeOfCodeItem - 1; j++)
+            for(uint32_t j = 0; j < nSizeOfCodeItem - 1; j++)
             {
                 Destination.push_back(Source[i - nSizeOfCodeItem + 1]);
                 Source.erase(Source.begin() + i - nSizeOfCodeItem + 1);

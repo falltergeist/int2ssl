@@ -9,6 +9,7 @@
 
 // C++ standard includes
 #include <iostream>
+#include <cstdlib>
 
 // int2ssl includes
 #include "FalloutScript.h"

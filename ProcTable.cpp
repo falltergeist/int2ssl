@@ -10,6 +10,7 @@
 // C++ standard includes
 #include <iostream>
 #include <vector>
+#include <cstdlib>
 
 // int2ssl includes
 #include "ProcTable.h"
@@ -277,7 +278,7 @@ void CProcTable::Serialize(CArchive& ar)
 //    printf("m_ulOffsetOfProcSection: 0x%08X\n", m_ulOffsetOfProcSection);
 }
 
-int32_t CProcTable::GetSize()
+uint32_t CProcTable::GetSize()
 {
     return m_Table.size();
 }

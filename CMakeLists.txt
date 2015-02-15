@@ -34,7 +34,7 @@ Utility.cpp
 XGetopt.cpp
 )
 
-add_definitions (-std=c++11 -Wall)
+#add_definitions (-std=c++11 -Wall)
 
 add_executable(int2ssl ${SOURCES})
 #target_link_libraries(int2ssl)

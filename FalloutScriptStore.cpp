@@ -26,7 +26,7 @@ void CFalloutScript::StoreTree(CArchive& ar)
     ar.WriteString("============== Procedures ==================\n");
     ar.WriteString("\n");
 
-    for(int32_t nIndexOfProc = 0; nIndexOfProc < m_ProcTable.GetSize(); nIndexOfProc++)
+    for(uint32_t nIndexOfProc = 0; nIndexOfProc < m_ProcTable.GetSize(); nIndexOfProc++)
     {
         strOutLine = format("%d: %s (0x%08x)\n", nIndexOfProc, m_Namespace[m_ProcTable[nIndexOfProc].m_ulNameOffset].c_str(), m_ProcTable[nIndexOfProc].m_ulBodyOffset);
         ar.WriteString(strOutLine);
@@ -37,7 +37,7 @@ void CFalloutScript::StoreTree(CArchive& ar)
             ar.WriteString("Condition\n");
             ar.WriteString("===============================\n");
 
-            for(int32_t i = 0; i < m_Conditions[nIndexOfProc].size(); i++)
+            for(uint32_t i = 0; i < m_Conditions[nIndexOfProc].size(); i++)
             {
                 strOutLine = format("0x%08X: ", m_Conditions[nIndexOfProc][i].m_ulOffset);
                 ar.WriteString(strOutLine);
@@ -49,7 +49,7 @@ void CFalloutScript::StoreTree(CArchive& ar)
             ar.WriteString("===============================\n");
         }
 
-        for(int32_t i = 0; i < m_ProcBodies[nIndexOfProc].size(); i++)
+        for(uint32_t i = 0; i < m_ProcBodies[nIndexOfProc].size(); i++)
         {
             strOutLine = format("0x%08X: ", m_ProcBodies[nIndexOfProc][i].m_ulOffset);
             ar.WriteString(strOutLine);
@@ -91,7 +91,7 @@ void CFalloutScript::StoreDefinitions(CArchive& ar)
         ar.WriteString("*******************************************************/\n");
         ar.WriteString("\n");
 
-        for(int32_t i = 0; i < m_GlobalVar.size(); i++)
+        for(uint32_t i = 0; i < m_GlobalVar.size(); i++)
         {
             ulVarValue = m_GlobalVar[i].GetArgument();
             strDefinition += "variable ";
@@ -293,7 +293,7 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
 
     std::string strOutLine;
 
-    for(int32_t i = 0; i < m_ProcTable.GetSize(); i++)
+    for(uint32_t i = 0; i < m_ProcTable.GetSize(); i++)
     {
         printf("        Procedure: %d\r", i);
 
@@ -326,7 +326,7 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
             {
                 ar.WriteString("*    Other possible name(s):                           *\n");
 
-                for(int32_t j = i + 1; j < m_ProcTable.GetSize(); j++)
+                for(uint32_t j = i + 1; j < m_ProcTable.GetSize(); j++)
                 {
                     if (m_ProcTable[j].m_ulBodyOffset == m_ProcTable[i].m_ulBodyOffset)
                     {
@@ -587,7 +587,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
                 throw std::exception();
             }
 
-            if (int32_t(node.m_Arguments[0].m_Opcode.GetArgument()) > m_GlobalVarsNames.size() - 1)
+            if (uint32_t(node.m_Arguments[0].m_Opcode.GetArgument()) > m_GlobalVarsNames.size() - 1)
             {
                 printf("Error: Invalid index of global variable\n");
                 throw std::exception();
@@ -603,7 +603,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
                 throw std::exception();
             }
 
-            if (int32_t(node.m_Arguments[1].m_Opcode.GetArgument()) > m_GlobalVarsNames.size() - 1)
+            if (uint32_t(node.m_Arguments[1].m_Opcode.GetArgument()) > m_GlobalVarsNames.size() - 1)
             {
                 printf("Error: Invalid index of global variable\n");
                 throw std::exception();
@@ -711,7 +711,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
 
             strResult += "(";
 
-            for(int32_t nArgIndex = 0; nArgIndex < node.m_Arguments.size() - 1 - 1; nArgIndex++)
+            for(uint32_t nArgIndex = 0; nArgIndex < node.m_Arguments.size() - 1 - 1; nArgIndex++)
             {
                 if (nArgIndex == 0)
                 {

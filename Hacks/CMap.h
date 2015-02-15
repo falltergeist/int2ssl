@@ -49,10 +49,9 @@ class CMap
 
         bool Lookup(uint32_t offset, C& value) const
         {
-            auto it = _map.find(offset);
-            if (it != _map.end())
+            if (_map.find(offset) != _map.end())
             {
-                value = it->second;
+                value = _map.find(offset)->second;
                 return true;
             }
             return false;

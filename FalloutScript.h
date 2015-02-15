@@ -46,7 +46,7 @@ private:
     };
 
 private:
-    void ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Destination, uint16_t wDelimeter, int nSizeOfCodeItem, const char* lpszErrorMessage, bool (CFalloutScript::*pCheckFunc)(uint16_t, int32_t));
+    void ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Destination, uint16_t wDelimeter, uint32_t nSizeOfCodeItem, const char* lpszErrorMessage, bool (CFalloutScript::*pCheckFunc)(uint16_t, int32_t));
     bool CheckExportVarCode(uint16_t wOperator, int32_t nIndex);
     bool CheckSetExportedVarValueCode(uint16_t wOperator, int32_t nIndex);
     bool CheckExportProcCode(uint16_t wOperator, int32_t nIndex);
