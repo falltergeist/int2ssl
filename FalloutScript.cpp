@@ -171,7 +171,7 @@ void CFalloutScript::Serialize(CArchive& ar)
 
     for(INT_PTR i = 0; i < HeaderTail.GetSize(); i++)
     {
-        WORD wGlobalVarOperator = HeaderTail[i].GetOperator();
+        uint16_t wGlobalVarOperator = HeaderTail[i].GetOperator();
 
         if ((wGlobalVarOperator != COpcode::O_STRINGOP) &&
             (wGlobalVarOperator != COpcode::O_FLOATOP) &&
@@ -211,7 +211,7 @@ void CFalloutScript::Serialize(CArchive& ar)
     }
 }
 
-void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Destination, WORD wDelimeter, int nSizeOfCodeItem, const char* lpszErrorMessage, bool (CFalloutScript::*pCheckFunc)(WORD, INT_PTR))
+void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Destination, uint16_t wDelimeter, int nSizeOfCodeItem, const char* lpszErrorMessage, bool (CFalloutScript::*pCheckFunc)(uint16_t, INT_PTR))
 {
     INT_PTR i = 0;
 
@@ -259,12 +259,12 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
     }
 }
 
-bool CFalloutScript::CheckExportVarCode(WORD wOperator, INT_PTR nIndex)
+bool CFalloutScript::CheckExportVarCode(uint16_t wOperator, INT_PTR nIndex)
 {
     return (nIndex == 0) && (wOperator == COpcode::O_STRINGOP);
 }
 
-bool CFalloutScript::CheckSetExportedVarValueCode(WORD wOperator, INT_PTR nIndex)
+bool CFalloutScript::CheckSetExportedVarValueCode(uint16_t wOperator, INT_PTR nIndex)
 {
     switch(nIndex)
     {
@@ -280,7 +280,7 @@ bool CFalloutScript::CheckSetExportedVarValueCode(WORD wOperator, INT_PTR nIndex
     }
 }
 
-bool CFalloutScript::CheckExportProcCode(WORD wOperator, INT_PTR nIndex)
+bool CFalloutScript::CheckExportProcCode(uint16_t wOperator, INT_PTR nIndex)
 {
     return ((nIndex == 0) || (nIndex == 1)) && (wOperator == COpcode::O_INTOP);
 }

@@ -9,7 +9,7 @@
 
 // Third party includes
 
-UINT ReadMSBWord(CArchive& ar, WORD& wValue);
+UINT ReadMSBWord(CArchive& ar, uint16_t& wValue);
 UINT ReadMSBULong(CArchive& ar, ULONG& ulValue);
 
 std::string format(std::string format, ...);

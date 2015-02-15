@@ -22,7 +22,7 @@ void CFalloutScript::Dump(CArchive& ar)
 
 
     std::string strOutLine;
-    WORD wOperator;
+    uint16_t wOperator;
     ULONG ulArgument = 0;
 
     ar.WriteString("============== Global variables values ==================\n");

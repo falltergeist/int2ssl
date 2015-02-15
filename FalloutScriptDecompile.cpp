@@ -29,7 +29,7 @@ void CFalloutScript::InitDefinitions()
         }
         else if ((nObjectIndex = GetIndexOfExportedVariable(ulNameOffset)) != -1)
         {
-            WORD wOpcode = m_ExportedVarValue[nObjectIndex].GetOperator();
+            uint16_t wOpcode = m_ExportedVarValue[nObjectIndex].GetOperator();
             ULONG ulValue = m_ExportedVarValue[nObjectIndex].GetArgument();
 
             m_Definitions.SetAt(ulNameOffset, CDefObject(CDefObject::OBJECT_VARIABLE, V_EXPORT | wOpcode, ulValue));
@@ -235,12 +235,12 @@ INT_PTR CFalloutScript::NextNodeIndex( CNodeArray& NodeArray, INT_PTR nCurrentIn
     return nResult;
 }
 
-bool CFalloutScript::CheckSequenceOfNodes(CNodeArray& NodeArray, INT_PTR nStartIndex, const WORD wSequence[], INT_PTR nSequenceLen)
+bool CFalloutScript::CheckSequenceOfNodes(CNodeArray& NodeArray, INT_PTR nStartIndex, const uint16_t wSequence[], INT_PTR nSequenceLen)
 {
     return RemoveSequenceOfNodes(NodeArray, nStartIndex, 0, wSequence, nSequenceLen);
 }
 
-bool CFalloutScript::RemoveSequenceOfNodes(CNodeArray& NodeArray, INT_PTR nStartIndex, INT_PTR nCount, const WORD wSequence[], INT_PTR nSequenceLen)
+bool CFalloutScript::RemoveSequenceOfNodes(CNodeArray& NodeArray, INT_PTR nStartIndex, INT_PTR nCount, const uint16_t wSequence[], INT_PTR nSequenceLen)
 {
     INT_PTR nCurrentNodeIndex = nStartIndex - 1;
 
@@ -261,26 +261,26 @@ bool CFalloutScript::RemoveSequenceOfNodes(CNodeArray& NodeArray, INT_PTR nStart
 
 void CFalloutScript::InitialReduce()
 {
-    static WORD awTailOfProc[3] = {
+    static uint16_t awTailOfProc[3] = {
         COpcode::O_POP_TO_BASE,
         COpcode::O_POP_BASE,
         COpcode::O_POP_RETURN
     };
 
-    static WORD awTailOfCriticalProc[4] = {
+    static uint16_t awTailOfCriticalProc[4] = {
         COpcode::O_POP_TO_BASE,
         COpcode::O_POP_BASE,
         COpcode::O_CRITICAL_DONE,
         COpcode::O_POP_RETURN
     };
 
-    static WORD awCheckArgCount[3] = {
+    static uint16_t awCheckArgCount[3] = {
         COpcode::O_DUP,
         COpcode::O_INTOP,
         COpcode::O_CHECK_ARG_COUNT
     };
 
-    static WORD awShortCircuitAnd[5] = {
+    static uint16_t awShortCircuitAnd[5] = {
         COpcode::O_DUP,
         COpcode::O_INTOP,
         COpcode::O_SWAP,
@@ -288,7 +288,7 @@ void CFalloutScript::InitialReduce()
         COpcode::O_POP
     };
 
-    static WORD awShortCircuitOr[6] = {
+    static uint16_t awShortCircuitOr[6] = {
         COpcode::O_DUP,
         COpcode::O_INTOP,
         COpcode::O_SWAP,
@@ -297,12 +297,12 @@ void CFalloutScript::InitialReduce()
         COpcode::O_POP
     };
 
-    static WORD awStoreReturnAdress[2] = {
+    static uint16_t awStoreReturnAdress[2] = {
         COpcode::O_INTOP,
         COpcode::O_D_TO_A
     };
 
-    static WORD awReturn[6] = {
+    static uint16_t awReturn[6] = {
         COpcode::O_D_TO_A,
         COpcode::O_SWAPA,
         COpcode::O_POP_TO_BASE,
@@ -311,7 +311,7 @@ void CFalloutScript::InitialReduce()
         COpcode::O_POP_RETURN,
     };
 
-    static WORD awCriticalReturn[7] = {
+    static uint16_t awCriticalReturn[7] = {
         COpcode::O_D_TO_A,
         COpcode::O_SWAPA,
         COpcode::O_POP_TO_BASE,
@@ -321,7 +321,7 @@ void CFalloutScript::InitialReduce()
         COpcode::O_POP_RETURN,
     };
 
-    WORD* pwCode;
+    uint16_t* pwCode;
     INT_PTR nCount;
 
     for(INT_PTR i = 0 ; i < m_ProcBodies.GetSize(); i++)
@@ -404,7 +404,7 @@ void CFalloutScript::InitialReduce()
 // build tree for all nodes from nStartIndex to file offset ulEndOffset (not including)
 ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, ULONG ulEndOffset)
 {
-    WORD wOperator;
+    uint16_t wOperator;
     ULONG ulArgument;
     INT_PTR nNumOfArgs;
 
@@ -424,7 +424,7 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
             case COpcode::O_STORE_EXTERNAL:
             {
                 INT_PTR nExtVarNameNodeIndex = NextNodeIndex(NodeArray, j, -1);
-                WORD wOpeartor = NodeArray[nExtVarNameNodeIndex].m_Opcode.GetOperator();
+                uint16_t wOpeartor = NodeArray[nExtVarNameNodeIndex].m_Opcode.GetOperator();
                 ULONG ulArgument = NodeArray[nExtVarNameNodeIndex].m_Opcode.GetArgument();
 
                 if ((wOpeartor != COpcode::O_STRINGOP) && (wOpeartor != COpcode::O_INTOP))
@@ -440,7 +440,7 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
             case COpcode::O_CALL:
             {
                 INT_PTR nProcNumOfArgsNodeIndex = NextNodeIndex(NodeArray, j, -2);
-                WORD wProcNumOfArgsOperator = NodeArray[nProcNumOfArgsNodeIndex].m_Opcode.GetOperator();
+                uint16_t wProcNumOfArgsOperator = NodeArray[nProcNumOfArgsNodeIndex].m_Opcode.GetOperator();
                 ULONG ulProcNumOfArgs = NodeArray[nProcNumOfArgsNodeIndex].m_Opcode.GetArgument();
 
                 if (wProcNumOfArgsOperator != COpcode::O_INTOP)
@@ -456,7 +456,7 @@ ULONG CFalloutScript::BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, 
             case COpcode::O_ADDREGION:
             {
                 INT_PTR nAddRegionNumOfArgsNodeIndex = NextNodeIndex(NodeArray, j, -1);
-                WORD wAddRegionNumOfArgsOperator = NodeArray[nAddRegionNumOfArgsNodeIndex].m_Opcode.GetOperator();
+                uint16_t wAddRegionNumOfArgsOperator = NodeArray[nAddRegionNumOfArgsNodeIndex].m_Opcode.GetOperator();
                 ULONG ulAddRegionNumOfArgs = NodeArray[nAddRegionNumOfArgsNodeIndex].m_Opcode.GetArgument();
 
                 if (wAddRegionNumOfArgsOperator != COpcode::O_INTOP)
@@ -600,12 +600,12 @@ void CFalloutScript::ExtractAndReduceCondition(CNodeArray& Source, CNodeArray& D
     }
 
     // Reduce
-    static WORD awStartupOfCondition[2] = {
+    static uint16_t awStartupOfCondition[2] = {
         COpcode::O_JMP,
         COpcode::O_CRITICAL_START
     };
 
-    static WORD awCleanupOfCondition[2] = {
+    static uint16_t awCleanupOfCondition[2] = {
         COpcode::O_CRITICAL_DONE,
         COpcode::O_STOP_PROG
     };
@@ -866,7 +866,7 @@ void CFalloutScript::ReduceConditionalExpressions(CNodeArray& NodeArray)
     */
 }
 
-bool CFalloutScript::IsOmittetArgsAllowed(WORD wOpcode)
+bool CFalloutScript::IsOmittetArgsAllowed(uint16_t wOpcode)
 {
     if (((wOpcode >= COpcode::O_END_CORE) && (wOpcode < COpcode::O_END_OP)) ||
         (wOpcode == COpcode::O_POP_RETURN))

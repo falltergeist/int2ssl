@@ -2,7 +2,7 @@
 #include "Utility.h"
 
 
-UINT ReadMSBWord(CArchive& ar, WORD& wValue)
+UINT ReadMSBWord(CArchive& ar, uint16_t& wValue)
 {
     char* pBuffer = reinterpret_cast<char*>(&wValue);
     return (ar.Read(pBuffer + 1, 1) + ar.Read(pBuffer, 1));

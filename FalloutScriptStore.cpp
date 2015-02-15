@@ -420,7 +420,7 @@ void CFalloutScript::StoreDeclarations(CArchive& ar)
             else
             {
                 prevNodeType = CNode::TYPE_NORMAL;
-                WORD wOperator = m_ProcBodies[i][nNodeIndex].m_Opcode.GetOperator();
+                uint16_t wOperator = m_ProcBodies[i][nNodeIndex].m_Opcode.GetOperator();
 
                 if ((m_ProcBodies[i][nNodeIndex].m_Opcode.GetAttributes().m_Type == COpcode::COpcodeAttributes::TYPE_EXPRESSION) &&
                     (wOperator != COpcode::O_STRINGOP) && (wOperator != COpcode::O_FLOATOP) && (wOperator != COpcode::O_INTOP))
@@ -500,7 +500,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, ULONG ulNumArgs)
         return "/* Omitted argument */";
     }
 
-    WORD wOperator = node.m_Opcode.GetOperator();
+    uint16_t wOperator = node.m_Opcode.GetOperator();
     ULONG ulArgument = node.m_Opcode.GetArgument();
 
     // sslc additions:
@@ -608,7 +608,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, ULONG ulNumArgs)
 
         case COpcode::O_FETCH_EXTERNAL:
             {
-                WORD wOperator = node.m_Arguments[0].m_Opcode.GetOperator();
+                uint16_t wOperator = node.m_Arguments[0].m_Opcode.GetOperator();
 
                 if ((wOperator != COpcode::O_STRINGOP) && (wOperator != COpcode::O_INTOP))
                 {
@@ -622,7 +622,7 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, ULONG ulNumArgs)
 
         case COpcode::O_STORE_EXTERNAL:
             {
-                WORD wOperator = node.m_Arguments[1].m_Opcode.GetOperator();
+                uint16_t wOperator = node.m_Arguments[1].m_Opcode.GetOperator();
 
                 if ((wOperator != COpcode::O_STRINGOP) && (wOperator != COpcode::O_INTOP))
                 {
@@ -1056,7 +1056,7 @@ std::string CFalloutScript::GetIndentString(INT_PTR nLevel)
     return strResult;
 }
 
-int CFalloutScript::GetPriority(WORD wOperator)
+int CFalloutScript::GetPriority(uint16_t wOperator)
 {
     switch(wOperator)
     {
@@ -1092,7 +1092,7 @@ int CFalloutScript::GetPriority(WORD wOperator)
     }
 }
 
-CFalloutScript::Assoc CFalloutScript::GetAssociation(WORD wOperator)
+CFalloutScript::Assoc CFalloutScript::GetAssociation(uint16_t wOperator)
 {
     switch(wOperator)
     {

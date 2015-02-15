@@ -11,7 +11,7 @@ CStartupCode::~CStartupCode()
 
 void CStartupCode::Serialize(CArchive& ar)
 {
-    WORD wExpectOpcodes[17] = {
+    uint16_t wExpectOpcodes[17] = {
         COpcode::O_CRITICAL_START,
         COpcode::O_INTOP,
         COpcode::O_D_TO_A,

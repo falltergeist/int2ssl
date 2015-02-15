@@ -61,7 +61,7 @@ void COpcode::Serialize(CArchive& ar)
     }
 }
 
-void COpcode::Expect(CArchive& ar, WORD wOperator, bool bArgumentFound, ULONG ulArgument)
+void COpcode::Expect(CArchive& ar, uint16_t wOperator, bool bArgumentFound, ULONG ulArgument)
 {
     Serialize(ar);
 
@@ -81,7 +81,7 @@ void COpcode::Expect(CArchive& ar, WORD wOperator, bool bArgumentFound, ULONG ul
     }
 }
 
-void COpcode::Expect(CArchive& ar, int nCount, WORD pwOperators[])
+void COpcode::Expect(CArchive& ar, int nCount, uint16_t pwOperators[])
 {
     Serialize(ar);
     bool bFound = false;
@@ -131,12 +131,12 @@ int COpcode::GetSize() const
     }
 }
 
-WORD COpcode::GetOperator() const
+uint16_t COpcode::GetOperator() const
 {
     return m_wOperator;
 }
 
-void COpcode::SetOperator(WORD op)
+void COpcode::SetOperator(uint16_t op)
 {
     m_wOperator = op;
 }

@@ -37,7 +37,7 @@ void CNamespace::Serialize(CArchive& ar)
     if (ulLength == 0xFFFFFFFF) return;
 
     ULONG ulTotalRead = 0;
-    WORD wLengthOfString;
+    uint16_t wLengthOfString;
     char*  lpszNewString;
 
     while(ulTotalRead < ulLength)

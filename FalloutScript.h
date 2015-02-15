@@ -37,10 +37,10 @@ private:
     };
 
 private:
-    void ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Destination, WORD wDelimeter, int nSizeOfCodeItem, const char* lpszErrorMessage, bool (CFalloutScript::*pCheckFunc)(WORD, INT_PTR));
-    bool CheckExportVarCode(WORD wOperator, INT_PTR nIndex);
-    bool CheckSetExportedVarValueCode(WORD wOperator, INT_PTR nIndex);
-    bool CheckExportProcCode(WORD wOperator, INT_PTR nIndex);
+    void ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Destination, uint16_t wDelimeter, int nSizeOfCodeItem, const char* lpszErrorMessage, bool (CFalloutScript::*pCheckFunc)(uint16_t, INT_PTR));
+    bool CheckExportVarCode(uint16_t wOperator, INT_PTR nIndex);
+    bool CheckSetExportedVarValueCode(uint16_t wOperator, INT_PTR nIndex);
+    bool CheckExportProcCode(uint16_t wOperator, INT_PTR nIndex);
 
     INT_PTR GetIndexOfProc(const char* lpszName);
     INT_PTR GetIndexOfProc(ULONG ulNameOffset);
@@ -51,8 +51,8 @@ private:
     void TryRenameImportedVariables();
 
     INT_PTR NextNodeIndex( CNodeArray& NodeArray, INT_PTR nCurrentIndex, INT_PTR nSteep);
-    bool CheckSequenceOfNodes(CNodeArray& NodeArray, INT_PTR nStartIndex, const WORD wSequence[], INT_PTR nSequenceLen);
-    bool RemoveSequenceOfNodes(CNodeArray& NodeArray,INT_PTR nStartIndex, INT_PTR nCount, const WORD wSequence[], INT_PTR nSequenceLen);
+    bool CheckSequenceOfNodes(CNodeArray& NodeArray, INT_PTR nStartIndex, const uint16_t wSequence[], INT_PTR nSequenceLen);
+    bool RemoveSequenceOfNodes(CNodeArray& NodeArray,INT_PTR nStartIndex, INT_PTR nCount, const uint16_t wSequence[], INT_PTR nSequenceLen);
 
     void InitialReduce();
     void BuildTree(CNodeArray& NodeArray);
@@ -60,7 +60,7 @@ private:
     void SetBordersOfBlocks(CNodeArray& NodeArray);
     ULONG BuildTreeBranch(CNodeArray& NodeArray, ULONG nStartIndex, ULONG ulEndOffset);
     void ReduceConditionalExpressions(CNodeArray& NodeArray);
-    bool IsOmittetArgsAllowed(WORD wOpcode);
+    bool IsOmittetArgsAllowed(uint16_t wOpcode);
 
     void StoreDefinitions(CArchive& ar);
     void StoreDeclarations(CArchive& ar);
@@ -70,8 +70,8 @@ private:
     bool ArgNeedParens(const CNode& node, const CNode& argument, CFalloutScript::Assoc assoc = CFalloutScript::NON_ASSOC);
     std::string GetIndentString(INT_PTR nLevel);
 
-    int GetPriority(WORD wOperator);
-    Assoc GetAssociation(WORD wOperator);
+    int GetPriority(uint16_t wOperator);
+    Assoc GetAssociation(uint16_t wOperator);
 
 private:
     

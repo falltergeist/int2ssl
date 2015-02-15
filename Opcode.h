@@ -801,14 +801,14 @@ public:
     };
 
     // CF2OpcodeAttributesMap
-    class CF2OpcodeAttributesMap : public CMap<WORD, WORD, COpcodeAttributes, const COpcodeAttributes&>
+    class CF2OpcodeAttributesMap : public CMap<uint16_t, uint16_t, COpcodeAttributes, const COpcodeAttributes&>
     {
     public:
         CF2OpcodeAttributesMap();
     };
 
     // C12OpcodeAttributesMap
-    class CF1OpcodeAttributesMap : public CMap<WORD, WORD, COpcodeAttributes, const COpcodeAttributes&>
+    class CF1OpcodeAttributesMap : public CMap<uint16_t, uint16_t, COpcodeAttributes, const COpcodeAttributes&>
     {
     public:
         CF1OpcodeAttributesMap();
@@ -824,20 +824,20 @@ public:
 
 public:
     virtual void Serialize(CArchive& ar);
-    void Expect(CArchive& ar, WORD wOperator, bool bArgumentFound = false, ULONG ulArgument = 0);
-    void Expect(CArchive& ar, int nCount, WORD pwOperators[]);
+    void Expect(CArchive& ar, uint16_t wOperator, bool bArgumentFound = false, ULONG ulArgument = 0);
+    void Expect(CArchive& ar, int nCount, uint16_t pwOperators[]);
 
     bool HasArgument() const;
     int GetSize() const;
 
-    WORD GetOperator() const;
-    void SetOperator(WORD op);
+    uint16_t GetOperator() const;
+    void SetOperator(uint16_t op);
     ULONG GetArgument() const;
 
     const COpcodeAttributes GetAttributes() const;
 
 private:
-    WORD  m_wOperator;
+    uint16_t  m_wOperator;
     ULONG m_ulArgument;
 };
 

@@ -59,7 +59,7 @@ void CNode::StoreTree(CArchive& ar, int nIndent, int nIndex)
 
     // Node
     std::string strOutLine;
-    WORD wOperator = m_Opcode.GetOperator();
+    uint16_t wOperator = m_Opcode.GetOperator();
     ULONG ulArgument = m_Opcode.GetArgument();
 
     switch(wOperator)
