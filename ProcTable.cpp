@@ -47,7 +47,7 @@ CProcDescriptor& CProcDescriptor::operator = (const CProcDescriptor& Item)
 
 void CProcDescriptor::Serialize(CArchive& ar)
 {
-    UINT uiTotalRead;
+    uint32_t uiTotalRead;
 
     uiTotalRead = ReadMSBULong(ar, m_ulNameOffset);
     uiTotalRead += ReadMSBULong(ar, m_ulType);

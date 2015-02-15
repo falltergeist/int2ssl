@@ -349,15 +349,15 @@ void CFalloutScript::InitialReduce()
                     if (!RemoveSequenceOfNodes(m_ProcBodies[i], j, 3, awCheckArgCount, 3))
                     {
                         // short circuit AND
-                        UINT actualOperator = CheckSequenceOfNodes(m_ProcBodies[i], j, awShortCircuitAnd, 5)
+                        uint16_t actualOperator = CheckSequenceOfNodes(m_ProcBodies[i], j, awShortCircuitAnd, 5)
                                         ? COpcode::O_AND 
                                         : (CheckSequenceOfNodes(m_ProcBodies[i], j, awShortCircuitOr, 6)
                                             ? COpcode::O_OR
                                             : 0);
                         if (actualOperator)
                         {
-                            UINT k, skipOffset = m_ProcBodies[i][j+1].m_Opcode.GetArgument();
-                            CNode node;
+                            uint32_t k, skipOffset = m_ProcBodies[i][j+1].m_Opcode.GetArgument();
+
                             k = j - 1;
                             do
                             {

@@ -2,13 +2,13 @@
 #include "Utility.h"
 
 
-UINT ReadMSBWord(CArchive& ar, uint16_t& wValue)
+uint32_t ReadMSBWord(CArchive& ar, uint16_t& wValue)
 {
     char* pBuffer = reinterpret_cast<char*>(&wValue);
     return (ar.Read(pBuffer + 1, 1) + ar.Read(pBuffer, 1));
 }
 
-UINT ReadMSBULong(CArchive& ar, ULONG& ulValue)
+uint32_t ReadMSBULong(CArchive& ar, uint32_t& ulValue)
 {
     char* pBuffer = reinterpret_cast<char*>(&ulValue);
     return (ar.Read(pBuffer + 3, 1) + ar.Read(pBuffer + 2, 1) +

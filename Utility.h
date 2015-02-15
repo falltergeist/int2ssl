@@ -9,8 +9,8 @@
 
 // Third party includes
 
-UINT ReadMSBWord(CArchive& ar, uint16_t& wValue);
-UINT ReadMSBULong(CArchive& ar, ULONG& ulValue);
+uint32_t ReadMSBWord(CArchive& ar, uint16_t& wValue);
+uint32_t ReadMSBULong(CArchive& ar, uint32_t& ulValue);
 
 std::string format(std::string format, ...);
 std::string format(std::string format, std::string value);

@@ -10,8 +10,6 @@
 // Third party includes
 
 typedef unsigned char BYTE;
-typedef unsigned long DWORD;
-typedef unsigned int UINT;
 typedef int INT_PTR;
 typedef unsigned int ULONG;
 
