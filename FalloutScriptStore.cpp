@@ -288,7 +288,7 @@ void CFalloutScript::StoreDeclarations()
     std::string c_strArgumentTemplate("arg%u");
     std::string c_strLocalVarTemplate("LVar%u");
 
-    g_ofstream << "    Storing declarations" << std::endl;
+    std::cout << "    Storing declarations" << std::endl;
 
     std::string strOutLine;
 
