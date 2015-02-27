@@ -32,4 +32,9 @@ XGetopt.cpp
 
 add_definitions (-Wall)
 
+set(CMAKE_CXX_FLAGS_RELEASE "-Os -s")
+
+message("CMAKE_CXX_FLAGS_DEBUG is ${CMAKE_CXX_FLAGS_DEBUG}")
+message("CMAKE_CXX_FLAGS_RELEASE is ${CMAKE_CXX_FLAGS_RELEASE}")
+
 add_executable(int2ssl ${SOURCES})

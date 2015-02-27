@@ -451,7 +451,7 @@ void CFalloutScript::StoreDeclarations()
                         str += c_strLocalVarTemplate + " := ";
 
                         strOutLine = format(str.c_str(), ulLocalVarIndex);
-                        std::cout << GetIndentString(nIndentLevel) << strOutLine << GetSource(m_ProcBodies[i][nNodeIndex], false, procDescriptor.m_ulNumArgs) <<  ";" << std::endl;
+                        g_ofstream << GetIndentString(nIndentLevel) << strOutLine << GetSource(m_ProcBodies[i][nNodeIndex], false, procDescriptor.m_ulNumArgs) <<  ";" << std::endl;
                         ulLocalVarIndex++;
                         break;
                     }

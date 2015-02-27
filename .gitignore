@@ -10,3 +10,6 @@ Makefile
 *.exe
 int2ssl
 
+nbproject/
+Release/
+Debug/
