@@ -21,5 +21,6 @@
 std::string format(std::string format, ...);
 std::string format(std::string format, std::string value);
 std::string replace(std::string subject, std::string search, std::string replacement);
+std::string escape_str(std::string input);
 
 #endif
