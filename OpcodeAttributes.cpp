@@ -788,7 +788,16 @@ COpcode::CF2OpcodeAttributesMap::CF2OpcodeAttributesMap()
     SetAt(O_TS_CREATE_SPATIAL, COpcodeAttributes("O_TS_CREATE_SPATIAL", "create_spatial",    4, expression));
     SetAt(O_TS_ART_EXISTS, COpcodeAttributes("O_TS_ART_EXISTS", "art_exists",    1, expression));
     SetAt(O_TS_OBJ_IS_CARRYING_OBJ, COpcodeAttributes("O_TS_OBJ_IS_CARRYING_OBJ", "obj_is_carrying_obj",     2, expression));
-    //sfall end
+
+	// sfall 3.8
+	SetAt(O_TS_SFALL_METARULE0, COpcodeAttributes("O_TS_SFALL_METARULE0", "sfall_func0", 1, expression));
+	SetAt(O_TS_SFALL_METARULE1, COpcodeAttributes("O_TS_SFALL_METARULE1", "sfall_func1", 2, expression));
+	SetAt(O_TS_SFALL_METARULE2, COpcodeAttributes("O_TS_SFALL_METARULE2", "sfall_func2", 3, expression));
+	SetAt(O_TS_SFALL_METARULE3, COpcodeAttributes("O_TS_SFALL_METARULE3", "sfall_func3", 4, expression));
+	SetAt(O_TS_SFALL_METARULE4, COpcodeAttributes("O_TS_SFALL_METARULE4", "sfall_func4", 5, expression));
+	SetAt(O_TS_SFALL_METARULE5, COpcodeAttributes("O_TS_SFALL_METARULE5", "sfall_func5", 6, expression));
+	SetAt(O_TS_SFALL_METARULE6, COpcodeAttributes("O_TS_SFALL_METARULE6", "sfall_func6", 7, expression));
+    // sfall end
 
     SetAt(O_STRINGOP, COpcodeAttributes("O_STRINGOP", "", 0, expression));
     SetAt(O_FLOATOP, COpcodeAttributes("O_FLOATOP", "", 0, expression));
