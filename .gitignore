@@ -1,6 +1,7 @@
 CMakeFiles
 CMakeCache.txt
 CMakeLists.txt.user
+CMakeSettings.json
 Makefile
 *.dump
 *.int
@@ -14,3 +15,4 @@ nbproject/
 Release/
 Debug/
 .idea/
+.vs/

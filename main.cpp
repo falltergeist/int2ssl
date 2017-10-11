@@ -40,10 +40,10 @@ bool ProcessCommandLine(int argc, char* argv[]);
 
 int main(int argc, char* argv[])
 { 
-    std::cout << "Fallout script decompiler, version 8.4.0 (sfall edition)" << std::endl
+    std::cout << "Fallout script decompiler, version 8.4.1 (sfall edition)" << std::endl
               << "Copyright (C) Anchorite (TeamX), 2005-2009" << std::endl
               << "anchorite2001@yandex.ru" << std::endl
-              << "Continued by Nirran, phobos2077 (2014-2016)" << std::endl
+              << "Continued by Nirran, phobos2077 (2014-2017)" << std::endl
               << "Crossplatformed by alexeevdv (2015)" << std::endl;
 
     if (argc < 2 || !ProcessCommandLine(argc, argv))

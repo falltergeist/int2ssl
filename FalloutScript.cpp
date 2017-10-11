@@ -30,7 +30,7 @@ CFalloutScript::~CFalloutScript()
 void CFalloutScript::Serialize()
 {
 
-    std::cout << "  Read strtup code" << std::endl;
+    std::cout << "  Read startup code" << std::endl;
     m_StartupCode.Serialize();
 
     std::cout << "  Read procedures table" << std::endl;

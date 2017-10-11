@@ -94,7 +94,7 @@ void CFalloutScript::StoreDefinitions()
         for(uint32_t i = 0; i < m_GlobalVar.size(); i++)
         {
             ulVarValue = m_GlobalVar[i].GetArgument();
-            strDefinition += "variable ";
+            strDefinition = "variable ";
             strDefinition += m_GlobalVarsNames[i];
 
             switch(m_GlobalVar[i].GetOperator())
