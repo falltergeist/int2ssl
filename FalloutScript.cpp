@@ -255,13 +255,14 @@ void CFalloutScript::ExtractCodeElements(COpcodeArray& Source, COpcodeArray& Des
 
             for(uint32_t j = 0; j < nSizeOfCodeItem - 1; j++)
             {
-                Destination.push_back(Source[i - nSizeOfCodeItem + 1]);
-                Source.erase(Source.begin() + i - nSizeOfCodeItem + 1);
+                int ofs = i - nSizeOfCodeItem + 1;
+                Destination.push_back(Source[ofs]);
+                Source.erase(Source.begin() + ofs);
             }
 
-            Source.erase(Source.begin() + i - nSizeOfCodeItem + 1); // Delimeter
+            Source.erase(Source.begin() + (i - nSizeOfCodeItem + 1)); // Delimeter
 
-            if (i > Source.size() - 1)
+            if (i + 1 > Source.size())
             {
                 break;
             }
