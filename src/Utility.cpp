@@ -45,3 +45,28 @@ std::string replace(std::string subject, std::string search, std::string replace
     }
     return subject;
 }
+
+std::string escape_str(std::string input)
+{
+    std::string output;
+    output.reserve(input.length());
+
+    for (std::string::size_type i = 0; i < input.length(); ++i)
+    {
+        switch (input[i])
+		{
+			case '\n':
+				output += "\\n";
+				break;
+
+			case '\r':
+				output += "\\r";
+				break;
+
+			default:
+				output += input[i];
+				break;;
+        }
+    }
+    return output;
+}

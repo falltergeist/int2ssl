@@ -94,13 +94,13 @@ void CFalloutScript::StoreDefinitions()
         for(uint32_t i = 0; i < m_GlobalVar.size(); i++)
         {
             ulVarValue = m_GlobalVar[i].GetArgument();
-            strDefinition += "variable ";
+            strDefinition = "variable ";
             strDefinition += m_GlobalVarsNames[i];
 
             switch(m_GlobalVar[i].GetOperator())
             {
                 case COpcode::O_STRINGOP:
-                    strDefinition = format(strDefinition + " := \"%s\"", m_Stringspace[ulVarValue].c_str());
+                    strDefinition = format(strDefinition + " := \"%s\"", escape_str(m_Stringspace[ulVarValue]).c_str());
                     break;
 
                 case COpcode::O_FLOATOP:
@@ -245,7 +245,7 @@ void CFalloutScript::StoreDefinitions()
                         switch(defObject.m_ulAttributes & 0xFFFF)
                         {
                             case COpcode::O_STRINGOP:
-                                strDefinition = format(strDefinition + " := \"%s\"", m_Stringspace[defObject.m_ulVarValue].c_str());
+                                strDefinition = format(strDefinition + " := \"%s\"", escape_str(m_Stringspace[defObject.m_ulVarValue]).c_str());
                                 break;
 
                             case COpcode::O_FLOATOP:
@@ -535,7 +535,8 @@ std::string CFalloutScript::GetSource(CNode& node, bool bLabel, uint32_t ulNumAr
                 else
                 {
                     strResult = "\"";
-                    strResult += m_Stringspace[ulArgument] + "\"";
+                    strResult += escape_str(m_Stringspace[ulArgument]);
+                    strResult += "\"";
                 }
             }
             catch(const std::exception& e)
