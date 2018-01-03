@@ -1,0 +1,15 @@
+Source: int2ssl
+Section: utils
+Priority: optional
+Maintainer: Dmitry V. Alexeev <mail@alexeevdv.ru>
+Build-Depends: debhelper (>=9), cmake (>=2.8)
+Standards-Version: 3.9.6
+Homepage: https://github.com/falltergeist/int2ssl
+Vcs-Git: git://github.com/falltergeist/int2ssl.git
+Vcs-Browser: https://github.com/falltergeist/int2ssl.git
+
+Package: int2ssl
+Architecture: any
+Depends:
+Description: Fallout 1\2 scripts decompiler
+ Fallout 1\2 scripts decompiler

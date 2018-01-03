@@ -4,31 +4,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(int2ssl)
 
-set(SOURCES main.cpp
-Hacks/CMap.h
-Namespace.h
-Namespace.cpp
-Node.h
-Node.cpp
-ObjectAttributes.h
-Opcode.h
-ProcTable.h
-ProcTable.cpp
-Utility.h
-Utility.cpp
-FalloutScript.h
-FalloutScript.cpp
-FalloutScriptDecompile.cpp
-FalloutScriptDefObject.cpp
-FalloutScriptDump.cpp
-FalloutScriptStore.cpp
-OpcodeAttributes.cpp
-Opcode.cpp
-StartupCode.h
-StartupCode.cpp
-XGetopt.h
-XGetopt.cpp
-)
+aux_source_directory(src SRC_LIST)
 
 add_definitions (-Wall)
 
@@ -37,4 +13,5 @@ set(CMAKE_CXX_FLAGS_RELEASE "-Os -s")
 message("CMAKE_CXX_FLAGS_DEBUG is ${CMAKE_CXX_FLAGS_DEBUG}")
 message("CMAKE_CXX_FLAGS_RELEASE is ${CMAKE_CXX_FLAGS_RELEASE}")
 
-add_executable(int2ssl ${SOURCES})
+add_executable(${PROJECT_NAME} ${SRC_LIST})
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
