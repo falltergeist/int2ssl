@@ -1,4 +1,7 @@
-8.4.2 under development
+8.4.3 under development
+=====
+
+8.4.2 (2018-01-03)
 =====
 - Fixed some errors when parsing exported variable and procedure sections (phobos2077)
 - Replace linebreaks with escape sequence when storing string constants. (phobos2077)
