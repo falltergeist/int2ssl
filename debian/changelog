@@ -1,5 +1,5 @@
-int2ssl (8.3.1-1) trusty; urgency=medium
+int2ssl (8.3.1-2~artful) artful; urgency=medium
 
-  * Initial release
+  * No-change port to artful
 
  -- Dmitry V. Alexeev <mail@alexeevdv.ru>  Wed, 03 Jan 2018 16:11:16 +0300
