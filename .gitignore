@@ -1,6 +1,7 @@
 CMakeFiles
 CMakeCache.txt
 CMakeLists.txt.user
+CMakeSettings.json
 Makefile
 *.dump
 *.int
@@ -15,3 +16,4 @@ Release/
 Debug/
 .idea
 /cmake-build-debug
+.vs/

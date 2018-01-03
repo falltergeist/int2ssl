@@ -1,5 +1,8 @@
-8.3.2 under development
+8.4.2 under development
 =====
+- Fixed some errors when parsing exported variable and procedure sections (phobos2077)
+- Replace linebreaks with escape sequence when storing string constants. (phobos2077)
+- Added support for new universal sfall opcodes (phobos2077)
 
 8.3.1 (2018-01-03)
 =====

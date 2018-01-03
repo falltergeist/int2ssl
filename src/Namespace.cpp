@@ -97,7 +97,7 @@ void CNamespace::Serialize()
 
         for(uint32_t i = 0; i < strNonGraph.length(); i++)
         {
-            strNewString = replace(strNewString, "" + strNonGraph[i], "\\" + strEscape[i]);
+            strNewString = replace(strNewString, std::string() + strNonGraph[i], std::string("\\") + strEscape[i]);
         }
 
         m_Map.SetAt(ulTotalRead + 6, strNewString);
