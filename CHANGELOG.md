@@ -1,5 +1,6 @@
-8.3.2 under development
+8.4.2 under development
 =====
+- bug fixes (phobos2077)
 
 8.3.1 (2018-01-03)
 =====
