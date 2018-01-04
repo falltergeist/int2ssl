@@ -1,4 +1,7 @@
-8.4.3 under development
+8.4.4 under development
+=====
+
+8.4.3 (2018-01-03)
 =====
 - AppVeyor configuration (alexeevdv)
 
