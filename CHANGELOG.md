@@ -1,5 +1,6 @@
 8.4.3 under development
 =====
+- AppVeyor configuration (alexeevdv)
 
 8.4.2 (2018-01-03)
 =====

@@ -1,0 +1,34 @@
+version: '8.4.3-{build}'
+
+environment:
+  matrix:
+    - BUILD_TYPE: Release
+      COMPILER: MinGW
+      PLATFORM: Win32
+      WITH_MPFR: yes
+
+install:
+- set PATH=C:\MinGW\bin;%PATH%
+# Rename sh.exe as sh.exe in PATH interferes with MinGW
+- rename "C:\Program Files\Git\usr\bin\sh.exe" "sh2.exe"
+
+build_script:
+- mkdir build
+- cd build
+- cmake -G "MinGW Makefiles" -DCMAKE_PREFIX_PATH=C:\MinGW -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ..
+- cmake --build . --config %BUILD_TYPE%
+
+artifacts:
+  - path: build/int2ssl.exe
+    name: Windows binary
+    type: File
+
+deploy:
+  provider: GitHub
+  auth_token:
+    secure: "WQRWH4fHMtEyK8upN1h+QW3UGhpiCclabCZYFaCjrqIAjglWt7E64rPaSf2unPZz"
+  artifact: /.*/
+  draft: false
+  prerelease: false
+  on:
+    appveyor_repo_tag: true
