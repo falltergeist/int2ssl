@@ -1,4 +1,4 @@
-int2ssl [![Build Status](https://travis-ci.org/falltergeist/int2ssl.svg?branch=develop)](https://travis-ci.org/falltergeist/int2ssl)
+int2ssl [![Build Status](https://travis-ci.org/falltergeist/int2ssl.svg?branch=develop)](https://travis-ci.org/falltergeist/int2ssl) [![Version](https://img.shields.io/github/release/falltergeist/int2ssl.svg)](https://github.com/falltergeist/int2ssl/releases/latest) [![Discord](https://img.shields.io/discord/401990446747877376.svg)](https://discord.gg/jxs6WRq)
 ==========
 
 Script decompiler for Fallout 1/2.
