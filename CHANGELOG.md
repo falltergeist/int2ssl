@@ -1,5 +1,6 @@
 8.4.4 under development
 =====
+- Statically compile binary in MinGW environment (winterheart)
 
 8.4.3 (2018-01-03)
 =====
