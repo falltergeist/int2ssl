@@ -1,0 +1,43 @@
+name: build
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build:
+    name: Build all
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - { os: ubuntu-latest, cc: "gcc", cxx: "g++", build_type: "Release" }
+          - { os: ubuntu-latest, cc: "clang", cxx: "clang++", build_type: "Release" }
+          - { os: ubuntu-latest, cc: "x86_64-w64-mingw32-gcc", cxx: "x86_64-w64-mingw32-g++", build_type: "MinSizeRel",
+              toolchain: "cmake/Toolchain-MinGW64.cmake" }
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install g++-mingw-w64-x86-64 ninja-build
+      - name: Build with ${{ matrix.config.cc }}/${{ matrix.config.cxx }}
+        env:
+          CC: ${{ matrix.config.cc }}
+          CXX: ${{ matrix.config.cxx }}
+        run: |
+          cmake -B build -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE=${{ matrix.config.toolchain }} \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
+          cmake --build build -j2 -v
+      - name: Store artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: executables
+          path: build/int2ssl.exe
+
