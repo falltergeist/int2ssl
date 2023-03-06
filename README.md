@@ -26,13 +26,23 @@ Building from source:
 Dependencies:
 -------------
 
-- CMake (>= 2.8)
+- CMake (>= 3.13)
 
 Build:
 ------
 
 ```bash
 mkdir build && cd build && cmake .. && make
+```
+
+If you want cross-compile on Linux for Windows, you'll need to install MinGW
+toolchain and use special toolchain file:
+
+```bash
+sudo apt-get install g++-mingw-w64-x86-64
+mkdir build && cd build
+cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-MinGW64.cmake
+make
 ```
 
 Usage:
