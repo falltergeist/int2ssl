@@ -2,7 +2,7 @@ version: '8.4.4-{build}'
 
 environment:
   matrix:
-    - BUILD_TYPE: Release
+    - BUILD_TYPE: MinSizeRel
       COMPILER: MinGW
       PLATFORM: Win32
       WITH_MPFR: yes

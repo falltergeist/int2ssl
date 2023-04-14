@@ -198,7 +198,7 @@ int getopt(int argc, char *argv[], const char *optstring)
     if (cp == NULL || c == ':')
         return '?';
 
-	cp++;
+    cp++;
     if (*cp == ':')
 	{
         if (*next != '\0')
